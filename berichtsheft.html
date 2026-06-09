@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Berichtsheft ⚡</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --wood-deep: #110d07;
+  --wood-dark: #1c1408;
+  --wood-mid: #2a1f0e;
+  --wood-plank: #3d2c14;
+  --wood-light: #8B5A2B;
+  --neon: #FF6B00;
+  --neon-dim: #c45200;
+  --neon-glow: rgba(255,107,0,0.35);
+  --amber: #FFB347;
+  --moss: #4a7c59;
+  --moss-dark: #2d4d38;
+  --cream: #F0E6D3;
+  --cream-dim: #a89880;
+  --beam: #5c3d1e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--wood-deep);
+  background-image:
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(92,61,30,0.08) 60px, rgba(92,61,30,0.08) 61px),
+    repeating-linear-gradient(180deg, transparent, transparent 120px, rgba(92,61,30,0.05) 120px, rgba(92,61,30,0.05) 121px);
+  color: var(--cream);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  padding: 24px 16px 60px;
+}
+
+#app { max-width: 460px; margin: 0 auto; }
+
+/* ── HEADER ─────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--wood-plank);
+  position: relative;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--neon), transparent 60%);
+  box-shadow: 0 0 8px var(--neon-glow);
+}
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--moss);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+h1 {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--cream);
+  letter-spacing: -1px;
+  line-height: 1;
+  text-shadow: 0 0 20px var(--neon-glow), 0 0 40px rgba(255,107,0,0.15);
+}
+h1 span { color: var(--neon); text-shadow: 0 0 12px var(--neon), 0 0 30px var(--neon-glow); }
+.settings-btn {
+  background: none; border: none; font-size: 18px; cursor: pointer;
+  color: var(--cream-dim); padding: 4px; opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.settings-btn:hover { opacity: 1; }
+
+/* ── CARDS / PLANKS ─────────────────────────────────── */
+.plank {
+  background: linear-gradient(135deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+  border: 1px solid var(--wood-plank);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.plank::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    165deg,
+    transparent,
+    transparent 30px,
+    rgba(255,255,255,0.012) 30px,
+    rgba(255,255,255,0.012) 31px
+  );
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+/* ── STATS ──────────────────────────────────────────── */
+.stats { display: flex; gap: 10px; margin-bottom: 14px; }
+.stat {
+  flex: 1;
+  padding: 14px 8px;
+  text-align: center;
+  background: linear-gradient(160deg, var(--wood-mid), var(--wood-dark));
+  border: 1px solid var(--wood-plank);
+  border-radius: 10px;
+}
+.stat-n { font-size: 26px; font-weight: 900; color: var(--neon); font-family: 'Space Mono', monospace; line-height: 1; text-shadow: 0 0 10px var(--neon-glow); }
+.stat-l { font-size: 9px; color: var(--cream-dim); letter-spacing: 2px; margin-top: 3px; text-transform: uppercase; }
+
+/* ── SPRUCH BOX ─────────────────────────────────────── */
+.spruch-box {
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  border-left: 3px solid var(--moss);
+  background: linear-gradient(135deg, var(--wood-mid), var(--wood-dark));
+  border-radius: 0 10px 10px 0;
+  border-top: 1px solid var(--wood-plank);
+  border-right: 1px solid var(--wood-plank);
+  border-bottom: 1px solid var(--wood-plank);
+  transition: border-left-color 0.3s;
+}
+.spruch-box:hover { border-left-color: var(--neon); }
+.spruch-label { font-size: 9px; color: var(--moss); letter-spacing: 3px; text-transform: uppercase; font-family: 'Space Mono', monospace; margin-bottom: 6px; }
+.spruch-text { font-size: 13px; color: var(--cream); line-height: 1.6; }
+
+/* ── WEEK NAV ───────────────────────────────────────── */
+.week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, var(--wood-mid), var(--wood-dark));
+  border: 1px solid var(--wood-plank);
+  border-radius: 12px;
+  border-top: 2px solid var(--neon);
+  box-shadow: 0 0 20px rgba(255,107,0,0.08), inset 0 1px 0 rgba(255,179,71,0.06);
+}
+.arrow-btn {
+  background: var(--wood-plank); border: 1px solid var(--beam);
+  color: var(--cream); font-size: 18px; width: 36px; height: 36px;
+  border-radius: 8px; cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.arrow-btn:hover { background: var(--neon-dim); box-shadow: 0 0 10px var(--neon-glow); }
+.week-title { font-size: 20px; font-weight: 700; color: var(--cream); text-align: center; font-family: 'Space Mono', monospace; }
+.week-sub { font-size: 11px; color: var(--cream-dim); text-align: center; margin-top: 2px; }
+
+/* ── PROGRESS ───────────────────────────────────────── */
+.progress-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--cream-dim); margin-bottom: 6px; font-family: 'Space Mono', monospace; }
+.progress-bar { height: 4px; background: var(--wood-mid); border-radius: 2px; margin-bottom: 16px; border: 1px solid var(--wood-plank); }
+.progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 8px var(--neon-glow); }
+
+/* ── BUTTONS ────────────────────────────────────────── */
+.upload-row { display: flex; gap: 10px; margin-bottom: 12px; }
+.btn-wood {
+  flex: 1; padding: 12px 10px;
+  background: linear-gradient(160deg, var(--wood-plank), var(--wood-mid));
+  color: var(--cream);
+  border: 1px solid var(--beam);
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-wood:hover { border-color: var(--neon); box-shadow: 0 0 12px var(--neon-glow); color: var(--amber); }
+.btn-neon {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--neon) 0%, var(--neon-dim) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  box-shadow: 0 0 20px var(--neon-glow), 0 4px 12px rgba(0,0,0,0.4);
+  transition: all 0.2s;
+}
+.btn-neon:hover { box-shadow: 0 0 30px rgba(255,107,0,0.5), 0 4px 16px rgba(0,0,0,0.4); transform: translateY(-1px); }
+.btn-neon:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-moss {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(135deg, var(--moss-dark), #1e3828);
+  color: var(--moss);
+  border: 1px solid var(--moss-dark);
+  border-radius: 10px;
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.2s;
+}
+.btn-moss:hover { border-color: var(--moss); box-shadow: 0 0 10px rgba(74,124,89,0.3); }
+.btn-xs {
+  background: var(--wood-plank); color: var(--cream-dim);
+  border: 1px solid var(--beam); border-radius: 6px;
+  padding: 5px 11px; font-size: 11px; cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  transition: all 0.15s;
+}
+.btn-xs:hover { color: var(--amber); border-color: var(--amber); }
+.btn-done { background: var(--moss-dark); color: var(--moss); border-color: var(--moss-dark); }
+.btn-done:hover { border-color: var(--moss); color: #7ecb95; }
+
+/* ── DRAG DROP ──────────────────────────────────────── */
+.drop-zone {
+  border: 2px dashed var(--wood-plank);
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--wood-dark), var(--wood-deep));
+  transition: all 0.2s;
+  position: relative;
+}
+.drop-zone.drag-over {
+  border-color: var(--neon);
+  background: linear-gradient(135deg, #2a1800, #1c1000);
+  box-shadow: 0 0 20px var(--neon-glow), inset 0 0 20px rgba(255,107,0,0.05);
+}
+.drop-zone-icon { font-size: 32px; margin-bottom: 8px; }
+.drop-zone-text { font-size: 13px; color: var(--cream-dim); }
+.drop-zone-sub { font-size: 11px; color: var(--wood-light); margin-top: 4px; font-family: 'Space Mono', monospace; }
+
+/* ── PREVIEWS ───────────────────────────────────────── */
+.previews { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.preview-wrap { position: relative; }
+.preview-img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--wood-plank); display: block; }
+.preview-del {
+  position: absolute; top: -6px; right: -6px;
+  background: var(--neon); border: none; border-radius: 50%;
+  width: 20px; height: 20px; font-size: 11px; cursor: pointer;
+  color: #fff; font-weight: 900; line-height: 20px; text-align: center;
+  box-shadow: 0 0 8px var(--neon-glow);
+}
+
+/* ── RESULT ─────────────────────────────────────────── */
+.result-box {
+  background: linear-gradient(145deg, var(--wood-mid), var(--wood-dark));
+  border: 1px solid var(--wood-plank);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.result-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, rgba(255,107,0,0.12), transparent);
+  border-bottom: 1px solid var(--wood-plank);
+}
+.result-label { font-size: 9px; color: var(--neon); letter-spacing: 3px; text-transform: uppercase; font-family: 'Space Mono', monospace; }
+.result-btns { display: flex; gap: 8px; }
+.result-text { padding: 16px; font-size: 12px; line-height: 1.9; white-space: pre-wrap; color: var(--cream); font-family: 'Space Mono', monospace; }
+.result-warn { padding: 8px 16px; background: rgba(255,107,0,0.1); border-top: 1px solid rgba(255,107,0,0.2); font-size: 11px; color: var(--amber); }
+.result-ok { padding: 8px 16px; background: rgba(74,124,89,0.15); border-top: 1px solid var(--moss-dark); font-size: 11px; color: var(--moss); }
+
+/* ── WEEK LIST ──────────────────────────────────────── */
+.week-list-label { font-size: 9px; color: var(--wood-light); letter-spacing: 3px; margin-bottom: 10px; font-family: 'Space Mono', monospace; text-transform: uppercase; }
+.week-list { display: flex; flex-direction: column; gap: 4px; }
+.week-item {
+  display: flex; align-items: center; padding: 10px 14px;
+  border-radius: 8px; cursor: pointer;
+  border: 1px solid transparent;
+  background: var(--wood-dark);
+  transition: all 0.15s;
+}
+.week-item:hover { border-color: var(--wood-plank); background: var(--wood-mid); }
+.week-item.active { border-color: var(--neon); background: linear-gradient(135deg, #2a1800, #1c1000); box-shadow: 0 0 12px rgba(255,107,0,0.15); }
+.week-item-title { flex: 1; font-size: 13px; color: var(--cream-dim); font-weight: 600; }
+.week-item.active .week-item-title { color: var(--amber); }
+.week-item-sub { font-size: 10px; color: var(--wood-light); margin-top: 1px; font-family: 'Space Mono', monospace; }
+.week-item-pg { font-size: 11px; color: #555; font-family: 'Space Mono', monospace; }
+
+/* ── FIRST START ────────────────────────────────────── */
+.info-banner {
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border-left: 3px solid var(--amber);
+  background: linear-gradient(135deg, #2a1e08, var(--wood-dark));
+  border-radius: 0 10px 10px 0;
+  border-top: 1px solid var(--wood-plank);
+  border-right: 1px solid var(--wood-plank);
+  border-bottom: 1px solid var(--wood-plank);
+  font-size: 13px;
+  color: var(--cream-dim);
+  line-height: 1.6;
+}
+.info-banner strong { color: var(--amber); }
+
+/* ── SPINNER ────────────────────────────────────────── */
+.spinner {
+  display: inline-block; width: 13px; height: 13px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 7px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── NEON DIVIDER ───────────────────────────────────── */
+.neon-divider {
+  height: 1px;
+  background: linear-gradient(90deg, var(--neon), transparent 60%);
+  box-shadow: 0 0 6px var(--neon-glow);
+  margin: 20px 0;
+  border: none;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="eyebrow">Elektroniker &middot; E&amp;G &middot; Ausbildung</div>
+    <h1>Bericht<span>sheft</span> &#x26a1;</h1>
+  </div>
+  <button class="settings-btn" onclick="resetApp()" title="Zur&uuml;cksetzen">&#x2699;&#xfe0f;</button>
+</div>
+
+<!-- ERSTER START -->
+<div id="firstStart" style="display:none">
+  <div class="info-banner">
+    <strong>Erster Start &ndash; Seiten automatisch erkennen</strong><br>
+    Lad alle Fotos deines Stundenbuches hoch. Die KI liest das &auml;lteste Datum raus und nummeriert alles automatisch durch.
+  </div>
+
+  <div
+    class="drop-zone"
+    id="scanDrop"
+    onclick="document.getElementById('scanGallery').click()"
+    ondragover="dragOver(event,'scanDrop')"
+    ondragleave="dragLeave('scanDrop')"
+    ondrop="dropFiles(event,'scan')"
+  >
+    <div class="drop-zone-icon">&#x1f5bc;&#xfe0f;</div>
+    <div class="drop-zone-text">Alle Stundenbuch-Fotos hier reinziehen</div>
+    <div class="drop-zone-sub">oder tippen zum Ausw&auml;hlen &middot; mehrere auf einmal m&ouml;glich</div>
+  </div>
+
+  <div class="upload-row">
+    <button class="btn-wood" onclick="document.getElementById('scanGallery').click()">&#x1f5bc;&#xfe0f; Galerie</button>
+    <button class="btn-wood" onclick="document.getElementById('scanCamera').click()">&#x1f4f7; Kamera</button>
+  </div>
+  <input type="file" id="scanGallery" accept="image/*" multiple style="display:none" onchange="handleScanFiles(this.files)"/>
+  <input type="file" id="scanCamera" accept="image/*" capture="environment" style="display:none" onchange="handleScanFiles(this.files)"/>
+  <div class="previews" id="scanPreviews"></div>
+  <button class="btn-neon" id="scanBtn" onclick="scanDates()" disabled>&#x26a1; Datum erkennen &amp; starten</button>
+  <div id="scanStatus" style="font-size:12px;color:var(--cream-dim);text-align:center;margin-top:-8px;margin-bottom:14px;font-family:'Space Mono',monospace"></div>
+  <div style="text-align:center;margin-top:8px">
+    <button onclick="manualStart()" style="background:none;border:none;color:var(--wood-light);font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;text-decoration:underline">Datum manuell eingeben</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="home" style="display:none">
+  <div class="stats" id="statsRow"></div>
+
+  <div class="spruch-box" onclick="newSpruch()">
+    <div class="spruch-label">&#x1f9ff; Holz-Weisheit &mdash; tippen f&uuml;r neue</div>
+    <div class="spruch-text" id="spruchText"></div>
+  </div>
+
+  <div class="week-nav">
+    <button class="arrow-btn" onclick="changeWeek(-1)">&#x2039;</button>
+    <div>
+      <div class="week-title" id="weekTitle"></div>
+      <div class="week-sub" id="weekSub"></div>
+    </div>
+    <button class="arrow-btn" onclick="changeWeek(1)">&#x203a;</button>
+  </div>
+
+  <div class="progress-row">
+    <span id="progressLabel">Fortschritt</span>
+    <span id="progressPct" style="font-weight:700"></span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- DRAG DROP ZONE -->
+  <div
+    class="drop-zone"
+    id="mainDrop"
+    onclick="document.getElementById('fileGallery').click()"
+    ondragover="dragOver(event,'mainDrop')"
+    ondragleave="dragLeave('mainDrop')"
+    ondrop="dropFiles(event,'main')"
+  >
+    <div class="drop-zone-icon">&#x1f4c4;</div>
+    <div class="drop-zone-text">Stundenbuch-Foto hier reinziehen</div>
+    <div class="drop-zone-sub">oder tippen zum Ausw&auml;hlen</div>
+  </div>
+
+  <div class="upload-row">
+    <button class="btn-wood" onclick="document.getElementById('fileGallery').click()">&#x1f5bc;&#xfe0f; Galerie</button>
+    <button class="btn-wood" onclick="document.getElementById('fileCamera').click()">&#x1f4f7; Kamera</button>
+  </div>
+  <input type="file" id="fileGallery" accept="image/*" multiple style="display:none" onchange="handleFiles(this.files)"/>
+  <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display:none" onchange="handleFiles(this.files)"/>
+
+  <div class="previews" id="previews"></div>
+  <button class="btn-neon" id="genBtn" onclick="generate()" disabled>&#x25b6; Berichtsheft generieren</button>
+
+  <div id="resultBox" style="display:none" class="result-box">
+    <div class="result-header">
+      <span class="result-label" id="resultLabel"></span>
+      <div class="result-btns">
+        <button class="btn-xs" onclick="copyText()">Kopieren</button>
+        <button class="btn-xs btn-done" id="doneBtn" onclick="markDone()">&#x2713; Fertig</button>
+      </div>
+    </div>
+    <pre class="result-text" id="resultText"></pre>
+    <div id="unklar" class="result-warn" style="display:none">&#x26a0; [UNKLAR: ...] diese Stellen noch selbst ausf&uuml;llen</div>
+    <div id="doneTag" class="result-ok" style="display:none">&#x2713; Als fertig markiert</div>
+  </div>
+
+  <button class="btn-moss" id="notifBtn" onclick="requestNotif()">&#x1f514; Erinnerungen aktivieren</button>
+
+  <hr class="neon-divider"/>
+  <div class="week-list-label">&#x2500; Alle Seiten</div>
+  <div class="week-list" id="weekList"></div>
+</div>
+</div>
+
+<script>
+var SPRUECHE = [
+  "Bro dein Berichtsheft l\u00e4uft nicht weg \u2013 deine Ausbildung schon \u26a1",
+  "Stell dir vor du hast alles eingetragen. Geiles Gef\u00fchl oder? Tu's einfach \ud83d\udd25",
+  "Kein Eintrag heute = Schmerzen morgen. Du wei\u00dft es.",
+  "Die Zwischenpr\u00fcfung wartet auf niemanden \ud83d\ude24",
+  "5 Minuten Berichtsheft > 2h Stress danach. Rechne nach.",
+  "Deine Chefin hat deinen Ordner verschlampt \u2013 lass ihr keinen Grund mehr \ud83d\udc80",
+  "Heute Foto machen = morgen entspannt. Easy wie Strom verlegen.",
+  "Du machst Strom. Das Berichtsheft macht sich nicht von selbst. Los.",
+  "Andere Azubis sind auch im R\u00fcckstand. Aber du nicht mehr ab heute \ud83d\ude80",
+  "Fr Abend Ordner abgeben ohne Stress w\u00e4re schon geil oder?",
+  "Keine Ausreden. Telefon raus, Foto machen, fertig. \ud83d\udcf2",
+  "Future you wird sich bedanken. Oder fluchen. Du entscheidest.",
+  "Kabel klemmen kannst du. Berichtsheft auch. Gleiche Energie.",
+];
+
+var SYSTEM_SCAN = 'Du bekommst Fotos eines handgeschriebenen Stundenbuches.\nFinde das AELTESTE und NEUESTE Datum.\nAntworte NUR als JSON: {"oldest":"DD.MM.YYYY","newest":"DD.MM.YYYY"}\nKein Datum gefunden: {"oldest":null,"newest":null}';
+
+var SYSTEM_GEN = 'Du hilfst einem Elektroniker-Azubi (Energie- und Geb\u00e4udetechnik) beim Berichtsheft.\nFirma: Kundendienst + Baustellen (Rohbau, Firmen, Neuinstallationen). Mo\u2013Fr.\nStundenbuch-Spalten: Datum, Baustelle/Kunde, T\u00e4tigkeit (Stichpunkte), Stunden, mit wem.\nFormat:\nMontag (DD.MM): [2-3 S\u00e4tze Flie\u00dftext mit Fachbegriffen] \u2013 X Std.\nDienstag: ...\n(nur Mo\u2013Fr)\nFachbegriffe: Unterputzdosen, Leerrohre, NYM-Kabel, FI-Schutzschalter, Kabeltrassen, Schaltschrank, Verd\u00e4chtung, Klemmleiste, Potentialausgleich.\nUnklares: [UNKLAR: ...]\nNur der Text, kein Kommentar. Deutsch.';
+
+var KEY = "berichtsheft_v4";
+var state = { startDate: null, totalPages: 0, currentPage: 1, entries: {} };
+var activePage = 1;
+var images = [];
+var scanImages = [];
+
+function load() { try { var d = localStorage.getItem(KEY); if(d) state = JSON.parse(d); } catch(e) {} }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
+function rnd(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+function calcProg(text) {
+  if (!text) return 0;
+  var days = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"], n=0;
+  for(var i=0;i<days.length;i++) if(text.indexOf(days[i])>=0) n++;
+  return Math.round(n/5*100);
+}
+function getMon(dateStr) {
+  var p=dateStr.split("."), date=new Date(+p[2],+p[1]-1,+p[0]);
+  var day=date.getDay(), diff=day===0?-6:1-day;
+  date.setDate(date.getDate()+diff); return date;
+}
+function pageLabel(n) {
+  if (!state.startDate) return "Woche "+n;
+  var mon=new Date(getMon(state.startDate));
+  mon.setDate(mon.getDate()+(n-1)*7);
+  var fri=new Date(mon); fri.setDate(mon.getDate()+4);
+  var f=function(d){return d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});};
+  return f(mon)+" \u2013 "+f(fri);
+}
+function toB64(file) {
+  return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result.split(",")[1]);};r.onerror=rej;r.readAsDataURL(file);});
+}
+
+// drag/drop
+function dragOver(e,id) { e.preventDefault(); document.getElementById(id).classList.add("drag-over"); }
+function dragLeave(id) { document.getElementById(id).classList.remove("drag-over"); }
+function dropFiles(e,mode) {
+  e.preventDefault();
+  var id=mode==="scan"?"scanDrop":"mainDrop";
+  document.getElementById(id).classList.remove("drag-over");
+  var files=e.dataTransfer.files;
+  if(mode==="scan") handleScanFiles(files); else handleFiles(files);
+}
+
+load();
+if(state.startDate) { activePage=state.currentPage||state.totalPages||1; showHome(); }
+else { document.getElementById("firstStart").style.display="block"; }
+
+function handleScanFiles(files) {
+  Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(file){
+    scanImages.push({file:file,url:URL.createObjectURL(file)});
+  });
+  renderScanPreviews();
+}
+function renderScanPreviews() {
+  document.getElementById("scanPreviews").innerHTML=scanImages.map(function(img,i){
+    return '<div class="preview-wrap"><img class="preview-img" src="'+img.url+'"/><button class="preview-del" onclick="removeScan('+i+')">&#x2715;</button></div>';
+  }).join("");
+  document.getElementById("scanBtn").disabled=scanImages.length===0;
+  document.getElementById("scanStatus").textContent=scanImages.length>0?scanImages.length+" Foto(s) ausgew\u00e4hlt":"";
+}
+function removeScan(i){scanImages.splice(i,1);renderScanPreviews();}
+
+function manualStart() {
+  var d=prompt("Gib dein \u00e4ltestes Datum ein (z.B. 05.08.2024):"); if(!d) return;
+  var p=parseInt(prompt("Ungef\u00e4hre Seitenanzahl gesamt? (z.B. 95)")||"1");
+  state.startDate=d.trim(); state.totalPages=p; state.currentPage=p; state.entries={}; save();
+  activePage=p; document.getElementById("firstStart").style.display="none"; showHome();
+}
+
+async function scanDates() {
+  var btn=document.getElementById("scanBtn"), st=document.getElementById("scanStatus");
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> KI liest Daten...'; st.textContent="Bitte warten...";
+  try {
+    var content=[]; var imgs=scanImages.slice(0,5);
+    for(var i=0;i<imgs.length;i++){var b=await toB64(imgs[i].file);content.push({type:"image",source:{type:"base64",media_type:imgs[i].file.type||"image/jpeg",data:b}});}
+    content.push({type:"text",text:"Finde das \u00e4lteste und neueste Datum in diesen Stundenbuch-Fotos."});
+    var resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:100,system:SYSTEM_SCAN,messages:[{role:"user",content:content}]})});
+    var data=await resp.json();
+    var raw=(data.content||[]).map(function(c){return c.text||"";}).join("").trim().replace(/```json|```/g,"");
+    var parsed=null; try{parsed=JSON.parse(raw);}catch(e){}
+    if(parsed&&parsed.oldest){
+      var s=getMon(parsed.oldest), e2=getMon(parsed.newest||parsed.oldest);
+      var weeks=Math.round((e2-s)/(7*24*3600*1000))+1;
+      state.startDate=parsed.oldest; state.totalPages=Math.max(weeks,scanImages.length);
+      state.currentPage=state.totalPages; state.entries={}; save();
+      activePage=state.totalPages;
+      st.textContent="\u2713 \u00c4ltestes Datum: "+parsed.oldest+" \u2192 Seite 1. "+state.totalPages+" Seiten erkannt.";
+      setTimeout(function(){document.getElementById("firstStart").style.display="none";showHome();},1800);
+    } else { alert("Kein Datum erkannt \u2013 bitte manuell eingeben."); manualStart(); btn.innerHTML="\u26a1 Datum erkennen &amp; starten"; btn.disabled=false; }
+  } catch(err) { alert("Fehler \u2013 bitte nochmal versuchen."); btn.innerHTML="\u26a1 Datum erkennen &amp; starten"; btn.disabled=false; st.textContent=""; }
+}
+
+function showHome(){document.getElementById("home").style.display="block";document.getElementById("spruchText").textContent=rnd(SPRUECHE);renderAll();}
+function renderAll(){renderStats();renderWeekNav();renderProgress();renderResult();renderWeekList();}
+
+function renderStats(){
+  var t=state.totalPages,d=Object.values(state.entries).filter(function(e){return e&&e.done;}).length,b=t-d;
+  document.getElementById("statsRow").innerHTML=
+    '<div class="stat"><div class="stat-n">'+t+'</div><div class="stat-l">Seiten</div></div>'+
+    '<div class="stat"><div class="stat-n" style="color:var(--moss)">'+d+'</div><div class="stat-l">Fertig</div></div>'+
+    '<div class="stat"><div class="stat-n" style="color:'+(b>0?"#e74c3c":"var(--moss)")+'">'+b+'</div><div class="stat-l">R\u00fcckstand</div></div>';
+}
+function renderWeekNav(){
+  document.getElementById("weekTitle").textContent="Seite "+activePage;
+  document.getElementById("weekSub").textContent=pageLabel(activePage);
+}
+function renderProgress(){
+  var e=state.entries["P"+activePage],pg=calcProg(e?e.text:null),c=pg===100?"var(--moss)":"var(--neon)";
+  document.getElementById("progressLabel").textContent="Fortschritt Seite "+activePage;
+  document.getElementById("progressPct").style.color=c;
+  document.getElementById("progressPct").textContent=pg+"%";
+  document.getElementById("progressFill").style.width=pg+"%";
+  document.getElementById("progressFill").style.background=c;
+}
+function renderResult(){
+  var e=state.entries["P"+activePage],box=document.getElementById("resultBox");
+  if(!e||!e.text){box.style.display="none";return;}
+  box.style.display="block";
+  document.getElementById("resultLabel").textContent="SEITE "+activePage+" \u00b7 "+pageLabel(activePage);
+  document.getElementById("resultText").textContent=e.text;
+  document.getElementById("unklar").style.display=e.text.indexOf("[UNKLAR")>=0?"block":"none";
+  document.getElementById("doneTag").style.display=e.done?"block":"none";
+  document.getElementById("doneBtn").style.display=e.done?"none":"inline-block";
+}
+function renderWeekList(){
+  var html="";
+  for(var i=1;i<=state.totalPages;i++){
+    var e=state.entries["P"+i],pg=calcProg(e?e.text:null);
+    var pgT=(e&&e.done)?"\u2713 fertig":pg>0?pg+"%":"\u2013";
+    var pgC=(e&&e.done)?"var(--moss)":pg>0?"var(--amber)":"#444";
+    var ia=i===activePage;
+    html+='<div class="week-item'+(ia?" active":"")+'" onclick="selectPage('+i+')">'
+      +'<div><div class="week-item-title">Seite '+i+'</div>'
+      +'<div class="week-item-sub">'+pageLabel(i)+'</div></div>'
+      +'<div class="week-item-pg" style="color:'+pgC+'">'+pgT+'</div></div>';
+  }
+  document.getElementById("weekList").innerHTML=html;
+}
+
+function changeWeek(dir){var n=activePage+dir;if(n<1||n>state.totalPages)return;activePage=n;renderAll();}
+function selectPage(p){activePage=p;renderAll();window.scrollTo({top:0,behavior:"smooth"});}
+function newSpruch(){document.getElementById("spruchText").textContent=rnd(SPRUECHE);}
+
+function handleFiles(files){
+  Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(file){images.push({file:file,url:URL.createObjectURL(file)});});
+  renderPreviews();
+}
+function renderPreviews(){
+  document.getElementById("previews").innerHTML=images.map(function(img,i){
+    return '<div class="preview-wrap"><img class="preview-img" src="'+img.url+'"/><button class="preview-del" onclick="removeImg('+i+')">&#x2715;</button></div>';
+  }).join("");
+  document.getElementById("genBtn").disabled=images.length===0;
+}
+function removeImg(i){images.splice(i,1);renderPreviews();}
+
+async function generate(){
+  if(!images.length)return;
+  var btn=document.getElementById("genBtn");
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> KI schreibt...';
+  try{
+    var content=[];
+    for(var i=0;i<images.length;i++){var b=await toB64(images[i].file);content.push({type:"image",source:{type:"base64",media_type:images[i].file.type||"image/jpeg",data:b}});}
+    content.push({type:"text",text:"Seite "+activePage+" ("+pageLabel(activePage)+"). Berichtsheft schreiben bitte."});
+    var resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:SYSTEM_GEN,messages:[{role:"user",content:content}]})});
+    var data=await resp.json();
+    var text=(data.content||[]).map(function(c){return c.text||"";}).join("\n");
+    state.entries["P"+activePage]={text:text,done:false};
+    if(activePage>state.totalPages)state.totalPages=activePage;
+    save();images=[];renderPreviews();renderAll();
+  }catch(e){alert("Fehler \u2013 bitte nochmal versuchen.");}
+  btn.innerHTML="&#x25b6; Berichtsheft generieren";btn.disabled=false;
+}
+
+function copyText(){
+  var e=state.entries["P"+activePage];if(!e)return;
+  navigator.clipboard.writeText(e.text).then(function(){
+    var b=document.querySelector(".result-btns .btn-xs");b.textContent="\u2713 OK";setTimeout(function(){b.textContent="Kopieren";},2000);
+  });
+}
+function markDone(){if(!state.entries["P"+activePage])return;state.entries["P"+activePage].done=true;save();renderAll();}
+async function requestNotif(){
+  if(!("Notification"in window))return alert("Nicht verf\u00fcgbar.");
+  var p=await Notification.requestPermission();
+  if(p==="granted"){document.getElementById("notifBtn").textContent="\ud83d\udd14 Erinnerungen aktiv";new Notification("\u26a1 Berichtsheft",{body:rnd(SPRUECHE)});}
+}
+function resetApp(){if(confirm("Alle Daten l\u00f6schen und neu starten?")){localStorage.removeItem(KEY);location.reload();}}
+</script>
+</body>
+</html>
