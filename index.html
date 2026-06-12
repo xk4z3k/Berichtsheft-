@@ -1,656 +1,826 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>Berichtsheft ⚡</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Berichtsheftez</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap');
+:root{--c1:#110d07;--c2:#1c1408;--c3:#2a1f0e;--c4:#3d2c14;--c5:#8B5A2B;--neon:#FF6B00;--neon2:#c45200;--glow:rgba(255,107,0,0.35);--amber:#FFB347;--moss:#4a7c59;--moss2:#2d4d38;--cream:#F0E6D3;--dim:#a89880;--beam:#5c3d1e;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--c1);background-image:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(92,61,30,.08) 60px,rgba(92,61,30,.08) 61px),repeating-linear-gradient(180deg,transparent,transparent 120px,rgba(92,61,30,.05) 120px,rgba(92,61,30,.05) 121px);color:var(--cream);font-family:'Space Grotesk',sans-serif;min-height:100vh;padding:20px 14px 80px;overflow-x:hidden;}
+#app{max-width:460px;margin:0 auto;}
+/* HEADER */
+.hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--c4);position:relative;}
+.hdr::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--neon),transparent 60%);box-shadow:0 0 8px var(--glow);}
+.eyebrow{font-family:'Space Mono',monospace;font-size:9px;color:var(--moss);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+h1{font-size:30px;font-weight:900;color:var(--cream);letter-spacing:-1px;line-height:1;text-shadow:0 0 20px var(--glow);}
+h1 span{color:var(--neon);text-shadow:0 0 12px var(--neon);}
+.icon-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--dim);padding:4px;}
+/* OWNER MSG */
+.owner-msg{background:linear-gradient(135deg,#1a1000,var(--c2));border:1px solid var(--c4);border-left:3px solid var(--neon);border-radius:0 10px 10px 0;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--amber);font-style:italic;}
+/* STATS */
+.stats{display:flex;gap:8px;margin-bottom:14px;}
+.stat{flex:1;padding:12px 6px;text-align:center;background:linear-gradient(160deg,var(--c3),var(--c2));border:1px solid var(--c4);border-radius:10px;}
+.stat-n{font-size:24px;font-weight:900;color:var(--neon);font-family:'Space Mono',monospace;line-height:1;text-shadow:0 0 10px var(--glow);}
+.stat-l{font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:3px;text-transform:uppercase;}
+/* SPRUCH */
+.spruch-box{padding:12px 14px;margin-bottom:14px;cursor:pointer;border-left:3px solid var(--moss);background:linear-gradient(135deg,var(--c3),var(--c2));border-radius:0 10px 10px 0;border-top:1px solid var(--c4);border-right:1px solid var(--c4);border-bottom:1px solid var(--c4);}
+.spruch-lbl{font-size:9px;color:var(--moss);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:5px;}
+.spruch-txt{font-size:13px;color:var(--cream);line-height:1.5;}
+/* WEEK NAV */
+.wnav{background:linear-gradient(135deg,var(--c3),var(--c2));border:1px solid var(--c4);border-radius:12px;border-top:2px solid var(--neon);margin-bottom:14px;overflow:hidden;}
+.wnav-main{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;}
+.wnav-jumps{display:flex;gap:8px;padding:0 14px 12px;}
+.arr{background:var(--c4);border:1px solid var(--beam);color:var(--cream);font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;}
+.jmp{flex:1;padding:6px;background:var(--c1);border:1px solid var(--c4);color:var(--dim);font-size:11px;border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;}
+.wtitle{font-size:18px;font-weight:700;color:var(--cream);text-align:center;font-family:'Space Mono',monospace;}
+.wsub{font-size:11px;color:var(--dim);text-align:center;margin-top:2px;}
+/* PAGE BADGES */
+.page-badges{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.bdg{padding:4px 10px;border-radius:20px;font-size:10px;font-family:'Space Mono',monospace;border:1px solid;}
+.bdg-school{background:rgba(74,124,89,.15);color:var(--moss);border-color:var(--moss2);}
+.bdg-sick{background:rgba(192,57,43,.15);color:#e74c3c;border-color:#c0392b;}
+.bdg-vac{background:rgba(52,152,219,.15);color:#3498db;border-color:#2980b9;}
+.bdg-photo{background:rgba(255,107,0,.15);color:var(--amber);border-color:var(--neon2);}
+.bdg-prog{background:rgba(255,183,71,.15);color:var(--amber);border-color:var(--neon2);}
+.bdg-today{background:rgba(255,107,0,.25);color:var(--neon);border-color:var(--neon);}
+/* PROGRESS */
+.prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-bottom:5px;font-family:'Space Mono',monospace;}
+.prog-bar{height:4px;background:var(--c3);border-radius:2px;margin-bottom:14px;}
+.prog-fill{height:100%;border-radius:2px;transition:width .5s;box-shadow:0 0 8px var(--glow);}
+/* MODE TOGGLE */
+.mode-toggle{display:flex;margin-bottom:12px;border:1px solid var(--c4);border-radius:8px;overflow:hidden;}
+.mode-btn{flex:1;padding:10px;background:var(--c2);color:var(--dim);border:none;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s;}
+.mode-btn.active{background:var(--neon2);color:#fff;}
+/* SPECIAL */
+.special-box{background:linear-gradient(135deg,#0a1a10,var(--c2));border:1px solid var(--moss2);border-radius:10px;padding:14px;margin-bottom:12px;}
+.special-box label{display:block;font-size:10px;color:var(--moss);letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:8px;}
+.special-inp{width:100%;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:10px;color:var(--cream);font-size:13px;font-family:'Space Grotesk',sans-serif;outline:none;resize:vertical;min-height:60px;}
+/* DAILY */
+.daily-box{background:linear-gradient(135deg,#0d1020,var(--c2));border:1px solid var(--c4);border-radius:12px;padding:14px;margin-bottom:12px;border-left:3px solid var(--neon);}
+.daily-title{font-size:10px;color:var(--neon);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px;}
+.daily-days{display:flex;flex-direction:column;gap:8px;}
+.daily-day{display:flex;align-items:flex-start;gap:8px;}
+.daily-lbl{font-size:11px;color:var(--dim);font-family:'Space Mono',monospace;width:70px;padding-top:8px;flex-shrink:0;}
+.daily-inp{flex:1;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:8px;color:var(--cream);font-size:12px;font-family:'Space Grotesk',sans-serif;outline:none;resize:none;min-height:34px;}
+.daily-inp.ni{border-color:#e74c3c;}
+.daily-inp.ok{border-color:var(--moss);}
+.daily-inp.today{border-color:var(--neon);box-shadow:0 0 6px var(--glow);}
+/* UPLOAD */
+.upload-row{display:flex;gap:10px;margin-bottom:10px;}
+.btn-wood{flex:1;padding:11px 8px;background:linear-gradient(160deg,var(--c4),var(--c3));color:var(--cream);border:1px solid var(--beam);border-radius:10px;font-size:13px;font-family:'Space Grotesk',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-wood:hover{border-color:var(--neon);}
+.drop-zone{border:2px dashed var(--c4);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;margin-bottom:10px;background:linear-gradient(135deg,var(--c2),var(--c1));transition:all .2s;}
+.drop-zone.drag-over{border-color:var(--neon);box-shadow:0 0 20px var(--glow);}
+.dz-icon{font-size:28px;margin-bottom:6px;}
+.dz-txt{font-size:13px;color:var(--dim);}
+.dz-sub{font-size:10px;color:var(--c5);margin-top:3px;font-family:'Space Mono',monospace;}
+.previews{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.pw{position:relative;}
+.pi{width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--c4);display:block;}
+.pd{position:absolute;top:-5px;right:-5px;background:var(--neon);border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;color:#fff;font-weight:900;line-height:18px;text-align:center;}
+/* BUTTONS */
+.btn-neon{width:100%;padding:15px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;cursor:pointer;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;box-shadow:0 0 20px var(--glow),0 4px 12px rgba(0,0,0,.4);}
+.btn-neon:disabled{opacity:.3;cursor:not-allowed;box-shadow:none;}
+.btn-moss{width:100%;padding:11px;background:linear-gradient(135deg,var(--moss2),#1e3828);color:var(--moss);border:1px solid var(--moss2);border-radius:10px;font-size:12px;font-family:'Space Mono',monospace;cursor:pointer;margin-bottom:18px;}
+.btn-xs{background:var(--c4);color:var(--dim);border:1px solid var(--beam);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;}
+.btn-done{background:var(--moss2);color:var(--moss);border-color:var(--moss2);}
+/* RESULT */
+.result-box{background:linear-gradient(145deg,var(--c3),var(--c2));border:1px solid var(--c4);border-radius:12px;overflow:hidden;margin-bottom:12px;}
+.result-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:linear-gradient(90deg,rgba(255,107,0,.12),transparent);border-bottom:1px solid var(--c4);}
+.result-lbl{font-size:9px;color:var(--neon);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;}
+.result-btns{display:flex;gap:8px;}
+.result-txt{padding:14px;font-size:12px;line-height:1.9;white-space:pre-wrap;color:var(--cream);font-family:'Space Mono',monospace;}
+.result-warn{padding:8px 14px;background:rgba(255,107,0,.1);border-top:1px solid rgba(255,107,0,.2);font-size:11px;color:var(--amber);}
+.result-ok{padding:8px 14px;background:rgba(74,124,89,.15);border-top:1px solid var(--moss2);font-size:11px;color:var(--moss);}
+/* IMPROVE */
+.improve-box{background:var(--c2);border:1px solid var(--c4);border-radius:10px;padding:12px;margin:0 0 12px;}
+.improve-lbl{font-size:10px;color:var(--amber);letter-spacing:2px;font-family:'Space Mono',monospace;margin-bottom:8px;}
+.improve-row{display:flex;gap:8px;}
+.improve-inp{flex:1;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:9px;color:var(--cream);font-size:12px;font-family:'Space Grotesk',sans-serif;outline:none;}
+.improve-btn{padding:9px 14px;background:var(--neon2);border:none;border-radius:6px;color:#fff;font-size:12px;cursor:pointer;}
+/* PDF */
+.pdf-panel{background:linear-gradient(135deg,#100a20,var(--c2));border:1px solid var(--c4);border-radius:12px;padding:14px;margin-bottom:12px;border-left:3px solid #6C63FF;}
+.pdf-title{font-size:10px;color:#6C63FF;letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px;}
+.pdf-opt{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--c4);border-radius:8px;cursor:pointer;background:var(--c2);margin-bottom:8px;}
+.pdf-opt:hover{border-color:#6C63FF;}
+.pdf-opt-lbl{font-size:13px;color:var(--cream);}
+.pdf-opt-sub{font-size:10px;color:var(--dim);margin-top:2px;}
+/* GEN BANNER */
+.gen-banner{background:linear-gradient(135deg,#1a1000,var(--c2));border:1px solid var(--neon2);border-radius:10px;padding:14px;margin-bottom:12px;}
+.gen-banner-t{font-size:13px;color:var(--amber);font-weight:700;margin-bottom:6px;}
+.gen-banner-s{font-size:11px;color:var(--dim);margin-bottom:10px;font-family:'Space Mono',monospace;}
+/* WEEK LIST */
+.ndiv{height:1px;background:linear-gradient(90deg,var(--neon),transparent 60%);box-shadow:0 0 6px var(--glow);margin:18px 0;border:none;}
+.wlist-lbl{font-size:9px;color:var(--c5);letter-spacing:3px;margin-bottom:8px;font-family:'Space Mono',monospace;text-transform:uppercase;}
+.wlist{display:flex;flex-direction:column;gap:4px;}
+.wi{display:flex;align-items:center;padding:9px 12px;border-radius:8px;cursor:pointer;border:1px solid transparent;background:var(--c2);}
+.wi:hover{border-color:var(--c4);}
+.wi.active{border-color:var(--neon);background:linear-gradient(135deg,#2a1800,#1c1000);}
+.wi-title{flex:1;font-size:13px;color:var(--dim);font-weight:600;}
+.wi.active .wi-title{color:var(--amber);}
+.wi-sub{font-size:10px;color:var(--c5);font-family:'Space Mono',monospace;}
+.wi-pg{font-size:11px;font-family:'Space Mono',monospace;}
 
-:root {
-  --wood-deep: #110d07;
-  --wood-dark: #1c1408;
-  --wood-mid: #2a1f0e;
-  --wood-plank: #3d2c14;
-  --wood-light: #8B5A2B;
-  --neon: #FF6B00;
-  --neon-dim: #c45200;
-  --neon-glow: rgba(255,107,0,0.35);
-  --amber: #FFB347;
-  --moss: #4a7c59;
-  --moss-dark: #2d4d38;
-  --cream: #F0E6D3;
-  --cream-dim: #a89880;
-  --beam: #5c3d1e;
-}
+.wi-empty{border-left:3px solid #333;}
+.wi-photo{border-left:3px solid #FFB347;background:linear-gradient(135deg,#1a1500,var(--c2));}
+.wi-scanned{border-left:3px solid #3498db;background:linear-gradient(135deg,#0a1020,var(--c2));}
+.wi-done{border-left:3px solid #27ae60;background:linear-gradient(135deg,#0a1a0a,var(--c2));}
+.wi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-right:6px;}
+.wi-dot-empty{background:#333;}
+.wi-dot-photo{background:#FFB347;box-shadow:0 0 4px #FFB347;}
+.wi-dot-scanned{background:#3498db;box-shadow:0 0 4px #3498db;}
+.wi-dot-done{background:#27ae60;box-shadow:0 0 4px #27ae60;}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background-color: var(--wood-deep);
-  background-image:
-    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(92,61,30,0.08) 60px, rgba(92,61,30,0.08) 61px),
-    repeating-linear-gradient(180deg, transparent, transparent 120px, rgba(92,61,30,0.05) 120px, rgba(92,61,30,0.05) 121px);
-  color: var(--cream);
-  font-family: 'Space Grotesk', sans-serif;
-  min-height: 100vh;
-  padding: 24px 16px 60px;
-}
-
-#app { max-width: 460px; margin: 0 auto; }
-
-/* ── HEADER ─────────────────────────────────────────── */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--wood-plank);
-  position: relative;
-}
-.header::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, var(--neon), transparent 60%);
-  box-shadow: 0 0 8px var(--neon-glow);
-}
-.eyebrow {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  color: var(--moss);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-h1 {
-  font-size: 32px;
-  font-weight: 900;
-  color: var(--cream);
-  letter-spacing: -1px;
-  line-height: 1;
-  text-shadow: 0 0 20px var(--neon-glow), 0 0 40px rgba(255,107,0,0.15);
-}
-h1 span { color: var(--neon); text-shadow: 0 0 12px var(--neon), 0 0 30px var(--neon-glow); }
-.settings-btn {
-  background: none; border: none; font-size: 18px; cursor: pointer;
-  color: var(--cream-dim); padding: 4px; opacity: 0.6;
-  transition: opacity 0.2s;
-}
-.settings-btn:hover { opacity: 1; }
-
-/* ── CARDS / PLANKS ─────────────────────────────────── */
-.plank {
-  background: linear-gradient(135deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
-  border: 1px solid var(--wood-plank);
-  border-radius: 12px;
-  position: relative;
-  overflow: hidden;
-}
-.plank::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: repeating-linear-gradient(
-    165deg,
-    transparent,
-    transparent 30px,
-    rgba(255,255,255,0.012) 30px,
-    rgba(255,255,255,0.012) 31px
-  );
-  pointer-events: none;
-  border-radius: 12px;
-}
-
-/* ── STATS ──────────────────────────────────────────── */
-.stats { display: flex; gap: 10px; margin-bottom: 14px; }
-.stat {
-  flex: 1;
-  padding: 14px 8px;
-  text-align: center;
-  background: linear-gradient(160deg, var(--wood-mid), var(--wood-dark));
-  border: 1px solid var(--wood-plank);
-  border-radius: 10px;
-}
-.stat-n { font-size: 26px; font-weight: 900; color: var(--neon); font-family: 'Space Mono', monospace; line-height: 1; text-shadow: 0 0 10px var(--neon-glow); }
-.stat-l { font-size: 9px; color: var(--cream-dim); letter-spacing: 2px; margin-top: 3px; text-transform: uppercase; }
-
-/* ── SPRUCH BOX ─────────────────────────────────────── */
-.spruch-box {
-  padding: 14px 16px;
-  margin-bottom: 14px;
-  cursor: pointer;
-  border-left: 3px solid var(--moss);
-  background: linear-gradient(135deg, var(--wood-mid), var(--wood-dark));
-  border-radius: 0 10px 10px 0;
-  border-top: 1px solid var(--wood-plank);
-  border-right: 1px solid var(--wood-plank);
-  border-bottom: 1px solid var(--wood-plank);
-  transition: border-left-color 0.3s;
-}
-.spruch-box:hover { border-left-color: var(--neon); }
-.spruch-label { font-size: 9px; color: var(--moss); letter-spacing: 3px; text-transform: uppercase; font-family: 'Space Mono', monospace; margin-bottom: 6px; }
-.spruch-text { font-size: 13px; color: var(--cream); line-height: 1.6; }
-
-/* ── WEEK NAV ───────────────────────────────────────── */
-.week-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  margin-bottom: 14px;
-  background: linear-gradient(135deg, var(--wood-mid), var(--wood-dark));
-  border: 1px solid var(--wood-plank);
-  border-radius: 12px;
-  border-top: 2px solid var(--neon);
-  box-shadow: 0 0 20px rgba(255,107,0,0.08), inset 0 1px 0 rgba(255,179,71,0.06);
-}
-.arrow-btn {
-  background: var(--wood-plank); border: 1px solid var(--beam);
-  color: var(--cream); font-size: 18px; width: 36px; height: 36px;
-  border-radius: 8px; cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s;
-}
-.arrow-btn:hover { background: var(--neon-dim); box-shadow: 0 0 10px var(--neon-glow); }
-.week-title { font-size: 20px; font-weight: 700; color: var(--cream); text-align: center; font-family: 'Space Mono', monospace; }
-.week-sub { font-size: 11px; color: var(--cream-dim); text-align: center; margin-top: 2px; }
-
-/* ── PROGRESS ───────────────────────────────────────── */
-.progress-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--cream-dim); margin-bottom: 6px; font-family: 'Space Mono', monospace; }
-.progress-bar { height: 4px; background: var(--wood-mid); border-radius: 2px; margin-bottom: 16px; border: 1px solid var(--wood-plank); }
-.progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 8px var(--neon-glow); }
-
-/* ── BUTTONS ────────────────────────────────────────── */
-.upload-row { display: flex; gap: 10px; margin-bottom: 12px; }
-.btn-wood {
-  flex: 1; padding: 12px 10px;
-  background: linear-gradient(160deg, var(--wood-plank), var(--wood-mid));
-  color: var(--cream);
-  border: 1px solid var(--beam);
-  border-radius: 10px;
-  font-size: 13px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-wood:hover { border-color: var(--neon); box-shadow: 0 0 12px var(--neon-glow); color: var(--amber); }
-.btn-neon {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--neon) 0%, var(--neon-dim) 100%);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: 'Space Grotesk', sans-serif;
-  cursor: pointer;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-  box-shadow: 0 0 20px var(--neon-glow), 0 4px 12px rgba(0,0,0,0.4);
-  transition: all 0.2s;
-}
-.btn-neon:hover { box-shadow: 0 0 30px rgba(255,107,0,0.5), 0 4px 16px rgba(0,0,0,0.4); transform: translateY(-1px); }
-.btn-neon:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
-.btn-moss {
-  width: 100%;
-  padding: 11px;
-  background: linear-gradient(135deg, var(--moss-dark), #1e3828);
-  color: var(--moss);
-  border: 1px solid var(--moss-dark);
-  border-radius: 10px;
-  font-size: 12px;
-  font-family: 'Space Mono', monospace;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: all 0.2s;
-}
-.btn-moss:hover { border-color: var(--moss); box-shadow: 0 0 10px rgba(74,124,89,0.3); }
-.btn-xs {
-  background: var(--wood-plank); color: var(--cream-dim);
-  border: 1px solid var(--beam); border-radius: 6px;
-  padding: 5px 11px; font-size: 11px; cursor: pointer;
-  font-family: 'Space Mono', monospace;
-  transition: all 0.15s;
-}
-.btn-xs:hover { color: var(--amber); border-color: var(--amber); }
-.btn-done { background: var(--moss-dark); color: var(--moss); border-color: var(--moss-dark); }
-.btn-done:hover { border-color: var(--moss); color: #7ecb95; }
-
-/* ── DRAG DROP ──────────────────────────────────────── */
-.drop-zone {
-  border: 2px dashed var(--wood-plank);
-  border-radius: 12px;
-  padding: 28px 20px;
-  text-align: center;
-  cursor: pointer;
-  margin-bottom: 12px;
-  background: linear-gradient(135deg, var(--wood-dark), var(--wood-deep));
-  transition: all 0.2s;
-  position: relative;
-}
-.drop-zone.drag-over {
-  border-color: var(--neon);
-  background: linear-gradient(135deg, #2a1800, #1c1000);
-  box-shadow: 0 0 20px var(--neon-glow), inset 0 0 20px rgba(255,107,0,0.05);
-}
-.drop-zone-icon { font-size: 32px; margin-bottom: 8px; }
-.drop-zone-text { font-size: 13px; color: var(--cream-dim); }
-.drop-zone-sub { font-size: 11px; color: var(--wood-light); margin-top: 4px; font-family: 'Space Mono', monospace; }
-
-/* ── PREVIEWS ───────────────────────────────────────── */
-.previews { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.preview-wrap { position: relative; }
-.preview-img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--wood-plank); display: block; }
-.preview-del {
-  position: absolute; top: -6px; right: -6px;
-  background: var(--neon); border: none; border-radius: 50%;
-  width: 20px; height: 20px; font-size: 11px; cursor: pointer;
-  color: #fff; font-weight: 900; line-height: 20px; text-align: center;
-  box-shadow: 0 0 8px var(--neon-glow);
-}
-
-/* ── RESULT ─────────────────────────────────────────── */
-.result-box {
-  background: linear-gradient(145deg, var(--wood-mid), var(--wood-dark));
-  border: 1px solid var(--wood-plank);
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-.result-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 16px;
-  background: linear-gradient(90deg, rgba(255,107,0,0.12), transparent);
-  border-bottom: 1px solid var(--wood-plank);
-}
-.result-label { font-size: 9px; color: var(--neon); letter-spacing: 3px; text-transform: uppercase; font-family: 'Space Mono', monospace; }
-.result-btns { display: flex; gap: 8px; }
-.result-text { padding: 16px; font-size: 12px; line-height: 1.9; white-space: pre-wrap; color: var(--cream); font-family: 'Space Mono', monospace; }
-.result-warn { padding: 8px 16px; background: rgba(255,107,0,0.1); border-top: 1px solid rgba(255,107,0,0.2); font-size: 11px; color: var(--amber); }
-.result-ok { padding: 8px 16px; background: rgba(74,124,89,0.15); border-top: 1px solid var(--moss-dark); font-size: 11px; color: var(--moss); }
-
-/* ── WEEK LIST ──────────────────────────────────────── */
-.week-list-label { font-size: 9px; color: var(--wood-light); letter-spacing: 3px; margin-bottom: 10px; font-family: 'Space Mono', monospace; text-transform: uppercase; }
-.week-list { display: flex; flex-direction: column; gap: 4px; }
-.week-item {
-  display: flex; align-items: center; padding: 10px 14px;
-  border-radius: 8px; cursor: pointer;
-  border: 1px solid transparent;
-  background: var(--wood-dark);
-  transition: all 0.15s;
-}
-.week-item:hover { border-color: var(--wood-plank); background: var(--wood-mid); }
-.week-item.active { border-color: var(--neon); background: linear-gradient(135deg, #2a1800, #1c1000); box-shadow: 0 0 12px rgba(255,107,0,0.15); }
-.week-item-title { flex: 1; font-size: 13px; color: var(--cream-dim); font-weight: 600; }
-.week-item.active .week-item-title { color: var(--amber); }
-.week-item-sub { font-size: 10px; color: var(--wood-light); margin-top: 1px; font-family: 'Space Mono', monospace; }
-.week-item-pg { font-size: 11px; color: #555; font-family: 'Space Mono', monospace; }
-
-/* ── FIRST START ────────────────────────────────────── */
-.info-banner {
-  padding: 14px 16px;
-  margin-bottom: 16px;
-  border-left: 3px solid var(--amber);
-  background: linear-gradient(135deg, #2a1e08, var(--wood-dark));
-  border-radius: 0 10px 10px 0;
-  border-top: 1px solid var(--wood-plank);
-  border-right: 1px solid var(--wood-plank);
-  border-bottom: 1px solid var(--wood-plank);
-  font-size: 13px;
-  color: var(--cream-dim);
-  line-height: 1.6;
-}
-.info-banner strong { color: var(--amber); }
-
-/* ── SPINNER ────────────────────────────────────────── */
-.spinner {
-  display: inline-block; width: 13px; height: 13px;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  vertical-align: middle; margin-right: 7px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── NEON DIVIDER ───────────────────────────────────── */
-.neon-divider {
-  height: 1px;
-  background: linear-gradient(90deg, var(--neon), transparent 60%);
-  box-shadow: 0 0 6px var(--neon-glow);
-  margin: 20px 0;
-  border: none;
-}
+/* FORMS */
+.lbl{display:block;font-size:11px;color:var(--dim);margin-bottom:5px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;}
+.inp{width:100%;background:var(--c3);border:1px solid var(--c4);border-radius:8px;padding:11px 13px;color:var(--cream);font-size:14px;font-family:'Space Mono',monospace;margin-bottom:14px;outline:none;}
+.inp:focus{border-color:var(--neon);}
+.info-banner{padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--amber);background:linear-gradient(135deg,#2a1e08,var(--c2));border-radius:0 10px 10px 0;border-top:1px solid var(--c4);border-right:1px solid var(--c4);border-bottom:1px solid var(--c4);font-size:13px;color:var(--dim);line-height:1.6;}
+.info-banner strong{color:var(--amber);}
+/* SIDEBAR */
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;display:none;}
+.overlay.open{display:block;}
+.sidebar{position:fixed;top:0;left:-290px;width:270px;bottom:0;background:linear-gradient(160deg,#1a1000,var(--c2));border-right:1px solid var(--c4);z-index:101;transition:left .3s;overflow-y:auto;padding-bottom:40px;}
+.sidebar.open{left:0;}
+.sb-hdr{padding:24px 18px 16px;border-bottom:1px solid var(--c4);background:linear-gradient(90deg,rgba(255,107,0,.1),transparent);}
+.sb-user{font-size:14px;font-weight:700;color:var(--amber);font-family:'Space Mono',monospace;}
+.sb-role{font-size:10px;color:var(--moss);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+.sb-sec{padding:12px 18px 4px;font-size:9px;color:var(--c5);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;}
+.sb-item{display:flex;align-items:center;gap:12px;padding:12px 18px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;}
+.sb-item:hover{background:rgba(255,107,0,.08);border-left-color:var(--neon);}
+.sb-icon{font-size:18px;width:24px;text-align:center;}
+.sb-txt{font-size:13px;color:var(--cream);}
+.sb-sub{font-size:10px;color:var(--dim);margin-top:1px;}
+/* STATS PANEL */
+.stat-card{background:var(--c2);border:1px solid var(--c4);border-radius:10px;padding:14px;margin-bottom:10px;}
+.stat-card-t{font-size:10px;color:var(--neon);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--c4);font-size:13px;}
+.stat-row:last-child{border-bottom:none;}
+.stat-rl{color:var(--dim);}
+.stat-rv{color:var(--amber);font-family:'Space Mono',monospace;font-weight:700;}
+/* THEME */
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.tsw{width:100%;aspect-ratio:1;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .2s;}
+.tsw.sel{border-color:var(--cream);transform:scale(1.1);}
+/* SPINNER */
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes sp{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- HEADER -->
-<div class="header">
-  <div>
-    <div class="eyebrow">Elektroniker &middot; E&amp;G &middot; Ausbildung</div>
-    <h1>Bericht<span>sheft</span> &#x26a1;</h1>
+<!-- OVERLAY + SIDEBAR -->
+<div class="overlay" id="overlay" onclick="closeSB()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sb-hdr">
+    <div class="sb-user">k4z3k_owner</div>
+    <div class="sb-role">Owner &middot; Admin</div>
   </div>
-  <button class="settings-btn" onclick="resetApp()" title="Zur&uuml;cksetzen">&#x2699;&#xfe0f;</button>
+  <div class="sb-sec">Navigation</div>
+  <div class="sb-item" onclick="goTo('home')"><div class="sb-icon">&#x26a1;</div><div><div class="sb-txt">Berichtsheft</div><div class="sb-sub">Alle Seiten</div></div></div>
+  <div class="sb-item" onclick="goTo('stats')"><div class="sb-icon">&#x1f4ca;</div><div><div class="sb-txt">Statistiken</div><div class="sb-sub">Krank, Urlaub, Schule</div></div></div>
+  <div class="sb-item" onclick="goTo('template')"><div class="sb-icon">&#x1f4cb;</div><div><div class="sb-txt">Vorlage</div><div class="sb-sub">Berichtsheft-Vorlage</div></div></div>
+  <div class="sb-item" onclick="goTo('settings')"><div class="sb-icon">&#x2699;&#xfe0f;</div><div><div class="sb-txt">Einstellungen</div><div class="sb-sub">API Key, Theme, Reset</div></div></div>
+  <div class="sb-sec">Account</div>
+  <div class="sb-item" onclick="doLogout()"><div class="sb-icon">&#x1f6aa;</div><div><div class="sb-txt">Ausloggen</div></div></div>
 </div>
 
-<!-- ERSTER START -->
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div style="text-align:center;padding:50px 0 24px;">
+    <div style="font-size:52px;margin-bottom:8px;">&#x26a1;</div>
+    <h1 style="margin-bottom:4px;">Bericht<span>sheftez</span></h1>
+    <div class="eyebrow" style="text-align:center;margin-top:4px;">Elektroniker &middot; E&amp;G</div>
+  </div>
+  <form onsubmit="doLogin();return false;">
+  <label class="lbl">Benutzername</label>
+  <input class="inp" type="text" id="lUser" name="username" placeholder="k4z3k_owner" autocomplete="username"/>
+  <label class="lbl">Passwort</label>
+  <input class="inp" type="password" id="lPass" name="password" placeholder="Passwort" autocomplete="current-password"/>
+  <div id="lErr" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:10px;font-family:'Space Mono',monospace;">Falscher Benutzername oder Passwort</div>
+  <div id="lHint" style="display:none;font-size:12px;color:var(--moss);margin-bottom:10px;font-family:'Space Mono',monospace;">Erster Start: Passwort wird jetzt gesetzt.</div>
+  <button class="btn-neon" type="submit">Einloggen</button>
+</form>
+</div>
+
+<!-- API KEY -->
+<div id="apiScreen" style="display:none">
+  <div class="info-banner"><strong>API Key einrichten</strong><br>Einmalig. Findest du auf console.anthropic.com unter API-Schluessel.</div>
+  <label class="lbl">Anthropic API Key</label>
+  <input class="inp" type="password" id="apiInp" placeholder="sk-ant-..."/>
+  <button class="btn-neon" onclick="doSaveKey()">Speichern &amp; weiter</button>
+</div>
+
+<!-- FIRST START -->
 <div id="firstStart" style="display:none">
-  <div class="info-banner">
-    <strong>Erster Start &ndash; Seiten automatisch erkennen</strong><br>
-    Lad alle Fotos deines Stundenbuches hoch. Die KI liest das &auml;lteste Datum raus und nummeriert alles automatisch durch.
+  <div class="info-banner"><strong>Erster Start</strong><br>Lad deine Stundenbuch-Fotos hoch. Die KI erkennt das aelteste Datum automatisch und nummeriert alle Seiten durch.</div>
+  <div class="drop-zone" id="scanDrop" onclick="document.getElementById('sGal').click()" ondragover="dov(event,'scanDrop')" ondragleave="dlv('scanDrop')" ondrop="ddr(event,'scan')">
+    <div class="dz-icon">&#x1f5bc;&#xfe0f;</div>
+    <div class="dz-txt">Alle Stundenbuch-Fotos hier reinziehen</div>
+    <div class="dz-sub">oder tippen &middot; mehrere moeglich</div>
   </div>
-
-  <div
-    class="drop-zone"
-    id="scanDrop"
-    onclick="document.getElementById('scanGallery').click()"
-    ondragover="dragOver(event,'scanDrop')"
-    ondragleave="dragLeave('scanDrop')"
-    ondrop="dropFiles(event,'scan')"
-  >
-    <div class="drop-zone-icon">&#x1f5bc;&#xfe0f;</div>
-    <div class="drop-zone-text">Alle Stundenbuch-Fotos hier reinziehen</div>
-    <div class="drop-zone-sub">oder tippen zum Ausw&auml;hlen &middot; mehrere auf einmal m&ouml;glich</div>
-  </div>
-
   <div class="upload-row">
-    <button class="btn-wood" onclick="document.getElementById('scanGallery').click()">&#x1f5bc;&#xfe0f; Galerie</button>
-    <button class="btn-wood" onclick="document.getElementById('scanCamera').click()">&#x1f4f7; Kamera</button>
+    <button class="btn-wood" onclick="document.getElementById('sGal').click()">Galerie</button>
+    <button class="btn-wood" onclick="document.getElementById('sCam').click()">Kamera</button>
   </div>
-  <input type="file" id="scanGallery" accept="image/*" multiple style="display:none" onchange="handleScanFiles(this.files)"/>
-  <input type="file" id="scanCamera" accept="image/*" capture="environment" style="display:none" onchange="handleScanFiles(this.files)"/>
-  <div class="previews" id="scanPreviews"></div>
-  <button class="btn-neon" id="scanBtn" onclick="scanDates()" disabled>&#x26a1; Datum erkennen &amp; starten</button>
-  <div id="scanStatus" style="font-size:12px;color:var(--cream-dim);text-align:center;margin-top:-8px;margin-bottom:14px;font-family:'Space Mono',monospace"></div>
-  <div style="text-align:center;margin-top:8px">
-    <button onclick="manualStart()" style="background:none;border:none;color:var(--wood-light);font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;text-decoration:underline">Datum manuell eingeben</button>
+  <input type="file" id="sGal" accept="image/*" multiple style="display:none" onchange="hScan(this.files)"/>
+  <input type="file" id="sCam" accept="image/*" capture="environment" style="display:none" onchange="hScan(this.files)"/>
+  <div class="previews" id="sPrev"></div>
+  <button class="btn-neon" id="scanBtn" onclick="doScan()" disabled>Datum erkennen &amp; starten</button>
+  <div id="scanSt" style="font-size:11px;color:var(--dim);text-align:center;margin-top:-6px;margin-bottom:12px;font-family:'Space Mono',monospace;"></div>
+  <div style="text-align:center;margin-top:8px;">
+    <button onclick="manualStart()" style="background:none;border:none;color:var(--c5);font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;text-decoration:underline;">Datum manuell eingeben</button>
   </div>
 </div>
 
 <!-- HOME -->
 <div id="home" style="display:none">
-  <div class="stats" id="statsRow"></div>
-
-  <div class="spruch-box" onclick="newSpruch()">
-    <div class="spruch-label">&#x1f9ff; Holz-Weisheit &mdash; tippen f&uuml;r neue</div>
-    <div class="spruch-text" id="spruchText"></div>
-  </div>
-
-  <div class="week-nav">
-    <button class="arrow-btn" onclick="changeWeek(-1)">&#x2039;</button>
+  <div class="hdr">
     <div>
-      <div class="week-title" id="weekTitle"></div>
-      <div class="week-sub" id="weekSub"></div>
+      <div class="eyebrow">Elektroniker &middot; E&amp;G &middot; Ausbildung</div>
+      <h1>Bericht<span>sheftez</span></h1>
     </div>
-    <button class="arrow-btn" onclick="changeWeek(1)">&#x203a;</button>
+    <button class="icon-btn" onclick="openSB()">&#x2630;</button>
   </div>
-
-  <div class="progress-row">
-    <span id="progressLabel">Fortschritt</span>
-    <span id="progressPct" style="font-weight:700"></span>
+  <div class="owner-msg" id="ownerMsg"></div>
+  <div class="stats" id="statsRow"></div>
+  <div class="spruch-box" onclick="newSpruch()">
+    <div class="spruch-lbl">Holz-Weisheit &mdash; tippen</div>
+    <div class="spruch-txt" id="spruchTxt"></div>
   </div>
-  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-
-  <!-- DRAG DROP ZONE -->
-  <div
-    class="drop-zone"
-    id="mainDrop"
-    onclick="document.getElementById('fileGallery').click()"
-    ondragover="dragOver(event,'mainDrop')"
-    ondragleave="dragLeave('mainDrop')"
-    ondrop="dropFiles(event,'main')"
-  >
-    <div class="drop-zone-icon">&#x1f4c4;</div>
-    <div class="drop-zone-text">Stundenbuch-Foto hier reinziehen</div>
-    <div class="drop-zone-sub">oder tippen zum Ausw&auml;hlen</div>
+  <!-- WEEK NAV -->
+  <div class="wnav">
+    <div class="wnav-main">
+      <button class="arr" onclick="chWeek(-1)">&#x2039;</button>
+      <div><div class="wtitle" id="wTitle"></div><div class="wsub" id="wSub"></div></div>
+      <button class="arr" onclick="chWeek(1)">&#x203a;</button>
+    </div>
+    <div class="wnav-jumps">
+      <button class="jmp" onclick="selPage(1)">Seite 1</button>
+      <button class="jmp" onclick="selPage(state.totalPages)">Letzte</button>
+      <button class="jmp" onclick="goToday()">Heute</button>
+    </div>
   </div>
-
-  <div class="upload-row">
-    <button class="btn-wood" onclick="document.getElementById('fileGallery').click()">&#x1f5bc;&#xfe0f; Galerie</button>
-    <button class="btn-wood" onclick="document.getElementById('fileCamera').click()">&#x1f4f7; Kamera</button>
+  <!-- BADGES -->
+  <div class="page-badges" id="pageBadges"></div>
+  <!-- PROGRESS -->
+  <div class="prog-row"><span id="progLbl">Fortschritt</span><span id="progPct" style="font-weight:700"></span></div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  <!-- MODE TOGGLE -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modePhotoBtn" onclick="setMode('photo')">&#x1f4f7; Foto</button>
+    <button class="mode-btn" id="modeDailyBtn" onclick="setMode('daily')">&#x270f; Tages-Eingabe</button>
   </div>
-  <input type="file" id="fileGallery" accept="image/*" multiple style="display:none" onchange="handleFiles(this.files)"/>
-  <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display:none" onchange="handleFiles(this.files)"/>
-
-  <div class="previews" id="previews"></div>
-  <button class="btn-neon" id="genBtn" onclick="generate()" disabled>&#x25b6; Berichtsheft generieren</button>
-
+  <!-- SPECIAL BOX -->
+  <div id="specialBox" style="display:none" class="special-box">
+    <label id="specialLbl">Zusatzinfo</label>
+    <textarea class="special-inp" id="specialInp" placeholder="Was war der Inhalt?"></textarea>
+  </div>
+  <!-- DAILY BOX -->
+  <div id="dailyBox" style="display:none" class="daily-box">
+    <div class="daily-title">Tages-Eintraege</div>
+    <div class="daily-days" id="dailyDays"></div>
+    <button class="btn-moss" onclick="saveDailyEntries()" style="margin-top:10px;">Speichern</button>
+  </div>
+  <!-- UPLOAD (FOTO MODE) -->
+  <div id="uploadArea">
+    <div class="drop-zone" id="mainDrop" onclick="document.getElementById('fGal').click()" ondragover="dov(event,'mainDrop')" ondragleave="dlv('mainDrop')" ondrop="ddr(event,'main')">
+      <div class="dz-icon">&#x1f4c4;</div>
+      <div class="dz-txt">Stundenbuch-Foto hier reinziehen</div>
+      <div class="dz-sub">oder tippen &middot; ganze Woche auf einmal</div>
+    </div>
+    <div class="upload-row">
+      <button class="btn-wood" onclick="document.getElementById('fGal').click()">Galerie</button>
+      <button class="btn-wood" onclick="document.getElementById('fCam').click()">Kamera</button>
+    </div>
+    <input type="file" id="fGal" accept="image/*" multiple style="display:none" onchange="hFiles(this.files)"/>
+    <input type="file" id="fCam" accept="image/*" capture="environment" style="display:none" onchange="hFiles(this.files)"/>
+    <div class="previews" id="prevBox"></div>
+  </div>
+  <button class="btn-neon" id="mainBtn" onclick="handleMainBtn()" disabled>Eintrag speichern</button>
+  <!-- RESULT -->
   <div id="resultBox" style="display:none" class="result-box">
-    <div class="result-header">
-      <span class="result-label" id="resultLabel"></span>
+    <div class="result-hdr">
+      <span class="result-lbl" id="resultLbl"></span>
       <div class="result-btns">
-        <button class="btn-xs" onclick="copyText()">Kopieren</button>
-        <button class="btn-xs btn-done" id="doneBtn" onclick="markDone()">&#x2713; Fertig</button>
+        <button class="btn-xs" onclick="copyTxt()">Kopieren</button>
+        <button class="btn-xs btn-done" id="doneBtn" onclick="markDone()">Fertig</button>
       </div>
     </div>
-    <pre class="result-text" id="resultText"></pre>
-    <div id="unklar" class="result-warn" style="display:none">&#x26a0; [UNKLAR: ...] diese Stellen noch selbst ausf&uuml;llen</div>
-    <div id="doneTag" class="result-ok" style="display:none">&#x2713; Als fertig markiert</div>
+    <pre class="result-txt" id="resultTxt"></pre>
+    <div id="unklar" style="display:none" class="result-warn">Stellen mit [UNKLAR: ...] noch selbst ausfuellen</div>
+    <div id="doneTag" style="display:none" class="result-ok">Als fertig markiert</div>
+    <div class="improve-box">
+      <div class="improve-lbl">Text verbessern</div>
+      <div class="improve-row">
+        <input class="improve-inp" id="improveInp" placeholder='z.B. "Montag: Kabeltrassen statt Leerrohre"'/>
+        <button class="improve-btn" onclick="improveText()">&#x27a4;</button>
+      </div>
+    </div>
   </div>
-
-  <button class="btn-moss" id="notifBtn" onclick="requestNotif()">&#x1f514; Erinnerungen aktivieren</button>
-
-  <hr class="neon-divider"/>
-  <div class="week-list-label">&#x2500; Alle Seiten</div>
-  <div class="week-list" id="weekList"></div>
+  <!-- GEN ALL BANNER -->
+  <div id="genBanner" style="display:none" class="gen-banner">
+    <div class="gen-banner-t">Vorlage hochgeladen!</div>
+    <div class="gen-banner-s" id="genBannerSub"></div>
+    <button class="btn-neon" onclick="genAllSaved()">Alle Seiten generieren</button>
+  </div>
+  <!-- PDF PANEL -->
+  <div id="pdfPanel" style="display:none" class="pdf-panel">
+    <div class="pdf-title">Drucken / PDF</div>
+    <div id="pdfOpts"></div>
+  </div>
+  <button class="btn-moss" id="notifBtn" onclick="reqNotif()">Erinnerungen aktivieren</button>
+  <hr class="ndiv"/>
+  <div class="wlist-lbl">Alle Seiten</div>
+  <div class="wlist" id="wList"></div>
 </div>
+
+<!-- STATS -->
+<div id="statsPanel" style="display:none">
+  <div class="hdr"><div><div class="eyebrow">Auswertung</div><h1>Statistik<span>en</span></h1></div><button class="icon-btn" onclick="goTo('home')">&#x2715;</button></div>
+  <div id="statsContent"></div>
 </div>
 
+<!-- TEMPLATE -->
+<div id="templatePanel" style="display:none">
+  <div class="hdr"><div><div class="eyebrow">Einrichtung</div><h1>Vor<span>lage</span></h1></div><button class="icon-btn" onclick="goTo('home')">&#x2715;</button></div>
+  <div class="info-banner"><strong>Berichtsheft-Vorlage</strong><br>Lade deine PDF oder Bild-Vorlage hoch.</div>
+  <div id="tplStatus" style="margin-bottom:12px;font-size:12px;color:var(--moss);font-family:'Space Mono',monospace;"></div>
+  <button class="btn-wood" style="width:100%;margin-bottom:10px;" onclick="document.getElementById('tplFile').click()">Vorlage hochladen</button>
+  <input type="file" id="tplFile" accept=".pdf,image/*" style="display:none" onchange="uploadTpl(this.files)"/>
+  <button class="btn-moss" onclick="goTo('home')">Zurueck</button>
+</div>
+
+<!-- SETTINGS -->
+<div id="settingsPanel" style="display:none">
+  <div class="hdr"><div><div class="eyebrow">Konfiguration</div><h1>Einstel<span>lungen</span></h1></div><button class="icon-btn" onclick="goTo('home')">&#x2715;</button></div>
+  <div class="info-banner" style="border-left-color:var(--neon)"><strong>API Key</strong></div>
+  <label class="lbl">Neuen Key eingeben</label>
+  <input class="inp" type="password" id="newKeyInp" placeholder="sk-ant-..."/>
+  <button class="btn-neon" onclick="updKey()" style="margin-bottom:18px;">Key aktualisieren</button>
+  <div class="info-banner" style="border-left-color:var(--moss)"><strong>App Theme</strong></div>
+  <div class="theme-grid" id="themeGrid"></div>
+  <div class="info-banner" style="border-left-color:#e74c3c"><strong>Gefahrenzone</strong></div>
+  <button onclick="resetApp()" style="width:100%;padding:12px;background:none;border:1px solid #c0392b;color:#c0392b;border-radius:8px;font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;">Alle Daten loeschen</button>
+</div>
+
+</div>
 <script>
-var SPRUECHE = [
-  "Bro dein Berichtsheft l\u00e4uft nicht weg \u2013 deine Ausbildung schon \u26a1",
-  "Stell dir vor du hast alles eingetragen. Geiles Gef\u00fchl oder? Tu's einfach \ud83d\udd25",
-  "Kein Eintrag heute = Schmerzen morgen. Du wei\u00dft es.",
-  "Die Zwischenpr\u00fcfung wartet auf niemanden \ud83d\ude24",
-  "5 Minuten Berichtsheft > 2h Stress danach. Rechne nach.",
-  "Deine Chefin hat deinen Ordner verschlampt \u2013 lass ihr keinen Grund mehr \ud83d\udc80",
-  "Heute Foto machen = morgen entspannt. Easy wie Strom verlegen.",
-  "Du machst Strom. Das Berichtsheft macht sich nicht von selbst. Los.",
-  "Andere Azubis sind auch im R\u00fcckstand. Aber du nicht mehr ab heute \ud83d\ude80",
-  "Fr Abend Ordner abgeben ohne Stress w\u00e4re schon geil oder?",
-  "Keine Ausreden. Telefon raus, Foto machen, fertig. \ud83d\udcf2",
-  "Future you wird sich bedanken. Oder fluchen. Du entscheidest.",
-  "Kabel klemmen kannst du. Berichtsheft auch. Gleiche Energie.",
+var OWNER=[
+  "Ey owner was geht! Alles chill heute?",
+  "k4z3k_owner im Haus - lass mal Berichtsheft cracken",
+  "Yo Stern, Strom fliesst und das Berichtsheft auch",
+  "Owner-Mode aktiviert. Die App gehoert dir!",
+  "Was geht Meister - noch eine Seite dann bist du done",
+  "k4z3k online - die App ist ready wenn du es bist",
+  "Ey Stern lass heute mal richtig Seiten schreiben",
 ];
+var SPRUECHE=[
+  "Bro dein Berichtsheft laeuft nicht weg - deine Ausbildung schon",
+  "Stell dir vor du hast alles eingetragen. Geiles Gefuehl oder?",
+  "Kein Eintrag heute = Schmerzen morgen. Du weisst es.",
+  "5 Minuten Berichtsheft > 2h Stress danach.",
+  "Deine Chefin hat deinen Ordner verschlampt - lass ihr keinen Grund mehr",
+  "Heute Foto machen = morgen entspannt. Easy wie Strom verlegen.",
+  "Du machst Strom. Das Berichtsheft macht sich nicht von selbst.",
+  "Kabel klemmen kannst du. Berichtsheft auch. Gleiche Energie.",
+  "Keine Ausreden. Telefon raus, Foto machen, fertig.",
+  "Future you wird sich bedanken. Oder fluchen. Du entscheidest.",
+];
+var THEMES=[
+  {n:"Holz",c1:"#110d07",c2:"#1c1408",c3:"#2a1f0e",neon:"#FF6B00",moss:"#4a7c59",sw:"#FF6B00"},
+  {n:"Nacht",c1:"#080810",c2:"#10101a",c3:"#1a1a2a",neon:"#6C63FF",moss:"#3a7ca5",sw:"#6C63FF"},
+  {n:"Gruen",c1:"#070f09",c2:"#0d1a0f",c3:"#132614",neon:"#00ff88",moss:"#4a7c59",sw:"#00ff88"},
+  {n:"Rot",c1:"#100707",c2:"#1a0d0d",c3:"#2a1414",neon:"#ff3355",moss:"#7c4a4a",sw:"#ff3355"},
+  {n:"Blau",c1:"#070a10",c2:"#0d1018",c3:"#141a25",neon:"#00b4ff",moss:"#3a7ca5",sw:"#00b4ff"},
+  {n:"Gold",c1:"#100e07",c2:"#1a180d",c3:"#252112",neon:"#FFD700",moss:"#7c6e2a",sw:"#FFD700"},
+  {n:"Pink",c1:"#100710",c2:"#1a0d1a",c3:"#251425",neon:"#ff69b4",moss:"#7c4a7c",sw:"#ff69b4"},
+  {n:"Cyan",c1:"#071010",c2:"#0d1a1a",c3:"#142525",neon:"#00ffcc",moss:"#2a7c7c",sw:"#00ffcc"},
+];
+var SYSGEN="Du hilfst einem Elektroniker-Azubi (Energie- und Gebaeudetechnik) beim Berichtsheft.\nFirma: Kundendienst + Baustellen (Rohbau, Firmen, Neuinstallationen). Mo-Fr.\nStundenbuch: Datum, Baustelle/Kunde, Taetigkeit (Stichpunkte), Stunden, mit wem.\nFormat:\nMontag (DD.MM): [2-3 Saetze Fachbegriffe] - X Std.\nDienstag: ...(nur Mo-Fr)\nFachbegriffe: Unterputzdosen, Leerrohre, NYM-Kabel, FI-Schutzschalter, Kabeltrassen, Schaltschrank, Verdrahtung, Klemmleiste, Potentialausgleich.\nWenn ein Tag komplett leer oder nicht lesbar ist: schreib [NICHT_ID] fuer diesen Tag.\nKrank/Erkrankung: 'Montag (DD.MM): Erkrankung. - 0 Std.'\nUrlaub: 'Montag (DD.MM): Urlaub. - 0 Std.'\nPfeil durch mehrere Tage (z.B. Berufsschule ganze Woche): alle Tage mit gleichem Inhalt.\nNur Text. Deutsch.";
+var KEY="bhz_v1";
+var state={startDate:null,totalPages:0,currentPage:1,entries:{},sickDays:[],vacDays:[],schoolDays:[]};
+var active=1;
+var imgs=[],scanImgs=[];
+var curMode="photo";
 
-var SYSTEM_SCAN = 'Du bekommst Fotos eines handgeschriebenen Stundenbuches.\nFinde das AELTESTE und NEUESTE Datum.\nAntworte NUR als JSON: {"oldest":"DD.MM.YYYY","newest":"DD.MM.YYYY"}\nKein Datum gefunden: {"oldest":null,"newest":null}';
+function ld(){try{var d=localStorage.getItem(KEY);if(d)state=JSON.parse(d);}catch(e){}}
+function sv(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function gKey(){return localStorage.getItem("bhz_k")||"";}
+function sKey(k){localStorage.setItem("bhz_k",k);}
+function gPw(){return localStorage.getItem("bhz_pw")||"";}
+function sPw(p){localStorage.setItem("bhz_pw",p);}
+function rnd(a){return a[Math.floor(Math.random()*a.length)];}
+function calcProg(txt){if(!txt)return 0;var d=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"],n=0;for(var i=0;i<d.length;i++)if(txt.indexOf(d[i])>=0)n++;return Math.round(n/5*100);}
+function getMon(s){var p=s.split(".");if(p.length<3)return new Date();var dt=new Date(+p[2],+p[1]-1,+p[0]);var dy=dt.getDay(),df=dy===0?-6:1-dy;dt.setDate(dt.getDate()+df);return dt;}
+function pLabel(n){if(!state.startDate)return"Woche "+n;var m=new Date(getMon(state.startDate).getTime());m.setDate(m.getDate()+(n-1)*7);var f=new Date(m.getTime());f.setDate(m.getDate()+4);var fmt=function(d){return d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});};return fmt(m)+" - "+fmt(f);}
+function getTodayPage(){if(!state.startDate)return active;var s=getMon(state.startDate),t=new Date(),d=Math.floor((t.getTime()-s.getTime())/(7*24*3600*1000));return Math.max(1,Math.min(d+1,state.totalPages));}
+function b64(file){return new Promise(function(r,j){var rd=new FileReader();rd.onload=function(){r(rd.result.split(",")[1]);};rd.onerror=j;rd.readAsDataURL(file);});}
 
-var SYSTEM_GEN = 'Du hilfst einem Elektroniker-Azubi (Energie- und Geb\u00e4udetechnik) beim Berichtsheft.\nFirma: Kundendienst + Baustellen (Rohbau, Firmen, Neuinstallationen). Mo\u2013Fr.\nStundenbuch-Spalten: Datum, Baustelle/Kunde, T\u00e4tigkeit (Stichpunkte), Stunden, mit wem.\nFormat:\nMontag (DD.MM): [2-3 S\u00e4tze Flie\u00dftext mit Fachbegriffen] \u2013 X Std.\nDienstag: ...\n(nur Mo\u2013Fr)\nFachbegriffe: Unterputzdosen, Leerrohre, NYM-Kabel, FI-Schutzschalter, Kabeltrassen, Schaltschrank, Verd\u00e4chtung, Klemmleiste, Potentialausgleich.\nUnklares: [UNKLAR: ...]\nNur der Text, kein Kommentar. Deutsch.';
-
-var KEY = "berichtsheft_v4";
-var state = { startDate: null, totalPages: 0, currentPage: 1, entries: {} };
-var activePage = 1;
-var images = [];
-var scanImages = [];
-
-function load() { try { var d = localStorage.getItem(KEY); if(d) state = JSON.parse(d); } catch(e) {} }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
-function rnd(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
-function calcProg(text) {
-  if (!text) return 0;
-  var days = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"], n=0;
-  for(var i=0;i<days.length;i++) if(text.indexOf(days[i])>=0) n++;
-  return Math.round(n/5*100);
-}
-function getMon(dateStr) {
-  var p=dateStr.split("."), date=new Date(+p[2],+p[1]-1,+p[0]);
-  var day=date.getDay(), diff=day===0?-6:1-day;
-  date.setDate(date.getDate()+diff); return date;
-}
-function pageLabel(n) {
-  if (!state.startDate) return "Woche "+n;
-  var mon=new Date(getMon(state.startDate));
-  mon.setDate(mon.getDate()+(n-1)*7);
-  var fri=new Date(mon); fri.setDate(mon.getDate()+4);
-  var f=function(d){return d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});};
-  return f(mon)+" \u2013 "+f(fri);
-}
-function toB64(file) {
-  return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result.split(",")[1]);};r.onerror=rej;r.readAsDataURL(file);});
-}
-
-// drag/drop
-function dragOver(e,id) { e.preventDefault(); document.getElementById(id).classList.add("drag-over"); }
-function dragLeave(id) { document.getElementById(id).classList.remove("drag-over"); }
-function dropFiles(e,mode) {
-  e.preventDefault();
-  var id=mode==="scan"?"scanDrop":"mainDrop";
-  document.getElementById(id).classList.remove("drag-over");
-  var files=e.dataTransfer.files;
-  if(mode==="scan") handleScanFiles(files); else handleFiles(files);
-}
-
-load();
-if(state.startDate) { activePage=state.currentPage||state.totalPages||1; showHome(); }
-else { document.getElementById("firstStart").style.display="block"; }
-
-function handleScanFiles(files) {
-  Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(file){
-    scanImages.push({file:file,url:URL.createObjectURL(file)});
-  });
-  renderScanPreviews();
-}
-function renderScanPreviews() {
-  document.getElementById("scanPreviews").innerHTML=scanImages.map(function(img,i){
-    return '<div class="preview-wrap"><img class="preview-img" src="'+img.url+'"/><button class="preview-del" onclick="removeScan('+i+')">&#x2715;</button></div>';
-  }).join("");
-  document.getElementById("scanBtn").disabled=scanImages.length===0;
-  document.getElementById("scanStatus").textContent=scanImages.length>0?scanImages.length+" Foto(s) ausgew\u00e4hlt":"";
-}
-function removeScan(i){scanImages.splice(i,1);renderScanPreviews();}
-
-function manualStart() {
-  var d=prompt("Gib dein \u00e4ltestes Datum ein (z.B. 05.08.2024):"); if(!d) return;
-  var p=parseInt(prompt("Ungef\u00e4hre Seitenanzahl gesamt? (z.B. 95)")||"1");
-  state.startDate=d.trim(); state.totalPages=p; state.currentPage=p; state.entries={}; save();
-  activePage=p; document.getElementById("firstStart").style.display="none"; showHome();
+async function apiCall(messages,maxTok,sys){
+  var k=gKey();if(!k){alert("Kein API Key!");return null;}
+  var body={model:"claude-sonnet-4-20250514",max_tokens:maxTok||1000,messages:messages};
+  if(sys)body.system=sys;
+  var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify(body)});
+  return await r.json();
 }
 
-async function scanDates() {
-  var btn=document.getElementById("scanBtn"), st=document.getElementById("scanStatus");
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> KI liest Daten...'; st.textContent="Bitte warten...";
-  try {
-    var content=[]; var imgs=scanImages.slice(0,5);
-    for(var i=0;i<imgs.length;i++){var b=await toB64(imgs[i].file);content.push({type:"image",source:{type:"base64",media_type:imgs[i].file.type||"image/jpeg",data:b}});}
-    content.push({type:"text",text:"Finde das \u00e4lteste und neueste Datum in diesen Stundenbuch-Fotos."});
-    var resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:100,system:SYSTEM_SCAN,messages:[{role:"user",content:content}]})});
-    var data=await resp.json();
-    var raw=(data.content||[]).map(function(c){return c.text||"";}).join("").trim().replace(/```json|```/g,"");
-    var parsed=null; try{parsed=JSON.parse(raw);}catch(e){}
+// SWIPE
+var tx=0;
+document.addEventListener("touchstart",function(e){tx=e.touches[0].clientX;});
+document.addEventListener("touchend",function(e){var dx=e.changedTouches[0].clientX-tx;if(tx<30&&dx>60)openSB();if(dx<-60&&document.getElementById("sidebar").classList.contains("open"))closeSB();});
+function openSB(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open");}
+function closeSB(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
+function dov(e,id){e.preventDefault();document.getElementById(id).classList.add("drag-over");}
+function dlv(id){document.getElementById(id).classList.remove("drag-over");}
+function ddr(e,m){e.preventDefault();dlv(m==="scan"?"scanDrop":"mainDrop");if(m==="scan")hScan(e.dataTransfer.files);else hFiles(e.dataTransfer.files);}
+
+// INIT
+ld();
+applyTheme(localStorage.getItem("bhz_theme")||"0");
+buildThemeGrid();
+var pw=gPw();
+if(!pw)document.getElementById("lHint").style.display="block";
+
+function doLogin(){
+  var u=document.getElementById("lUser").value.trim();
+  var p=document.getElementById("lPass").value;
+  var stored=gPw();
+  document.getElementById("lErr").style.display="none";
+  if(!stored){
+    if(u==="k4z3k_owner"&&p.length>=4){sPw(p);afterLogin();}
+    else{document.getElementById("lErr").style.display="block";document.getElementById("lErr").textContent="Benutzername muss k4z3k_owner sein, Passwort min 4 Zeichen.";}
+  } else {
+    if(u==="k4z3k_owner"&&p===stored)afterLogin();
+    else document.getElementById("lErr").style.display="block";
+  }
+}
+
+function afterLogin(){
+  hideAll();
+  if(!gKey()){document.getElementById("apiScreen").style.display="block";return;}
+  if(!state.startDate){document.getElementById("firstStart").style.display="block";return;}
+  active=getTodayPage();
+  showHome();
+}
+
+function doLogout(){closeSB();hideAll();document.getElementById("loginScreen").style.display="block";document.getElementById("lPass").value="";}
+
+function doSaveKey(){var k=document.getElementById("apiInp").value.trim();if(!k||k.length<10){alert("Gueltigen Key eingeben.");return;}sKey(k);hideAll();if(!state.startDate){document.getElementById("firstStart").style.display="block";}else{active=getTodayPage();showHome();}}
+
+function hideAll(){["loginScreen","apiScreen","firstStart","home","statsPanel","templatePanel","settingsPanel"].forEach(function(id){document.getElementById(id).style.display="none";});}
+
+function goTo(s){closeSB();hideAll();if(s==="home"){showHome();return;}if(s==="stats"){showStats();return;}if(s==="template"){document.getElementById("templatePanel").style.display="block";updTplStatus();return;}if(s==="settings"){document.getElementById("settingsPanel").style.display="block";return;};}
+
+// SCAN
+function hScan(files){Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(f){scanImgs.push({file:f,url:URL.createObjectURL(f)});});rScanPrev();}
+function rScanPrev(){document.getElementById("sPrev").innerHTML=scanImgs.map(function(i,x){return'<div class="pw"><img class="pi" src="'+i.url+'"/><button class="pd" onclick="rmScan('+x+')">x</button></div>';}).join("");document.getElementById("scanBtn").disabled=scanImgs.length===0;document.getElementById("scanSt").textContent=scanImgs.length>0?scanImgs.length+" Fotos":"" ;}
+function rmScan(i){scanImgs.splice(i,1);rScanPrev();}
+function manualStart(){var d=prompt("Aeltestes Datum (z.B. 19.08.2024):");if(!d)return;var p=parseInt(prompt("Gesamte Seitenanzahl? (z.B. 99)")||"99");state.startDate=d.trim();state.totalPages=p;state.currentPage=p;state.entries={};sv();active=getTodayPage();hideAll();showHome();}
+
+async function doScan(){
+  var btn=document.getElementById("scanBtn"),st=document.getElementById("scanSt");
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>KI liest...';st.textContent="Bitte warten...";
+  try{
+    var content=[];var sl=scanImgs.slice(0,5);
+    for(var i=0;i<sl.length;i++){var b=await b64(sl[i].file);content.push({type:"image",source:{type:"base64",media_type:sl[i].file.type||"image/jpeg",data:b}});}
+    content.push({type:"text",text:"Finde das aelteste und neueste Datum in diesen Stundenbuch-Fotos."});
+    var data=await apiCall([{role:"user",content:content}],100,'Antworte NUR als JSON: {"oldest":"DD.MM.YYYY","newest":"DD.MM.YYYY"} oder {"oldest":null,"newest":null}');
+    if(!data)throw new Error();
+    var raw=(data.content||[]).map(function(c){return c.text||"";}).join("").replace(/```json|```/g,"").trim();
+    var parsed=null;try{parsed=JSON.parse(raw);}catch(e){}
     if(parsed&&parsed.oldest){
-      var s=getMon(parsed.oldest), e2=getMon(parsed.newest||parsed.oldest);
-      var weeks=Math.round((e2-s)/(7*24*3600*1000))+1;
-      state.startDate=parsed.oldest; state.totalPages=Math.max(weeks,scanImages.length);
-      state.currentPage=state.totalPages; state.entries={}; save();
-      activePage=state.totalPages;
-      st.textContent="\u2713 \u00c4ltestes Datum: "+parsed.oldest+" \u2192 Seite 1. "+state.totalPages+" Seiten erkannt.";
-      setTimeout(function(){document.getElementById("firstStart").style.display="none";showHome();},1800);
-    } else { alert("Kein Datum erkannt \u2013 bitte manuell eingeben."); manualStart(); btn.innerHTML="\u26a1 Datum erkennen &amp; starten"; btn.disabled=false; }
-  } catch(err) { alert("Fehler \u2013 bitte nochmal versuchen."); btn.innerHTML="\u26a1 Datum erkennen &amp; starten"; btn.disabled=false; st.textContent=""; }
+      var s=getMon(parsed.oldest),e2=getMon(parsed.newest||parsed.oldest);
+      var wks=Math.round((e2.getTime()-s.getTime())/(7*24*3600*1000))+1;
+      state.startDate=parsed.oldest;state.totalPages=Math.max(wks,scanImgs.length);state.currentPage=state.totalPages;state.entries={};sv();
+      active=getTodayPage();
+      st.textContent="Datum: "+parsed.oldest+" - "+state.totalPages+" Seiten erkannt";
+      setTimeout(function(){hideAll();showHome();},1500);
+    } else {alert("Kein Datum erkannt.");manualStart();btn.innerHTML="Datum erkennen &amp; starten";btn.disabled=false;}
+  }catch(err){alert("Fehler - nochmal versuchen.");btn.innerHTML="Datum erkennen &amp; starten";btn.disabled=false;st.textContent="";}
 }
 
-function showHome(){document.getElementById("home").style.display="block";document.getElementById("spruchText").textContent=rnd(SPRUECHE);renderAll();}
-function renderAll(){renderStats();renderWeekNav();renderProgress();renderResult();renderWeekList();}
+// HOME
+function showHome(){hideAll();document.getElementById("home").style.display="block";document.getElementById("ownerMsg").textContent=rnd(OWNER);document.getElementById("spruchTxt").textContent=rnd(SPRUECHE);renderAll();}
+function renderAll(){rStats();rWeekNav();rProgress();rBadges();rSpecial();rResult();rWList();updBtn();updPdf();updBanner();}
 
-function renderStats(){
-  var t=state.totalPages,d=Object.values(state.entries).filter(function(e){return e&&e.done;}).length,b=t-d;
-  document.getElementById("statsRow").innerHTML=
-    '<div class="stat"><div class="stat-n">'+t+'</div><div class="stat-l">Seiten</div></div>'+
-    '<div class="stat"><div class="stat-n" style="color:var(--moss)">'+d+'</div><div class="stat-l">Fertig</div></div>'+
-    '<div class="stat"><div class="stat-n" style="color:'+(b>0?"#e74c3c":"var(--moss)")+'">'+b+'</div><div class="stat-l">R\u00fcckstand</div></div>';
+function rStats(){var t=state.totalPages,d=Object.values(state.entries).filter(function(e){return e&&e.done;}).length,b=t-d;document.getElementById("statsRow").innerHTML='<div class="stat"><div class="stat-n">'+t+'</div><div class="stat-l">Seiten</div></div><div class="stat"><div class="stat-n" style="color:var(--moss)">'+d+'</div><div class="stat-l">Fertig</div></div><div class="stat"><div class="stat-n" style="color:'+(b>0?"#e74c3c":"var(--moss)")+'">'+b+'</div><div class="stat-l">Rueckstand</div></div>';}
+function rWeekNav(){document.getElementById("wTitle").textContent="Seite "+active;var sub=pLabel(active);if(active===getTodayPage())sub+=" (Aktuelle Woche)";document.getElementById("wSub").textContent=sub;}
+function rProgress(){var e=state.entries["P"+active],pg=calcProg(e?e.text:null),c=pg===100?"var(--moss)":"var(--neon)";document.getElementById("progLbl").textContent="Fortschritt Seite "+active;document.getElementById("progPct").style.color=c;document.getElementById("progPct").textContent=pg+"%";document.getElementById("progFill").style.width=pg+"%";document.getElementById("progFill").style.background=c;}
+
+function rBadges(){
+  var e=state.entries["P"+active];
+  var html="";
+  if(active===getTodayPage())html+='<span class="bdg bdg-today">Aktuelle Woche</span>';
+  if(e){
+    if(e.type==="sick")html+='<span class="bdg bdg-sick">Krank</span>';
+    if(e.type==="vacation")html+='<span class="bdg bdg-vac">Urlaub</span>';
+    if(e.type==="school")html+='<span class="bdg bdg-school">Schule/Innung</span>';
+    if(e.photosSaved&&!e.text)html+='<span class="bdg bdg-photo">Foto gespeichert</span>';
+    if(e.inProgress&&!e.done&&!e.text)html+='<span class="bdg bdg-prog">In Bearbeitung</span>';
+  }
+  document.getElementById("pageBadges").innerHTML=html;
 }
-function renderWeekNav(){
-  document.getElementById("weekTitle").textContent="Seite "+activePage;
-  document.getElementById("weekSub").textContent=pageLabel(activePage);
+
+function rSpecial(){
+  var e=state.entries["P"+active];
+  var box=document.getElementById("specialBox");
+  if(e&&e.type==="school"){box.style.display="block";document.getElementById("specialLbl").textContent="Was wurde in Schule/Innung gemacht?";document.getElementById("specialInp").value=e.specialNote||"";}
+  else if(e&&e.type==="sick"&&!e.text){box.style.display="block";document.getElementById("specialLbl").textContent="Krank-Notiz (optional)";document.getElementById("specialInp").value=e.specialNote||"";}
+  else box.style.display="none";
 }
-function renderProgress(){
-  var e=state.entries["P"+activePage],pg=calcProg(e?e.text:null),c=pg===100?"var(--moss)":"var(--neon)";
-  document.getElementById("progressLabel").textContent="Fortschritt Seite "+activePage;
-  document.getElementById("progressPct").style.color=c;
-  document.getElementById("progressPct").textContent=pg+"%";
-  document.getElementById("progressFill").style.width=pg+"%";
-  document.getElementById("progressFill").style.background=c;
-}
-function renderResult(){
-  var e=state.entries["P"+activePage],box=document.getElementById("resultBox");
+
+function rResult(){
+  var e=state.entries["P"+active],box=document.getElementById("resultBox");
   if(!e||!e.text){box.style.display="none";return;}
   box.style.display="block";
-  document.getElementById("resultLabel").textContent="SEITE "+activePage+" \u00b7 "+pageLabel(activePage);
-  document.getElementById("resultText").textContent=e.text;
-  document.getElementById("unklar").style.display=e.text.indexOf("[UNKLAR")>=0?"block":"none";
+  document.getElementById("resultLbl").textContent="SEITE "+active+" - "+pLabel(active);
+  document.getElementById("resultTxt").textContent=e.text;
+  document.getElementById("unklar").style.display=e.text.indexOf("[UNKLAR")>=0||e.text.indexOf("[NICHT_ID")>=0?"block":"none";
   document.getElementById("doneTag").style.display=e.done?"block":"none";
   document.getElementById("doneBtn").style.display=e.done?"none":"inline-block";
 }
-function renderWeekList(){
+
+function getPageState(e){
+  if(!e)return "empty";
+  if(e.done||e.text)return "done";
+  if(e.weekDetected||e.scanned)return "scanned";
+  if(e.photosSaved||e.inProgress||(e.daily&&Object.keys(e.daily).length>0))return "photo";
+  return "empty";
+}
+function rWList(){
   var html="";
+  var sc={empty:"#333",photo:"#FFB347",scanned:"#3498db",done:"#27ae60"};
+  var sl={empty:"-",photo:"Foto",scanned:"Erkannt",done:"Fertig"};
   for(var i=1;i<=state.totalPages;i++){
-    var e=state.entries["P"+i],pg=calcProg(e?e.text:null);
-    var pgT=(e&&e.done)?"\u2713 fertig":pg>0?pg+"%":"\u2013";
-    var pgC=(e&&e.done)?"var(--moss)":pg>0?"var(--amber)":"#444";
-    var ia=i===activePage;
-    html+='<div class="week-item'+(ia?" active":"")+'" onclick="selectPage('+i+')">'
-      +'<div><div class="week-item-title">Seite '+i+'</div>'
-      +'<div class="week-item-sub">'+pageLabel(i)+'</div></div>'
-      +'<div class="week-item-pg" style="color:'+pgC+'">'+pgT+'</div></div>';
+    var e=state.entries["P"+i];
+    var ps=getPageState(e);
+    var ia=(i===active);
+    var isTod=(i===getTodayPage());
+    var col=sc[ps];
+    var lbl=(e&&e.done)?"Fertig":(e&&e.text)?Math.round(calcProg(e.text))+"%":(e&&e.type==="sick")?"Krank":(e&&e.type==="vacation")?"Urlaub":sl[ps];
+    var borderStyle=ia?"border-color:var(--neon);background:linear-gradient(135deg,#2a1800,#1c1000);":"border-left:3px solid "+col+";";
+    var todayBadge=isTod?"<span style='color:var(--neon);font-size:10px;'> Heute</span>":"";
+    var dot="<div class='wi-dot' style='background:"+col+";box-shadow:0 0 4px "+col+";width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-right:6px;'></div>";
+    html+="<div class='wi' style='"+borderStyle+"' onclick='selPage("+i+")'>"
+      +dot
+      +"<div style='flex:1'><div class='wi-title'>Seite "+i+todayBadge+"</div>"
+      +"<div class='wi-sub'>"+pLabel(i)+"</div></div>"
+      +"<div class='wi-pg' style='color:"+col+"'>"+lbl+"</div></div>";
   }
-  document.getElementById("weekList").innerHTML=html;
+  document.getElementById("wList").innerHTML=html;
+}
+function chWeek(d){var n=active+d;if(n<1||n>state.totalPages)return;active=n;renderAll();}
+function selPage(p){active=p;renderAll();window.scrollTo({top:0,behavior:"smooth"});}
+function goToday(){active=getTodayPage();renderAll();window.scrollTo({top:0,behavior:"smooth"});}
+function newSpruch(){document.getElementById("spruchTxt").textContent=rnd(SPRUECHE);}
+
+// MODE
+function setMode(m){
+  curMode=m;
+  document.getElementById("modePhotoBtn").classList.toggle("active",m==="photo");
+  document.getElementById("modeDailyBtn").classList.toggle("active",m==="daily");
+  document.getElementById("uploadArea").style.display=m==="photo"?"block":"none";
+  document.getElementById("dailyBox").style.display=m==="daily"?"block":"none";
+  if(m==="daily")buildDaily();
+  updBtn();
 }
 
-function changeWeek(dir){var n=activePage+dir;if(n<1||n>state.totalPages)return;activePage=n;renderAll();}
-function selectPage(p){activePage=p;renderAll();window.scrollTo({top:0,behavior:"smooth"});}
-function newSpruch(){document.getElementById("spruchText").textContent=rnd(SPRUECHE);}
-
-function handleFiles(files){
-  Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(file){images.push({file:file,url:URL.createObjectURL(file)});});
-  renderPreviews();
-}
-function renderPreviews(){
-  document.getElementById("previews").innerHTML=images.map(function(img,i){
-    return '<div class="preview-wrap"><img class="preview-img" src="'+img.url+'"/><button class="preview-del" onclick="removeImg('+i+')">&#x2715;</button></div>';
-  }).join("");
-  document.getElementById("genBtn").disabled=images.length===0;
-}
-function removeImg(i){images.splice(i,1);renderPreviews();}
-
-async function generate(){
-  if(!images.length)return;
-  var btn=document.getElementById("genBtn");
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> KI schreibt...';
-  try{
-    var content=[];
-    for(var i=0;i<images.length;i++){var b=await toB64(images[i].file);content.push({type:"image",source:{type:"base64",media_type:images[i].file.type||"image/jpeg",data:b}});}
-    content.push({type:"text",text:"Seite "+activePage+" ("+pageLabel(activePage)+"). Berichtsheft schreiben bitte."});
-    var resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:SYSTEM_GEN,messages:[{role:"user",content:content}]})});
-    var data=await resp.json();
-    var text=(data.content||[]).map(function(c){return c.text||"";}).join("\n");
-    state.entries["P"+activePage]={text:text,done:false};
-    if(activePage>state.totalPages)state.totalPages=activePage;
-    save();images=[];renderPreviews();renderAll();
-  }catch(e){alert("Fehler \u2013 bitte nochmal versuchen.");}
-  btn.innerHTML="&#x25b6; Berichtsheft generieren";btn.disabled=false;
-}
-
-function copyText(){
-  var e=state.entries["P"+activePage];if(!e)return;
-  navigator.clipboard.writeText(e.text).then(function(){
-    var b=document.querySelector(".result-btns .btn-xs");b.textContent="\u2713 OK";setTimeout(function(){b.textContent="Kopieren";},2000);
+function buildDaily(){
+  var e=state.entries["P"+active]||{};
+  var daily=e.daily||{};
+  var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
+  var todayIdx=new Date().getDay();
+  var html="";
+  days.forEach(function(d,i){
+    var val=daily[d]||"";
+    var isToday=(i===(todayIdx-1));
+    var cls="daily-inp"+(val==="NICHT_ID"?" ni":val?" ok":"")+(isToday?" today":"");
+    var ph=isToday?"Heute - was hast du gemacht?":d+"...";
+    if(val==="NICHT_ID")ph="Nicht identifiziert - frei lassen oder eingeben";
+    html+='<div class="daily-day"><span class="daily-lbl">'+d+(isToday?' <span style="color:var(--neon);font-size:9px;">heute</span>':'')+'</span>'
+      +'<textarea class="'+cls+'" id="dd_'+d+'" placeholder="'+ph+'">'+(val==="NICHT_ID"?"":val)+'</textarea></div>';
   });
+  document.getElementById("dailyDays").innerHTML=html;
 }
-function markDone(){if(!state.entries["P"+activePage])return;state.entries["P"+activePage].done=true;save();renderAll();}
-async function requestNotif(){
-  if(!("Notification"in window))return alert("Nicht verf\u00fcgbar.");
-  var p=await Notification.requestPermission();
-  if(p==="granted"){document.getElementById("notifBtn").textContent="\ud83d\udd14 Erinnerungen aktiv";new Notification("\u26a1 Berichtsheft",{body:rnd(SPRUECHE)});}
+
+function saveDailyEntries(){
+  var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
+  if(!state.entries["P"+active])state.entries["P"+active]={};
+  if(!state.entries["P"+active].daily)state.entries["P"+active].daily={};
+  var filled=0;
+  days.forEach(function(d){var el=document.getElementById("dd_"+d);if(el&&el.value.trim()){state.entries["P"+active].daily[d]=el.value.trim();filled++;}});
+  if(filled>=5)state.entries["P"+active].done=true;
+  else if(filled>0)state.entries["P"+active].inProgress=true;
+  sv();renderAll();
+  alert("Gespeichert! "+filled+"/5 Tage eingetragen");
 }
-function resetApp(){if(confirm("Alle Daten l\u00f6schen und neu starten?")){localStorage.removeItem(KEY);location.reload();}}
+
+// FILES
+function hFiles(files){Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(f){imgs.push({file:f,url:URL.createObjectURL(f)});});rPrev();updBtn();}
+function rPrev(){document.getElementById("prevBox").innerHTML=imgs.map(function(i,x){return'<div class="pw"><img class="pi" src="'+i.url+'"/><button class="pd" onclick="rmImg('+x+')">x</button></div>';}).join("");updBtn();}
+function rmImg(i){imgs.splice(i,1);rPrev();}
+
+// MAIN BUTTON
+function updBtn(){
+  var hasTpl=!!localStorage.getItem("bhz_tpl");
+  var btn=document.getElementById("mainBtn");if(!btn)return;
+  if(curMode==="daily"){btn.style.display="none";return;}
+  btn.style.display="block";
+  if(hasTpl){btn.textContent="Berichtsheft generieren";btn.disabled=imgs.length===0;}
+  else{btn.textContent="Eintrag speichern";btn.disabled=imgs.length===0;}
+}
+
+function handleMainBtn(){
+  var hasTpl=!!localStorage.getItem("bhz_tpl");
+  if(hasTpl)generate();else saveNoTpl();
+}
+
+function saveNoTpl(){
+  if(!imgs.length)return;
+  if(!state.entries["P"+active])state.entries["P"+active]={};
+  state.entries["P"+active].photosSaved=true;
+  state.entries["P"+active].inProgress=true;
+  state.entries["P"+active].scanned=true;
+  if(active>state.totalPages)state.totalPages=active;
+  sv();imgs=[];rPrev();renderAll();
+  alert("Gespeichert auf Seite "+active+"!");
+}
+
+
+// GENERATE
+async function generate(){
+  if(!imgs.length)return;
+  var btn=document.getElementById("mainBtn");
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>KI schreibt...';
+  try{
+    // detect type
+    var c0=[],b0=await b64(imgs[0].file);
+    c0.push({type:"image",source:{type:"base64",media_type:imgs[0].file.type||"image/jpeg",data:b0}});
+    c0.push({type:"text",text:"Lies diese Seite. Steht da krank, erkrankt, Urlaub, Schule, Berufsschule, Innung oder ueberbetrieblich? Antworte NUR: sick, vacation, school oder none"});
+    var td=await apiCall([{role:"user",content:c0}],20,null);
+    var tr=(td&&td.content||[]).map(function(c){return c.text||"";}).join("").trim().toLowerCase();
+    var pt=tr.indexOf("sick")>=0?"sick":tr.indexOf("vacation")>=0?"vacation":tr.indexOf("school")>=0?"school":"none";
+    if(!state.entries["P"+active])state.entries["P"+active]={};
+    if(pt!=="none")state.entries["P"+active].type=pt;
+    var lbl=pLabel(active);
+    if(pt==="sick"&&state.sickDays.indexOf(lbl)<0)state.sickDays.push(lbl);
+    if(pt==="vacation"&&state.vacDays.indexOf(lbl)<0)state.vacDays.push(lbl);
+    if(pt==="school"&&state.schoolDays.indexOf(lbl)<0)state.schoolDays.push(lbl);
+    var sn=document.getElementById("specialInp").value.trim();
+    state.entries["P"+active].specialNote=sn;
+    // generate text
+    var content=[];
+    for(var i=0;i<imgs.length;i++){var b=await b64(imgs[i].file);content.push({type:"image",source:{type:"base64",media_type:imgs[i].file.type||"image/jpeg",data:b}});}
+    var extra="";
+    if(pt==="school"&&sn)extra="\nZusatzinfo Schule/Innung: "+sn;
+    if(pt==="sick")extra="\nHinweis: Erkrankung diese Woche.";
+    if(pt==="vacation")extra="\nHinweis: Urlaub diese Woche.";
+    content.push({type:"text",text:"Seite "+active+" ("+pLabel(active)+"). Berichtsheft schreiben. Wenn du ein anderes Datum siehst bitte trotzdem fuer diese Woche schreiben."+extra});
+    var data=await apiCall([{role:"user",content:content}],1000,SYSGEN);
+    if(!data)throw new Error();
+    var text=(data.content||[]).map(function(c){return c.text||"";}).join("\n");
+    if(!text)throw new Error();
+    state.entries["P"+active].text=text;state.entries["P"+active].done=false;
+    if(active>state.totalPages)state.totalPages=active;
+    sv();imgs=[];rPrev();renderAll();
+  }catch(err){alert("Fehler - nochmal versuchen.");}
+  btn.innerHTML="Berichtsheft generieren";btn.disabled=false;
+}
+
+// IMPROVE
+async function improveText(){
+  var inp=document.getElementById("improveInp").value.trim();if(!inp)return;
+  var e=state.entries["P"+active];if(!e||!e.text)return;
+  var btn=document.querySelector(".improve-btn");btn.innerHTML='<span class="spin"></span>';btn.disabled=true;
+  try{
+    var data=await apiCall([{role:"user",content:"Berichtsheft-Text:\n\n"+e.text+"\n\nAenderung: "+inp+"\n\nGib den KOMPLETTEN aktualisierten Text zurueck."}],1000,"Du verbesserst Berichtsheft-Texte fuer einen Elektroniker-Azubi. Gib immer den vollstaendigen Text zurueck.");
+    if(data){var t=(data.content||[]).map(function(c){return c.text||"";}).join("\n");if(t){state.entries["P"+active].text=t;sv();rResult();document.getElementById("improveInp").value="";}}
+  }catch(e){alert("Fehler.");}
+  btn.innerHTML="&#x27a4;";btn.disabled=false;
+}
+
+function copyTxt(){var e=state.entries["P"+active];if(!e)return;navigator.clipboard.writeText(e.text).then(function(){var b=document.querySelector(".result-btns .btn-xs");b.textContent="OK";setTimeout(function(){b.textContent="Kopieren";},2000);});}
+function markDone(){if(!state.entries["P"+active])return;state.entries["P"+active].done=true;sv();renderAll();}
+async function reqNotif(){if(!("Notification"in window))return;var p=await Notification.requestPermission();if(p==="granted"){document.getElementById("notifBtn").textContent="Erinnerungen aktiv";new Notification("Berichtsheftez",{body:rnd(SPRUECHE)});}}
+
+// STATS
+function showStats(){
+  hideAll();document.getElementById("statsPanel").style.display="block";
+  var sick=state.sickDays||[],vac=state.vacDays||[],school=state.schoolDays||[];
+  var html='<div class="stat-card"><div class="stat-card-t">Kranktage</div>';
+  if(!sick.length)html+='<div style="color:var(--dim);font-size:12px;padding:8px 0;">Keine Eintraege</div>';
+  sick.forEach(function(d){html+='<div class="stat-row"><span class="stat-rl">'+d+'</span><span class="stat-rv">Krank</span></div>';});
+  html+='<div class="stat-row"><span class="stat-rl">Gesamt</span><span class="stat-rv">'+sick.length+' Wochen</span></div></div>';
+  html+='<div class="stat-card"><div class="stat-card-t">Urlaub</div>';
+  if(!vac.length)html+='<div style="color:var(--dim);font-size:12px;padding:8px 0;">Keine Eintraege</div>';
+  vac.forEach(function(d){html+='<div class="stat-row"><span class="stat-rl">'+d+'</span><span class="stat-rv">Urlaub</span></div>';});
+  html+='<div class="stat-row"><span class="stat-rl">Gesamt</span><span class="stat-rv">'+vac.length+' Wochen</span></div></div>';
+  html+='<div class="stat-card"><div class="stat-card-t">Schule / Innung</div>';
+  if(!school.length)html+='<div style="color:var(--dim);font-size:12px;padding:8px 0;">Keine Eintraege</div>';
+  school.forEach(function(d){html+='<div class="stat-row"><span class="stat-rl">'+d+'</span><span class="stat-rv">Schule</span></div>';});
+  html+='<div class="stat-row"><span class="stat-rl">Gesamt</span><span class="stat-rv">'+school.length+' Wochen</span></div></div>';
+  document.getElementById("statsContent").innerHTML=html;
+}
+
+// TEMPLATE
+function updTplStatus(){var t=localStorage.getItem("bhz_tpl");document.getElementById("tplStatus").textContent=t?"Vorlage gespeichert ("+Math.round(t.length/1024)+"KB)":"Noch keine Vorlage hochgeladen.";}
+function uploadTpl(files){if(!files.length)return;var f=files[0];var r=new FileReader();r.onload=function(){localStorage.setItem("bhz_tpl",r.result);updTplStatus();updBtn();updBanner();alert("Vorlage gespeichert!");};r.readAsDataURL(f);}
+
+// GEN ALL BANNER
+function updBanner(){
+  var hasTpl=!!localStorage.getItem("bhz_tpl");
+  var ban=document.getElementById("genBanner");if(!ban)return;
+  if(!hasTpl){ban.style.display="none";return;}
+  var saved=0;for(var i=1;i<=state.totalPages;i++){var e=state.entries["P"+i];if(e&&(e.photosSaved||e.inProgress)&&!e.text)saved++;}
+  if(saved>0){ban.style.display="block";document.getElementById("genBannerSub").textContent=saved+" gespeicherte Seiten - ca. "+Math.ceil(saved*0.3)+" Minuten";}
+  else ban.style.display="none";
+}
+
+async function genAllSaved(){
+  var saved=[];
+  for(var i=1;i<=state.totalPages;i++){var e=state.entries["P"+i];if(e&&(e.photosSaved||e.inProgress)&&!e.text)saved.push(i);}
+  if(!saved.length){alert("Keine Seiten gefunden.");return;}
+  if(!confirm(saved.length+" Seiten generieren?"))return;
+  document.getElementById("genBanner").style.display="none";
+  var prog=document.createElement("div");
+  prog.style.cssText="position:fixed;top:0;left:0;right:0;background:#1c1408;border-bottom:2px solid #FF6B00;padding:14px;z-index:200;text-align:center;font-family:monospace;font-size:12px;color:#FFB347;";
+  document.body.appendChild(prog);
+  for(var j=0;j<saved.length;j++){
+    var p=saved[j];prog.textContent="Generiere Seite "+p+" ("+(j+1)+"/"+saved.length+")...";
+    try{
+      var e2=state.entries["P"+p]||{};
+      var note=e2.specialNote?". Zusatzinfo: "+e2.specialNote:"";
+      var data=await apiCall([{role:"user",content:"Seite "+p+" ("+pLabel(p)+"): Berichtsheft fuer Elektroniker-Azubi EuG generieren."+note}],800,SYSGEN);
+      if(data){var t=(data.content||[]).map(function(c){return c.text||"";}).join("\n");if(t){state.entries["P"+p].text=t;state.entries["P"+p].done=true;sv();}}
+    }catch(err){}
+    await new Promise(function(r){setTimeout(r,600);});
+  }
+  prog.remove();renderAll();alert("Fertig! "+saved.length+" Seiten generiert");
+}
+
+// PDF
+function updPdf(){
+  var hasTpl=!!localStorage.getItem("bhz_tpl");
+  var panel=document.getElementById("pdfPanel");if(!panel)return;
+  if(!hasTpl){panel.style.display="none";return;}
+  var done=[];for(var i=1;i<=state.totalPages;i++){if(state.entries["P"+i]&&state.entries["P"+i].text)done.push(i);}
+  if(!done.length){panel.style.display="none";return;}
+  panel.style.display="block";
+  var unpr=done.filter(function(i){return!state.entries["P"+i].printed;});
+  var html="";
+  if(unpr.length){html+='<div class="pdf-opt" onclick="doPrint('+JSON.stringify(unpr)+')"><div><div class="pdf-opt-lbl">'+unpr.length+' neue Seiten drucken</div><div class="pdf-opt-sub">Noch nicht gedruckt</div></div></div>';}
+  html+='<div class="pdf-opt" onclick="doPrint('+JSON.stringify(done)+')"><div><div class="pdf-opt-lbl">Alle '+done.length+' Seiten drucken</div><div class="pdf-opt-sub">Komplett-PDF</div></div></div>';
+  html+='<div class="pdf-opt" onclick="selPrint('+JSON.stringify(done)+')"><div><div class="pdf-opt-lbl">Seiten auswaehlen</div><div class="pdf-opt-sub">Bestimmte Seiten</div></div></div>';
+  document.getElementById("pdfOpts").innerHTML=html;
+}
+
+function doPrint(pages){
+  var win=window.open("","_blank");if(!win){alert("Popup blockiert.");return;}
+  var b="<html><head><title>Berichtsheftez</title><style>body{font-family:Arial,sans-serif;font-size:12px;margin:20px;line-height:1.6;}h2{border-bottom:2px solid #333;padding-bottom:4px;margin-top:30px;}pre{white-space:pre-wrap;}@media print{.np{display:none;}}</style></head><body>";
+  b+="<h1>Berichtsheft - Ausbildung Elektroniker E&G</h1>";
+  pages.forEach(function(p){
+    var e=state.entries["P"+p];if(!e||!e.text)return;
+    b+="<h2>Seite "+p+" - "+pLabel(p)+"</h2><pre>"+e.text+"</pre>";
+    state.entries["P"+p].printed=true;state.entries["P"+p].printedAt=new Date().toLocaleDateString("de-DE");
+  });
+  b+='<br><button class="np" onclick="window.print()">Drucken / PDF speichern</button></body></html>';
+  win.document.write(b);win.document.close();sv();updPdf();
+}
+
+function selPrint(done){
+  var sel=prompt("Welche Seiten? (z.B. 1-10 oder 5,7,9)","1-"+done.length);if(!sel)return;
+  var pages=[];
+  sel.split(",").forEach(function(part){
+    part=part.trim();
+    if(part.indexOf("-")>0){var ab=part.split("-");for(var i=+ab[0];i<=+ab[1];i++)if(done.indexOf(i)>=0)pages.push(i);}
+    else{var n=parseInt(part);if(!isNaN(n)&&done.indexOf(n)>=0)pages.push(n);}
+  });
+  if(pages.length)doPrint(pages);else alert("Keine gueltigen Seiten.");
+}
+
+// SETTINGS
+function updKey(){var k=document.getElementById("newKeyInp").value.trim();if(!k||k.length<10){alert("Ungueltiger Key.");return;}sKey(k);alert("Key gespeichert!");}
+function resetApp(){if(confirm("Alle Daten loeschen?")){["bhz_v1","bhz_k","bhz_pw","bhz_tpl","bhz_theme"].forEach(function(k){localStorage.removeItem(k);});location.reload();}}
+
+// THEMES
+function applyTheme(idx){
+  var t=THEMES[+idx]||THEMES[0];
+  var r=document.documentElement.style;
+  r.setProperty("--c1",t.c1);r.setProperty("--c2",t.c2);r.setProperty("--c3",t.c3);
+  r.setProperty("--c4",adj(t.c3,20));r.setProperty("--neon",t.neon);r.setProperty("--neon2",dim(t.neon));
+  r.setProperty("--glow",rgba(t.neon,.35));r.setProperty("--moss",t.moss);r.setProperty("--moss2",dim(t.moss));
+  r.setProperty("--amber",ltn(t.neon));localStorage.setItem("bhz_theme",idx);
+}
+function buildThemeGrid(){var g=document.getElementById("themeGrid");if(!g)return;var cur=localStorage.getItem("bhz_theme")||"0";g.innerHTML=THEMES.map(function(t,i){return'<div class="tsw'+(i==cur?" sel":"")+'" style="background:'+t.sw+';box-shadow:0 0 8px '+t.sw+'40;" onclick="applyTheme('+i+');buildThemeGrid();" title="'+t.n+'"></div>';}).join("");}
+function rgba(hex,a){try{var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return"rgba("+r+","+g+","+b+","+a+")";}catch(e){return"rgba(255,107,0,"+a+")";}}
+function dim(hex){try{var r=Math.round(parseInt(hex.slice(1,3),16)*.6),g=Math.round(parseInt(hex.slice(3,5),16)*.6),b=Math.round(parseInt(hex.slice(5,7),16)*.6);return"#"+[r,g,b].map(function(x){return x.toString(16).padStart(2,"0");}).join("");}catch(e){return hex;}}
+function ltn(hex){try{var r=Math.min(255,parseInt(hex.slice(1,3),16)+60),g=Math.min(255,parseInt(hex.slice(3,5),16)+40),b=Math.min(255,parseInt(hex.slice(5,7),16)+20);return"#"+[r,g,b].map(function(x){return x.toString(16).padStart(2,"0");}).join("");}catch(e){return hex;}}
+function adj(hex,amt){try{var r=Math.min(255,parseInt(hex.slice(1,3),16)+amt),g=Math.min(255,parseInt(hex.slice(3,5),16)+amt),b=Math.min(255,parseInt(hex.slice(5,7),16)+amt);return"#"+[r,g,b].map(function(x){return x.toString(16).padStart(2,"0");}).join("");}catch(e){return hex;}}
 </script>
 </body>
 </html>
