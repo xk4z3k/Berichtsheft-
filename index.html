@@ -328,7 +328,11 @@ h1 span{color:var(--neon);text-shadow:0 0 12px var(--neon);}
   <input type="file" id="sigFile" accept="image/*" style="display:none" onchange="uploadSig(this.files)"/>
   <div id="sigStatus" style="font-size:11px;color:var(--moss);margin-bottom:14px;font-family:'Space Mono',monospace;"></div>
   <div class="info-banner" style="border-left-color:#e74c3c"><strong>Gefahrenzone</strong></div>
-  <button onclick="resetApp()" style="width:100%;padding:12px;background:none;border:1px solid #c0392<script>
+  <button onclick="resetApp()" style="width:100%;padding:12px;background:none;border:1px solid #c0392b;color:#c0392b;border-radius:8px;font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;">Alle Daten loeschen</button>
+</div>
+
+</div>
+<script>
 var OWNER=["Ey owner was geht! Alles chill heute?","k4z3k_owner im Haus - lass mal Berichtsheft cracken","Yo Stern, Strom fliesst und das Berichtsheft auch","Owner-Mode aktiviert. Die App gehoert dir!","Was geht Meister - noch eine Seite dann bist du done","k4z3k online - die App ist ready wenn du es bist","Ey Stern lass heute mal richtig Seiten schreiben","Owner checkt ein - Berichtsheft wartet nicht","Yo k4z3k was laeuft - Baustelle oder Kundendienst heute?","Stern! Die Zwischenpruefung naht - Berichtsheft auch","Ey owner was geht - alles im gruenen Bereich?","k4z3k checkt seine Seiten wie ein Profi","Yo Elektriker-Legende was laeuft","Owner online - die App ist stolz auf dich","Stern was geht - heute Schule oder Baustelle?","k4z3k_owner - Ausbildung Year 2, Berichtsheft auch","Ey was geht du Potentialausgleich-Profi","Owner checkt ein - Kabeltrassen verlegt?","Yo k4z3k heute wird aufgeholt was liegengeblieben ist","Stern! Eine Seite. Das ist alles was ich will.","k4z3k online - Verdrahtung sitzt, Text sitzt","Ey owner Klemmleiste gecrimpt und Berichtsheft geschrieben?","Owner-Status: Legendaer wie immer","Yo was laeuft Meister der Unterputzdosen","k4z3k_owner - die App hat nur einen User und der ist elite","Stern was geht - heute ist ein guter Tag","Owner checkt ein - Schaltschrank verdrahtet?","Yo Elektriker-Boy lass mal eine Seite machen","Stern! Foto rein. Generieren. Fertig. Du schaffst das.","Ey owner die Ausbildung ist bald rum - Berichtsheft auch","Owner-Mode aktiviert - Ausrede-Mode deaktiviert","Stern! Du bist owner. Owner erledigen Dinge."];
 
 var SPRUECHE=["Bro dein Berichtsheft laeuft nicht weg - deine Ausbildung schon","Stell dir vor du hast alles eingetragen. Geiles Gefuehl oder?","Kein Eintrag heute = Schmerzen morgen. Du weisst es.","5 Minuten Berichtsheft ist besser als 2h Stress danach.","Deine Chefin hat deinen Ordner verschlampt - lass ihr keinen Grund mehr","Heute Foto machen = morgen entspannt. Easy wie Strom verlegen.","Du machst Strom. Das Berichtsheft macht sich nicht von selbst.","Kabel klemmen kannst du. Berichtsheft auch. Gleiche Energie.","Keine Ausreden. Telefon raus, Foto machen, fertig.","Future you wird sich bedanken. Oder fluchen. Du entscheidest.","Ein Eintrag am Tag haelt den Panikschweiss weg.","Leerrohre verlegt? Super. Jetzt auch den Text verlegen.","Der Schaltschrank ist verdrahtet. Das Berichtsheft auch bald.","Potentialausgleich hergestellt? Jetzt auch im Berichtsheft.","NYM-Kabel gezogen und Berichtsheft auch? Perfekt.","Unterputzdosen gesetzt, Text noch nicht? Los jetzt.","FI-Schutzschalter sitzt. Berichtsheft sitzt noch nicht.","Klemmleiste beschriftet - Berichtsheft auch beschriften.","Kabeltrassen haengen. Der Text soll auch haengen - im Ordner.","Verdrahtung sitzt perfekt. Text sitzt noch nicht.","Stromkreis geschlossen. Berichtsheft-Kreis noch offen.","Du hast heute Strom gemacht. Mach jetzt auch Text.","Ohne Berichtsheft kein Zeugnis. Ohne Zeugnis kein Gehalt.","Elektriker ohne Berichtsheft ist wie NYM ohne Ader.","Zwischenpruefung kommt. Bist du ready?","Gesellenpruefung wartet. Berichtsheft auch.","Die letzten Seiten sind die wichtigsten. Gib Gas.","Anfang war schwer. Ende ist nah. Nicht aufhoeren.","Smart arbeiten ist auch eine Faehigkeit.","Andere Azubis tippen noch ab. Du hast KI.","Technologie nutzen ist auch eine Faehigkeit.","Deine Arbeit verdient Dokumentation.","10 Minuten jetzt oder 10 Stunden Panik spaeter.","Heute eine Seite. Morgen keine Sorgen.","Freitag Nachmittag - eine Seite und du bist frei.","App offen = halbe Arbeit. Foto rein = fast fertig.","KI schreibt. Du kontrollierst. Team.","Strom an. App an. Berichtsheft an. So laeuft das.","Spannung messen kannst du. Satzspannung auch?","L1 L2 L3 - Montag Dienstag Mittwoch. Alle drei eintragen.","Verteiler fertig verdrahtet. Jetzt den Text verdrahten.","Jede Seite ein Schritt Richtung Gesellenbrief.","Vollstaendiges Berichtsheft = bestandene Pruefung = Zukunft.","Wer zuletzt traegt traegt am besten - mit App.","Panik schreiben ist moeglich. Geplant schreiben ist besser.","3 Saetze pro Tag. Das ist alles was ich verlange.","Fachbegriffe rein. Klingt professionell. Ist auch so.","NYM-J 3x1.5mm klingt besser als Kabel. Nutze es.","Potentialausgleich ist ein Wort das Prueferherzen oeffnet.","FI-Schutzschalter schreiben und der Pruefer nickt.","Kabeltrasse sagt mehr als Metallding an der Decke.","Leerrohr klingt professioneller als Plastikrohr.","Unterputzdose klingt besser als Dose. Immer.","Was du machst ist es wert aufgeschrieben zu werden.","Elektrotechnik ist Praezision. Berichtsheft auch.","RCD ausgeloest? Nicht durch leeres Berichtsheft.","LS-Schalter haelt. Text haelt sich noch zurueck.","Aufputzinstallation gemacht - Aufputztext noch nicht.","Norm eingehalten. Berichtsheft-Norm auch einhalten.","VDE 0100 kennst du. Berichtsheft auch kennen.","Zaehlerplatz fertig. Textplatz leer.","Hauptverteiler sitzt. Haupttext fehlt.","Steigleitung gezogen. Textleitung auch ziehen.","Brandmeldung angeschlossen. Berichtsheft-Alarm!","Beleuchtung installiert. Jetzt auch Licht ins Berichtsheft.","Notbeleuchtung geprueft. Berichtsheft im Notfall auch.","Bewegungsmelder montiert. Bewegt dich das zu schreiben?","Zeitschaltuhr eingestellt. Berichtsheft-Zeit einstellen.","Smart Home installiert. Smarter Berichtsheft auch.","Wallbox montiert. Text auch laden.","Bus-System konfiguriert. Text-Bus auch konfigurieren.","KNX programmiert. Text auch programmieren.","DALI angeschlossen. Text auch beleuchten.","Datenkabel gezogen. Datenmenge im Berichtsheft erhoehen.","Cat7 verlegt. Kategorie 7 Text auch?","WLAN konfiguriert. Berichtsheft konfiguriert?","USV angeschlossen. Unterbrechungsfreier Text.","Trafo aufgestellt. Text transformieren.","Du bist fast fertig. Fast. Noch ein paar Seiten.","Letzte Seiten kommen bald. Mach sie gut.","Bald Gesellenpruefung. Bald freier Elektriker.","Noch kurz durchhalten. Berichtsheft fast voll.","Die Ziellinie ist sichtbar. Nicht aufhoeren.","Jede Seite bringt dich naeher ans Ziel.","Ordner voll = Ziel erreicht. Du schaffst das Stern.","Amalia hat das gebaut. Stern nutzt es. Win-Win.","k4z3k_owner weiss was er tut.","Die App funktioniert. Die Ausrede nicht mehr.","Tiprohre demontiert. Ausrede auch demontieren.","Stapparohre entfernt. Prokrastination auch entfernen.","Kundendienst erledigt. Eigenen Dienst am Berichtsheft?","Rohbau gemacht. Textbau steht noch aus.","Abzweigdose gecrimpt und Berichtsheft auch? Respekt.","Installationskanal montiert. Textkanal noch offen.","Wechselschaltung funktioniert. Berichtsheft noch nicht.","Sicherungskasten fertig. Jetzt auch den Text sichern.","Deine Zukunft liegt in deinen Haenden. Und im Berichtsheft.","Wochenende kommt. Berichtsheft auch?","Montag Morgen - neue Woche, neue Seite, neues Glueck.","Leere Seite = schlechter Eindruck. Volle Seite = Respekt.","Pruefer liest jeden Eintrag. Mach ihn stolz.","Unterschrift fehlt noch? Erstmal Text."];
@@ -396,8 +400,7 @@ document.addEventListener("touchstart",function(e){tx=e.touches[0].clientX;});
 document.addEventListener("touchend",function(e){var dx=e.changedTouches[0].clientX-tx;if(tx<30&&dx>60)openSB();if(dx<-60&&document.getElementById("sidebar").classList.contains("open"))closeSB();});
 function openSB(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open");}
 function closeSB(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
-ld();applyTheme(localStorage.getItem("bhz_theme")||"0");buildThemeGrid();
-if(!gPw())document.getElementById("lHint").style.display="block";
+
 function doLogin(){
   var u=document.getElementById("lUser").value.trim();
   var p=document.getElementById("lPass").value;
@@ -427,7 +430,20 @@ function resetPw(){if(confirm("Passwort zuruecksetzen?")){localStorage.removeIte
 function hideAll(){["loginScreen","apiScreen","firstStart","home","statsPanel","templatePanel","settingsPanel"].forEach(function(id){document.getElementById(id).style.display="none";});var rb=document.getElementById("room-bg");if(rb)rb.style.display="none";}
 function goTo(s){closeSB();hideAll();if(s==="home"){showHome();return;}if(s==="stats"){showStats();return;}if(s==="template"){document.getElementById("templatePanel").style.display="block";updTplStatus();return;}if(s==="settings"){document.getElementById("settingsPanel").style.display="block";var ss=document.getElementById("sigStatus");if(ss)ss.textContent=localStorage.getItem("bhz_sig")?"Unterschrift gespeichert ✓":"Keine Unterschrift hochgeladen";return;};}
 function hScan(files){Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(f){scanImgs.push({file:f,url:URL.createObjectURL(f)});});rScanPrev();}
-function rScanPrev(){var h="";scanImgs.forEach(function(im,x){if(im&&im.url)h+='<div class="pw"><img class="pi" src="'+im.url+'"/><button class="pd" onclick="rmScan('+x+')">x<\/button><\/div>';});document.getElementById("sPrev").innerHTML=h;document.getElementById("scanBtn").disabled=scanImgs.length===0;document.getElementById("scanSt").textContent=scanImgs.length>0?scanImgs.length+" Fotos":"";}
+function rScanPrev(){
+  var box=document.getElementById("sPrev");
+  while(box.firstChild)box.removeChild(box.firstChild);
+  scanImgs.forEach(function(im,x){
+    if(!im||!im.url)return;
+    var wrap=document.createElement("div");wrap.className="pw";
+    var img=document.createElement("img");img.className="pi";img.src=im.url;
+    var btn=document.createElement("button");btn.className="pd";btn.textContent="x";
+    btn.onclick=(function(i){return function(){rmScan(i);};})(x);
+    wrap.appendChild(img);wrap.appendChild(btn);box.appendChild(wrap);
+  });
+  document.getElementById("scanBtn").disabled=scanImgs.length===0;
+  document.getElementById("scanSt").textContent=scanImgs.length>0?scanImgs.length+" Fotos":"";
+}
 function rmScan(i){scanImgs.splice(i,1);rScanPrev();}
 function manualStart(){var d=prompt("Aeltestes Datum (z.B. 19.08.2024):");if(!d)return;var sm=getMon(d.trim());var today=new Date();var tm=new Date(today);var tday=tm.getDay(),tdiff=tday===0?-6:1-tday;tm.setDate(tm.getDate()+tdiff);var weeks=Math.round((tm.getTime()-sm.getTime())/(7*24*3600*1000))+1;weeks=Math.max(1,weeks);state.startDate=d.trim();state.totalPages=weeks;state.currentPage=weeks;state.entries={};sv();active=getTodayPage();hideAll();showHome();}
 async function doScan(){
@@ -601,7 +617,19 @@ function saveDailyEntries(){
   }
 }
 function hFiles(files){Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(f){imgs.push({file:f,url:URL.createObjectURL(f)});});rPrev();updBtn();}
-function rPrev(){var h="";imgs.forEach(function(im,x){if(im&&im.url)h+='<div class="pw"><img class="pi" src="'+im.url+'"/><button class="pd" onclick="rmImg('+x+')">x<\/button><\/div>';});document.getElementById("prevBox").innerHTML=h;updBtn();}
+function rPrev(){
+  var box=document.getElementById("prevBox");
+  while(box.firstChild)box.removeChild(box.firstChild);
+  imgs.forEach(function(im,x){
+    if(!im||!im.url)return;
+    var wrap=document.createElement("div");wrap.className="pw";
+    var img=document.createElement("img");img.className="pi";img.src=im.url;
+    var btn=document.createElement("button");btn.className="pd";btn.textContent="x";
+    btn.onclick=(function(i){return function(){rmImg(i);};})(x);
+    wrap.appendChild(img);wrap.appendChild(btn);box.appendChild(wrap);
+  });
+  updBtn();
+}
 function rmImg(i){imgs.splice(i,1);rPrev();}
 function updBtn(){var hasTpl=!!localStorage.getItem("bhz_tpl");var btn=document.getElementById("mainBtn");if(!btn)return;if(curMode==="daily"){btn.style.display="none";return;}btn.style.display="block";btn.textContent=hasTpl?"Berichtsheft generieren":"Eintrag speichern";btn.disabled=imgs.length===0;}
 function handleMainBtn(){if(!!localStorage.getItem("bhz_tpl"))generate();else saveNoTpl();}
@@ -949,11 +977,13 @@ function markAllDone(){
 }
 
 function uploadSig(files){
-  if(!files.length)return;
+  if(!files||!files.length)return;
   var r=new FileReader();
-  r.onload=function(){
-    localStorage.setItem("bhz_sig",r.result);
-    alert("Unterschrift gespeichert! Wird automatisch in alle PDFs eingefuegt.");
+  r.onload=function(ev){
+    localStorage.setItem("bhz_sig",ev.target.result);
+    var ss=document.getElementById("sigStatus");
+    if(ss)ss.textContent="Unterschrift gespeichert ✓";
+    alert("Unterschrift gespeichert!");
   };
   r.readAsDataURL(files[0]);
 }
@@ -963,100 +993,116 @@ function exportAllPdf(){
   for(var i=1;i<=state.totalPages;i++){
     if(state.entries["P"+i]&&state.entries["P"+i].text)done.push(i);
   }
-  if(!done.length){alert("Keine Seiten zum Exportieren.");return;}
+  if(!done.length){alert("Keine Seiten.");return;}
   var win=window.open("","_blank");
   if(!win){alert("Popup blockiert.");return;}
-  
-  var sig=localStorage.getItem("bhz_sig");
-  var sigHtml=sig?"<img src='"+sig+"' style='height:25px;max-width:120px;object-fit:contain;vertical-align:bottom;'/>":"";
-  
+  var sig=localStorage.getItem("bhz_sig")||"";
+  var sigHtml=sig?("<img src=\""+sig+"\" style=\"height:28px;max-width:130px;object-fit:contain;vertical-align:bottom;\"/>"):"";
   var css="*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,Helvetica,sans-serif;font-size:8.5pt;background:#fff;color:#000;}@media print{.noprint{display:none!important;}.pb{page-break-after:always;}@page{size:A4 portrait;margin:0;}}";
-  var body="<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Berichtsheft komplett<\/title><style>"+css+"<\/style><\/head><body>";
-  
+  var body="<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Berichtsheft<\/title><style>"+css+"<\/style><\/head><body>";
   done.forEach(function(p,idx){
     var pageHtml=buildPrintPage(p,state.entries["P"+p].text,pLabel(p),sigHtml);
     var bm=pageHtml.match(/<body[^>]*>([\s\S]*)<\/body>/);
-    if(bm)body+=bm[1]+(idx<done.length-1?"<div class='pb'><\/div>":"");
+    if(bm)body+=bm[1]+(idx<done.length-1?"<div class=\'pb\'><\/div>":"");
     state.entries["P"+p].printed=true;
   });
-  
-  body+="<div class='noprint' style='position:fixed;bottom:20px;right:20px;display:flex;gap:10px;'>";
-  body+="<button onclick='window.print()' style='padding:12px 24px;background:#FF6B00;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;'>Alle drucken / PDF speichern<\/button>";
-  body+="<\/div>";
-  body+="<\/body><\/html>";
-  
+  body+="<div class=\'noprint\' style=\'position:fixed;bottom:20px;right:20px;\'><button onclick=\'window.print()\' style=\'padding:12px 24px;background:#FF6B00;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;\'>Alle drucken / PDF<\/button><\/div><\/body><\/html>";
   win.document.write(body);
   win.document.close();
   sv();updPdf();
+
+function parseEntries(text){
+  var result={mon:"",tue:"",wed:"",thu:"",fri:"",monT:"",tueT:"",wedT:"",thuT:"",friT:""};
+  if(!text)return result;
+  var days=[{key:"mon",tKey:"monT",names:["Montag"]},{key:"tue",tKey:"tueT",names:["Dienstag"]},{key:"wed",tKey:"wedT",names:["Mittwoch"]},{key:"thu",tKey:"thuT",names:["Donnerstag"]},{key:"fri",tKey:"friT",names:["Freitag"]}];
+  var lines=text.split("\n");var curKey=null,curTKey=null,curLines=[];
+  function flush(){if(!curKey||!curLines.length)return;var full=curLines.join(" ").trim();var tMatch=full.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);if(tMatch){result[curTKey]=tMatch[1]+"-"+tMatch[2];full=full.replace(tMatch[0],"").trim();}full=full.replace(/^[A-Za-z]+tag\s*\([^)]*\)\s*:\s*/i,"").trim();full=full.replace(/\s*-\s*\d+[.,]?\d*\s*Std\.?\s*$/i,"").trim();full=full.replace(/\s*-\s*$/,"").trim();result[curKey]=full;curLines=[];}
+  lines.forEach(function(line){var matched=false;days.forEach(function(d){d.names.forEach(function(name){if(line.match(new RegExp("^"+name+"\\s*\\(","i"))||line.match(new RegExp("^"+name+"\\s*:","i"))){flush();curKey=d.key;curTKey=d.tKey;matched=true;curLines.push(line);}});});if(!matched&&curKey)curLines.push(line);});
+  flush();return result;
 }
 
-function copyTxt(){var e=state.entries["P"+active];if(!e||!e.text)return;navigator.clipboard.writeText(e.text).then(function(){var b=document.querySelector(".result-btns .btn-xs");if(b){var o=b.textContent;b.textContent="OK";setTimeout(function(){b.textContent=o;},2000);}});}
-function markDone(){
-  if(!state.entries["P"+active])return;
-  state.entries["P"+active].done=true;
-  sv();
-  rResult();
-  updPdf();
-  var dt=document.getElementById("doneTag");if(dt)dt.style.display="block";
-  var db=document.getElementById("doneBtn");if(db)db.style.display="none";
-}
-function movePage(){
-  var e=state.entries["P"+active];
-  if(!e||!e.text){alert("Kein Eintrag auf dieser Seite.");return;}
-  var target=parseInt(prompt("Auf welche Seite verschieben? (1-"+state.totalPages+")"));
-  if(!target||target<1||target>state.totalPages+10){alert("Ungueltige Seite.");return;}
-  if(target===active){alert("Das ist dieselbe Seite.");return;}
-  if(state.entries["P"+target]&&state.entries["P"+target].text&&state.entries["P"+target].text.trim().length>10){
-    if(!confirm("Seite "+target+" hat bereits Text. Trotzdem ueberschreiben?"))return;
-  }
-  state.entries["P"+target]=Object.assign({},state.entries["P"+active]);
-  delete state.entries["P"+active];
-  if(target>state.totalPages)state.totalPages=target;
-  sv();
-  active=target;
-  renderAll();
-  alert("Verschoben auf Seite "+target+" ("+pLabel(target)+")");
+function buildPrintPage(pageNum,text,weekLabel){
+  var e=parseEntries(text);
+  var parts=weekLabel.split("-");
+  var vonDate=(parts[0]||"").trim();var bisDate=(parts[1]||"").trim();
+  var year=new Date().getFullYear().toString().slice(2);
+  var ausbildungsjahr=getAusbildungsjahr(pageNum);
+  var userName=state.userName||"";
+  function splitLines(txt,max){if(!txt||txt==="[NICHT_ID]")return Array(max).fill("");var words=txt.split(" ");var lines=[],cur="";words.forEach(function(w){if(cur&&(cur+" "+w).length>72){lines.push(cur);cur=w;}else cur=cur?(cur+" "+w):w;});if(cur)lines.push(cur);while(lines.length<max)lines.push("");return lines.slice(0,max);}
+  var mL=splitLines(e.mon,6),tuL=splitLines(e.tue,6),wL=splitLines(e.wed,6),thL=splitLines(e.thu,6),fL=splitLines(e.fri,6);
+  function timeLines(t){if(!t)return["","","","","",""];var p=t.split("-");return[p[0]||"","-",p[1]||"","","",""];}
+  var mT=timeLines(e.monT),tuT=timeLines(e.tueT),wT=timeLines(e.wedT),thT=timeLines(e.thuT),fT=timeLines(e.friT);
+  var css="*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,Helvetica,sans-serif;font-size:8.5pt;background:#fff;color:#000;width:210mm;min-height:297mm;padding:10mm 12mm 10mm 14mm;}@media print{.noprint{display:none!important;}body{padding:8mm 10mm;}@page{size:A4 portrait;margin:0;}}.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4mm;}.tl{font-size:12pt;font-weight:bold;line-height:1.4;}.tr{font-size:8pt;line-height:1.85;}.f{display:inline-block;border-bottom:1px solid #000;min-width:120px;}.fs{display:inline-block;border-bottom:1px solid #000;min-width:22px;}table{width:100%;border-collapse:collapse;table-layout:fixed;}th,td{border:1px solid #000;padding:0;vertical-align:top;overflow:hidden;}.ctag{width:12mm;text-align:center;vertical-align:middle;font-size:7pt;font-weight:bold;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;}.ch{width:16mm;text-align:center;}.cnv{width:12mm;text-align:center;}.ln{height:6.2mm;padding:1px 3px;font-size:7.5pt;border-bottom:1px solid #ccc;white-space:nowrap;overflow:hidden;}.ln:last-child{border-bottom:none;}.tc{height:6.2mm;text-align:center;vertical-align:middle;font-size:7.5pt;border-bottom:1px solid #ccc;}.tc:last-child{border-bottom:none;}.sig{display:flex;margin-top:5mm;}.sb{flex:1;text-align:center;font-size:6.5pt;padding-top:2mm;border-top:1px solid #000;margin:0 4mm;}.sb:first-child{margin-left:0;}.sb:last-child{margin-right:0;}";
+  function dayRows(tag,lines,times){var n=lines.length;var r="<tr><td class='ctag' rowspan='"+n+"'>"+tag+"</td><td><div class='ln'>"+lines[0]+"</div></td><td class='ch' rowspan='"+n+"'><div class='tc'>"+times[0]+"</div><div class='tc'>"+times[1]+"</div><div class='tc'>"+times[2]+"</div><div class='tc'>"+times[3]+"</div><div class='tc'>"+times[4]+"</div><div class='tc'>"+times[5]+"</div></td><td class='cnv' rowspan='"+n+"'></td></tr>";for(var i=1;i<n;i++)r+="<tr><td><div class='ln'>"+lines[i]+"</div></td></tr>";return r;}
+  var sig=localStorage.getItem("bhz_sig");
+  var sigImg=sig?"<img src=\""+sig+"\" style=\"height:28px;max-width:120px;object-fit:contain;\"/>":"";
+  var h="<!DOCTYPE html><html><head><meta charset='UTF-8'><style>"+css+"</style></head><body>";
+  h+="<div class='top'><div class='tl'>Ausbildungs- und<br>T&auml;tigkeitsnachweis Nr.<span class='fs' style='margin-left:6px;font-size:12pt;'>"+pageNum+"</span></div><div class='tr'>Name: <span class='f'>"+userName+"</span><br>Ausbildungsabteilung: <span class='f'>Energie- u. Geb&auml;udetechnik</span><br>Woche vom <span class='f' style='min-width:50px;'>"+vonDate+"</span> bis <span class='f' style='min-width:50px;'>"+bisDate+"</span> 20<span class='fs'>"+year+"</span> Ausbildungsjahr <span class='fs'>"+ausbildungsjahr+"</span></div></div>";
+  h+="<table><tr><th class='ctag' style='writing-mode:horizontal-tb;transform:none;font-size:7pt;font-weight:normal;vertical-align:middle;'>Tag</th><th style='padding:2px 4px;font-size:7.5pt;'>Ausgef&uuml;hrte Arbeiten, Unterricht, Unterweisungen usw.</th><th class='ch' style='padding:2px;font-size:6.5pt;'>Einzel-<br>stunden</th><th class='cnv' style='padding:2px;font-size:6.5pt;'>neu<br>vermittelt*</th></tr>";
+  h+=dayRows("Montag",mL,mT);h+=dayRows("Dienstag",tuL,tuT);h+=dayRows("Mittwoch",wL,wT);h+=dayRows("Donnerstag",thL,thT);h+=dayRows("Freitag",fL,fT);
+  h+=dayRows("Sonnabend",["","","","","",""],["","","","","",""]);
+  h+="<tr><td colspan='2' style='text-align:right;padding:2px 4px;font-size:7.5pt;'>Wochenstunden</td><td class='ch'></td><td class='cnv' style='text-align:right;font-size:6pt;padding:1px 2px;'>* bitte<br>ankreuzen</td></tr></table>";
+  h+="<div class='sig'><div class='sb'>"+sigImg+"<br>Auszubildende/r<br>Unterschrift und Datum</div><div class='sb'>Ausbildende/r<br>Pr&uuml;fvermerk und Datum</div><div class='sb'>Gesetzlicher Vertreter<br>Sichtvermerk und Datum</div></div>";
+  h+="<div class='noprint' style='margin-top:10mm;text-align:center;'><button onclick='window.print()' style='padding:10px 28px;background:#FF6B00;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;'>Drucken &#x2F; PDF</button></div>";
+  h+="</body></html>";return h;
 }
 
-function deletePage(){
-  if(!confirm("Eintrag auf Seite "+active+" loeschen?"))return;
-  if(state.entries["P"+active])delete state.entries["P"+active];
-  sv();renderAll();
+function printOnePage(pageNum){
+  var e=state.entries["P"+pageNum];
+  if(!e||!e.text){alert("Kein Text fuer Seite "+pageNum+".");return;}
+  var html=buildPrintPage(pageNum,e.text,pLabel(pageNum));
+  var win=window.open("","_blank");
+  if(!win){alert("Popup blockiert.");return;}
+  win.document.write(html);win.document.close();
+  state.entries["P"+pageNum].printed=true;
+  state.entries["P"+pageNum].printedAt=new Date().toLocaleDateString("de-DE");
+  sv();updPdf();
 }
-async function reqNotif(){if(!("Notification"in window))return;var p=await Notification.requestPermission();if(p==="granted"){document.getElementById("notifBtn").textContent="Erinnerungen aktiv";new Notification("Berichtsheftez",{body:rnd(SPRUECHE)});}}
-function showStats(){hideAll();document.getElementById("statsPanel").style.display="block";var sick=state.sickDays||[],vac=state.vacDays||[],school=state.schoolDays||[];var html='<div class="stat-card"><div class="stat-card-t">Kranktage<\/div>';if(!sick.length)html+='<div style="color:var(--dim);font-size:12px;padding:8px 0;">Keine Eintraege<\/div>';sick.forEach(function(d){html+='<div class="stat-row"><span class="stat-rl">'+d+'<\/span><span class="stat-rv">Krank<\/span><\/div>';});html+='<div class="stat-row"><span class="stat-rl">Gesamt<\/span><span class="stat-rv">'+sick.length+'<\/span><\/div><\/div>';html+='<div class="stat-card"><div class="stat-card-t">Urlaub<\/div>';if(!vac.length)html+='<div style="color:var(--dim);font-size:12px;padding:8px 0;">Keine Eintraege<\/div>';vac.forEach(function(d){html+='<div class="stat-row"><span class="stat-rl">'+d+'<\/span><span class="stat-rv">Urlaub<\/span><\/div>';});html+='<div class="stat-row"><span class="stat-rl">Gesamt<\/span><span class="stat-rv">'+vac.length+'<\/span><\/div><\/div>';html+='<div class="stat-card"><div class="stat-card-t">Schule/Innung<\/div>';if(!school.length)html+='<div style="color:var(--dim);font-size:12px;padding:8px 0;">Keine Eintraege<\/div>';school.forEach(function(d){html+='<div class="stat-row"><span class="stat-rl">'+d+'<\/span><span class="stat-rv">Schule<\/span><\/div>';});html+='<div class="stat-row"><span class="stat-rl">Gesamt<\/span><span class="stat-rv">'+school.length+'<\/span><\/div><\/div>';document.getElementById("statsContent").innerHTML=html;}
-function updTplStatus(){var el=document.getElementById("tplStatus");var t=localStorage.getItem("bhz_tpl");if(el)el.textContent=t?"Vorlage gespeichert ("+Math.round(t.length/1024)+"KB)":"Keine Vorlage hochgeladen.";}
-function uploadTpl(files){if(!files.length)return;var f=files[0];var r=new FileReader();r.onload=function(){localStorage.setItem("bhz_tpl",r.result);updTplStatus();updBtn();updBanner();alert("Vorlage gespeichert!");};r.readAsDataURL(f);}
-function updBanner(){var hasTpl=!!localStorage.getItem("bhz_tpl");var ban=document.getElementById("genBanner");if(!ban)return;if(!hasTpl){ban.style.display="none";return;}var saved=0;for(var i=1;i<=state.totalPages;i++){var e=state.entries["P"+i];if(e&&(e.photosSaved||e.inProgress)&&!e.text)saved++;}if(saved>0){ban.style.display="block";var sub=document.getElementById("genBannerSub");if(sub)sub.textContent=saved+" Seiten - ca. "+Math.ceil(saved*0.3)+" Min";}else ban.style.display="none";}
-function updPdf(){var hasTpl=!!localStorage.getItem("bhz_tpl");var panel=document.getElementById("pdfPanel");if(!panel)return;if(!hasTpl){panel.style.display="none";return;}var done=[];for(var i=1;i<=state.totalPages;i++){if(state.entries["P"+i]&&state.entries["P"+i].text)done.push(i);}if(!done.length){panel.style.display="none";return;}panel.style.display="block";var unpr=done.filter(function(i){return!state.entries["P"+i].printed;});var html="";if(unpr.length)html+='<div class="pdf-opt" onclick="doPrint('+JSON.stringify(unpr)+')"><div><div class="pdf-opt-lbl">'+unpr.length+' neue Seiten drucken<\/div><\/div><\/div>';html+='<div class="pdf-opt" onclick="doPrint('+JSON.stringify(done)+')"><div><div class="pdf-opt-lbl">Alle '+done.length+' Seiten<\/div><\/div><\/div>';html+='<div class="pdf-opt" onclick="selPrint('+JSON.stringify(done)+')"><div><div class="pdf-opt-lbl">Seiten auswaehlen<\/div><\/div><\/div>';document.getElementById("pdfOpts").innerHTML=html;}
-async function genAllSaved(){var saved=[];for(var i=1;i<=state.totalPages;i++){var e=state.entries["P"+i];if(e&&(e.photosSaved||e.inProgress)&&!e.text)saved.push(i);}if(!saved.length){alert("Keine Seiten.");return;}if(!confirm(saved.length+" Seiten generieren?"))return;document.getElementById("genBanner").style.display="none";var prog=document.createElement("div");prog.style.cssText="position:fixed;top:0;left:0;right:0;background:#1c1408;border-bottom:2px solid #FF6B00;padding:14px;z-index:200;text-align:center;font-family:monospace;font-size:12px;color:#FFB347;";document.body.appendChild(prog);for(var j=0;j<saved.length;j++){var p=saved[j];prog.textContent="Seite "+p+" ("+(j+1)+"/"+saved.length+")...";try{var e2=state.entries["P"+p]||{};var data=await apiCall([{role:"user",content:"Seite "+p+" ("+pLabel(p)+"): Berichtsheft Elektriker."+(e2.specialNote?" "+e2.specialNote:"")}],2000,SYSGEN);if(data&&data.content){var t=(data.content||[]).map(function(c){return c.text||"";}).join("\n");if(t){state.entries["P"+p].text=t;state.entries["P"+p].done=true;sv();}}}catch(err){}await new Promise(function(r){setTimeout(r,600);});}prog.remove();renderAll();alert("Fertig!");}
-function parseEntries(text){var result={mon:"",tue:"",wed:"",thu:"",fri:"",monT:"",tueT:"",wedT:"",thuT:"",friT:""};if(!text)return result;var days=[{key:"mon",tKey:"monT",names:["Montag"]},{key:"tue",tKey:"tueT",names:["Dienstag"]},{key:"wed",tKey:"wedT",names:["Mittwoch"]},{key:"thu",tKey:"thuT",names:["Donnerstag"]},{key:"fri",tKey:"friT",names:["Freitag"]}];var lines=text.split("\n");var curKey=null,curTKey=null,curLines=[];function flush(){if(!curKey||!curLines.length)return;var full=curLines.join(" ").trim();var tMatch=full.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);if(tMatch){result[curTKey]=tMatch[1]+"-"+tMatch[2];full=full.replace(tMatch[0],"").trim();}full=full.replace(/^[A-Za-z]+tag\s*\([^)]*\)\s*:\s*/i,"").trim();full=full.replace(/\s*-\s*\d+[.,]?\d*\s*Std\.?\s*$/i,"").trim();result[curKey]=full;curLines=[];}lines.forEach(function(line){var matched=false;days.forEach(function(d){d.names.forEach(function(name){if(line.match(new RegExp("^"+name+"\\s*\\(","i"))||line.match(new RegExp("^"+name+"\\s*:","i"))){flush();curKey=d.key;curTKey=d.tKey;matched=true;curLines.push(line);}});});if(!matched&&curKey)curLines.push(line);});flush();return result;}
-function buildPrintPage(pageNum,text,weekLabel,sigHtml){var e=parseEntries(text);var parts=weekLabel.split("-");var vonDate=(parts[0]||"").trim();var bisDate=(parts[1]||"").trim();var year=new Date().getFullYear().toString().slice(2);var ausbildungsjahr=getAusbildungsjahr(pageNum);var userName=state.userName||"";function splitLines(txt,max){if(!txt||txt==="[NICHT_ID]")return Array(max).fill("");var words=txt.split(" ");var lines=[],cur="";words.forEach(function(w){if(cur&&(cur+" "+w).length>72){lines.push(cur);cur=w;}else cur=cur?(cur+" "+w):w;});if(cur)lines.push(cur);while(lines.length<max)lines.push("");return lines.slice(0,max);}var mL=splitLines(e.mon,6),tuL=splitLines(e.tue,6),wL=splitLines(e.wed,6),thL=splitLines(e.thu,6),fL=splitLines(e.fri,6);function tL(t){if(!t)return["","","","","",""];var p=t.split("-");return[p[0]||"","-",p[1]||"","","",""];}var css="*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,Helvetica,sans-serif;font-size:8.5pt;background:#fff;color:#000;width:210mm;min-height:297mm;padding:10mm 12mm 10mm 14mm;}@media print{.noprint{display:none!important;}body{padding:8mm 10mm;}@page{size:A4 portrait;margin:0;}}.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4mm;}.tl{font-size:12pt;font-weight:bold;line-height:1.4;}.tr{font-size:8pt;line-height:1.85;}.f{display:inline-block;border-bottom:1px solid #000;min-width:120px;}.fs{display:inline-block;border-bottom:1px solid #000;min-width:22px;}table{width:100%;border-collapse:collapse;table-layout:fixed;}th,td{border:1px solid #000;padding:0;vertical-align:top;overflow:hidden;}.ctag{width:12mm;text-align:center;vertical-align:middle;font-size:7pt;font-weight:bold;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;}.ch{width:16mm;text-align:center;}.cnv{width:12mm;text-align:center;}.ln{height:6.2mm;padding:1px 3px;font-size:7.5pt;border-bottom:1px solid #ccc;white-space:nowrap;overflow:hidden;}.ln:last-child{border-bottom:none;}.tc{height:6.2mm;text-align:center;vertical-align:middle;font-size:7.5pt;border-bottom:1px solid #ccc;}.tc:last-child{border-bottom:none;}.sig{display:flex;margin-top:5mm;}.sb{flex:1;text-align:center;font-size:6.5pt;padding-top:2mm;border-top:1px solid #000;margin:0 4mm;}.sb:first-child{margin-left:0;}.sb:last-child{margin-right:0;}";function dayRows(tag,lines,times){var n=lines.length;var r="<tr><td class='ctag' rowspan='"+n+"'>"+tag+"<\/td><td><div class='ln'>"+lines[0]+"<\/div><\/td><td class='ch' rowspan='"+n+"'><div class='tc'>"+times[0]+"<\/div><div class='tc'>"+times[1]+"<\/div><div class='tc'>"+times[2]+"<\/div><div class='tc'>"+times[3]+"<\/div><div class='tc'>"+times[4]+"<\/div><div class='tc'>"+times[5]+"<\/div><\/td><td class='cnv' rowspan='"+n+"'><\/td><\/tr>";for(var i=1;i<n;i++)r+="<tr><td><div class='ln'>"+lines[i]+"<\/div><\/td><\/tr>";return r;}var h="<!DOCTYPE html><html><head><meta charset='UTF-8'><style>"+css+"<\/style><\/head><body><div class='top'><div class='tl'>Ausbildungs- und<br>T&auml;tigkeitsnachweis Nr.<span class='fs' style='margin-left:6px;font-size:12pt;'>"+pageNum+"<\/span><\/div><div class='tr'>Name: <span class='f'>"+userName+"<\/span><br>Ausbildungsabteilung: <span class='f'>Energie- u. Geb&auml;udetechnik<\/span><br>Woche vom <span class='f' style='min-width:50px;'>"+vonDate+"<\/span> bis <span class='f' style='min-width:50px;'>"+bisDate+"<\/span> 20<span class='fs'>"+year+"<\/span> Ausbildungsjahr <span class='fs'>"+ausbildungsjahr+"<\/span><\/div><\/div><table><tr><th class='ctag' style='writing-mode:horizontal-tb;transform:none;font-size:7pt;font-weight:normal;'>Tag<\/th><th style='padding:2px 4px;font-size:7.5pt;'>Ausgef&uuml;hrte Arbeiten, Unterricht, Unterweisungen usw.<\/th><th class='ch' style='padding:2px;font-size:6.5pt;'>Einzel-<br>stunden<\/th><th class='cnv' style='padding:2px;font-size:6.5pt;'>neu<br>vermittelt*<\/th><\/tr>";h+=dayRows("Montag",mL,tL(e.monT));h+=dayRows("Dienstag",tuL,tL(e.tueT));h+=dayRows("Mittwoch",wL,tL(e.wedT));h+=dayRows("Donnerstag",thL,tL(e.thuT));h+=dayRows("Freitag",fL,tL(e.friT));h+=dayRows("Sonnabend",["","","","","",""],["","","","","",""]);h+="<tr><td colspan='2' style='text-align:right;padding:2px 4px;font-size:7.5pt;'>Wochenstunden<\/td><td class='ch'><\/td><td class='cnv' style='text-align:right;font-size:6pt;padding:1px 2px;'>* bitte<br>ankreuzen<\/td><\/tr><\/table><div class='sig'><div class='sb'>Auszubildende/r<br>Unterschrift und Datum<\/div><div class='sb'>Ausbildende/r<br>Pr&uuml;fvermerk und Datum<\/div><div class='sb'>Gesetzlicher Vertreter<br>Sichtvermerk und Datum<\/div><\/div><div class='noprint' style='margin-top:10mm;text-align:center;'><button onclick='window.print()' style='padding:10px 28px;background:#FF6B00;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;'>Drucken / PDF speichern<\/button><\/div><\/body><\/html>";return h;}
-function printOnePage(pageNum){var e=state.entries["P"+pageNum];if(!e||!e.text){alert("Kein Text.");return;}var win=window.open("","_blank");if(!win){alert("Popup blockiert.");return;}var sig2=localStorage.getItem('bhz_sig');var sigH2=sig2?"<img src='"+sig2+"' style='height:25px;max-width:120px;object-fit:contain;vertical-align:bottom;'/>": "";win.document.write(buildPrintPage(pageNum,e.text,pLabel(pageNum),sigH2));win.document.close();state.entries["P"+pageNum].printed=true;state.entries["P"+pageNum].printedAt=new Date().toLocaleDateString("de-DE");sv();updPdf();}
-function doPrint(pages){if(!pages||!pages.length)return;if(pages.length===1){printOnePage(pages[0]);return;}var win=window.open("","_blank");if(!win){alert("Popup blockiert.");return;}var body="<!DOCTYPE html><html><head><meta charset='UTF-8'><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;background:#fff;}@media print{.pb{page-break-after:always;}@page{size:A4 portrait;margin:0;}}<\/style><\/head><body>";pages.forEach(function(p,idx){var e=state.entries["P"+p];if(!e||!e.text)return;var bm=buildPrintPage(p,e.text,pLabel(p)).match(/<body[^>]*>([\s\S]*)<\/body>/);if(bm)body+=bm[1]+(idx<pages.length-1?"<div class='pb'><\/div>":"");state.entries["P"+p].printed=true;state.entries["P"+p].printedAt=new Date().toLocaleDateString("de-DE");});body+="<\/body><\/html>";win.document.write(body);win.document.close();sv();updPdf();}
-function selPrint(done){var sel=prompt("Welche Seiten? (z.B. 1-10 oder 5,7,9)","1-"+done.length);if(!sel)return;var pages=[];sel.split(",").forEach(function(part){part=part.trim();if(part.indexOf("-")>0){var ab=part.split("-");for(var i=+ab[0];i<=+ab[1];i++){if(done.indexOf(i)>=0)pages.push(i);}}else{var n=parseInt(part);if(!isNaN(n)&&done.indexOf(n)>=0)pages.push(n);}});if(pages.length)doPrint(pages);else alert("Keine gueltigen Seiten.");}
-function updKey(){var k=document.getElementById("newKeyInp").value.trim();if(!k||k.length<10){alert("Ungueltiger Key.");return;}sKey(k);alert("Key gespeichert!");}
-function resetApp(){if(confirm("Alle Daten loeschen?")){["bhz_v1","bhz_k","bhz_pw","bhz_tpl","bhz_theme"].forEach(function(k){localStorage.removeItem(k);});location.reload();}}
-function rgba(hex,a){try{var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return"rgba("+r+","+g+","+b+","+a+")";}catch(e){return"rgba(255,107,0,"+a+")";}}
-function dim(hex){try{var r=Math.round(parseInt(hex.slice(1,3),16)*.6),g=Math.round(parseInt(hex.slice(3,5),16)*.6),b=Math.round(parseInt(hex.slice(5,7),16)*.6);return"#"+[r,g,b].map(function(x){return x.toString(16).padStart(2,"0");}).join("");}catch(e){return hex;}}
-function ltn(hex){try{var r=Math.min(255,parseInt(hex.slice(1,3),16)+60),g=Math.min(255,parseInt(hex.slice(3,5),16)+40),b=Math.min(255,parseInt(hex.slice(5,7),16)+20);return"#"+[r,g,b].map(function(x){return x.toString(16).padStart(2,"0");}).join("");}catch(e){return hex;}}
-function adj(hex,amt){try{var r=Math.min(255,parseInt(hex.slice(1,3),16)+(amt||20)),g=Math.min(255,parseInt(hex.slice(3,5),16)+(amt||20)),b=Math.min(255,parseInt(hex.slice(5,7),16)+(amt||20));return"#"+[r,g,b].map(function(x){return x.toString(16).padStart(2,"0");}).join("");}catch(e){return hex;}}
-function applyTheme(idx){var t=THEMES[+idx]||THEMES[0];var r=document.documentElement.style;r.setProperty("--c1",t.c1);r.setProperty("--c2",t.c2);r.setProperty("--c3",t.c3);r.setProperty("--c4",adj(t.c3,20));r.setProperty("--neon",t.neon);r.setProperty("--neon2",dim(t.neon));r.setProperty("--glow",rgba(t.neon,.35));r.setProperty("--moss",t.moss);r.setProperty("--moss2",dim(t.moss));r.setProperty("--amber",ltn(t.neon));localStorage.setItem("bhz_theme",idx);}
-function buildThemeGrid(){
-  var g=document.getElementById("themeGrid");
-  if(!g)return;
-  var cur=localStorage.getItem("bhz_theme")||"0";
-  var h="";
-  THEMES.forEach(function(t,i){
-    var sel=i==+cur?" sel":"";
-    var div=document.createElement("div");
-    div.className="tsw"+sel;
-    div.style.background=t.sw;
-    div.style.boxShadow="0 0 8px "+t.sw+"40";
-    div.title=t.n;
-    div.onclick=(function(idx){return function(){applyTheme(idx);buildThemeGrid();};})(i);
-    g.appendChild(div);
+
+function doPrint(pages){
+  if(!pages||!pages.length)return;
+  if(pages.length===1){printOnePage(pages[0]);return;}
+  var win=window.open("","_blank");
+  if(!win){alert("Popup blockiert.");return;}
+  var css2="*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;font-size:9pt;background:#fff;}@media print{.pb{page-break-after:always;}@page{size:A4 portrait;margin:0;}}";
+  var body="<!DOCTYPE html><html><head><meta charset='UTF-8'><style>"+css2+"</style></head><body>";
+  pages.forEach(function(p,idx){
+    var e=state.entries["P"+p];if(!e||!e.text)return;
+    var pageHtml=buildPrintPage(p,e.text,pLabel(p));
+    var bm=pageHtml.match(/<body[^>]*>([\s\S]*)<\/body>/);
+    if(bm)body+=bm[1]+(idx<pages.length-1?"<div class='pb'></div>":"");
+    state.entries["P"+p].printed=true;
+    state.entries["P"+p].printedAt=new Date().toLocaleDateString("de-DE");
   });
-}</script>
+  body+="</body></html>";
+  win.document.write(body);win.document.close();sv();updPdf();
+}
+
+function selPrint(done){
+  var sel=prompt("Welche Seiten? (z.B. 1-10 oder 5,7,9)","1-"+done.length);
+  if(!sel)return;var pages=[];
+  sel.split(",").forEach(function(part){part=part.trim();if(part.indexOf("-")>0){var ab=part.split("-");for(var i=+ab[0];i<=+ab[1];i++){if(done.indexOf(i)>=0)pages.push(i);}}else{var n=parseInt(part);if(!isNaN(n)&&done.indexOf(n)>=0)pages.push(n);}});
+  if(pages.length)doPrint(pages);else alert("Keine gueltigen Seiten.");
+}
+
+function uploadSig(files){
+  if(!files||!files.length)return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    localStorage.setItem("bhz_sig",ev.target.result);
+    var ss=document.getElementById("sigStatus");
+    if(ss)ss.textContent="Unterschrift gespeichert ✓";
+    alert("Unterschrift gespeichert! Wird in alle PDFs eingefuegt.");
+  };
+  r.readAsDataURL(files[0]);
+}
+}
+
+// Init on load
+ld();
+applyTheme(localStorage.getItem("bhz_theme")||"0");
+buildThemeGrid();
+if(!gPw())document.getElementById("lHint").style.display="block";
+</script>
 </body>
 </html>
