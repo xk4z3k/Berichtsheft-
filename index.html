@@ -412,7 +412,15 @@ function doLogin(){
     else{errEl.style.display="block";errEl.textContent="Falscher Benutzername oder falsches Passwort.";}
   }
 }
-function afterLogin(){hideAll();if(!gKey()){document.getElementById("apiScreen").style.display="block";return;}if(!state.startDate){document.getElementById("firstStart").style.display="block";return;}active=getTodayPage();showHome();}
+function afterLogin(){
+  try{
+    hideAll();
+    if(!gKey()){document.getElementById("apiScreen").style.display="block";return;}
+    if(!state.startDate){document.getElementById("firstStart").style.display="block";return;}
+    active=getTodayPage();
+    showHome();
+  }catch(e){alert("afterLogin Fehler: "+e.message);}
+}
 function doLogout(){closeSB();hideAll();document.getElementById("loginScreen").style.display="block";document.getElementById("lPass").value="";}
 function doSaveKey(){var k=document.getElementById("apiInp").value.trim();if(!k||k.length<10){alert("Gueltigen Key eingeben.");return;}sKey(k);hideAll();if(!state.startDate)document.getElementById("firstStart").style.display="block";else{active=getTodayPage();showHome();}}
 function resetPw(){if(confirm("Passwort zuruecksetzen?")){localStorage.removeItem("bhz_pw");document.getElementById("lHint").style.display="block";document.getElementById("lHint").textContent="Passwort geloescht!";document.getElementById("lPass").value="";document.getElementById("lErr").style.display="none";}}
@@ -445,7 +453,17 @@ async function doScan(){
   }catch(err){alert("Fehler.");btn.innerHTML="Datum erkennen &amp; starten";btn.disabled=false;st.textContent="";}
 }
 function checkAutoNewPage(){if(!state.startDate)return;if(new Date().getDay()!==1)return;var tp=getTodayPage();if(tp>state.totalPages){state.totalPages=tp;sv();}}
-function showHome(){hideAll();document.getElementById("home").style.display="block";var rb=document.getElementById("room-bg");if(rb)rb.style.display="block";document.getElementById("ownerMsg").textContent=rnd(OWNER);document.getElementById("spruchTxt").textContent=rnd(SPRUECHE);checkAutoNewPage();renderAll();}
+function showHome(){
+  try{
+    hideAll();
+    document.getElementById("home").style.display="block";
+    var rb=document.getElementById("room-bg");if(rb)rb.style.display="block";
+    document.getElementById("ownerMsg").textContent=rnd(OWNER);
+    document.getElementById("spruchTxt").textContent=rnd(SPRUECHE);
+    checkAutoNewPage();
+    renderAll();
+  }catch(e){alert("showHome crash: "+e.message);}
+}
 function renderAll(){
   var fns=[
     ["rStats",rStats],["rWeekNav",rWeekNav],["rProgress",rProgress],
@@ -1039,7 +1057,6 @@ function buildThemeGrid(){
     div.onclick=(function(idx){return function(){applyTheme(idx);buildThemeGrid();};})(i);
     g.appendChild(div);
   });
-}
-</script>
+}</script>
 </body>
 </html>
