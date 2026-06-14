@@ -474,12 +474,8 @@ function rResult(){
   }
   txtEl.textContent=e.text;
   // Update PDF preview iframe
-  var frame=document.getElementById("previewFrame");
   var tplDiv=document.getElementById("templatePreview");
-  if(frame&&tplDiv&&localStorage.getItem("bhz_tpl")){
-    tplDiv.style.display="block";
-    frame.srcdoc=buildPrintPage(active,e.text,pLabel(active));
-  } else if(tplDiv){tplDiv.style.display="none";}
+  if(tplDiv)tplDiv.style.display="none"; // No iframe preview - use print button instead
   var uk=document.getElementById("unklar");if(uk)uk.style.display=e.text.indexOf("[NICHT_ID")>=0?"block":"none";
   var dt=document.getElementById("doneTag");if(dt)dt.style.display=e.done?"block":"none";
   var db=document.getElementById("doneBtn");if(db)db.style.display=e.done?"none":"inline-block";
@@ -603,7 +599,9 @@ async function generate(){
     statusDiv.textContent="Bild "+(i+1)+"/"+imgs.length+" - analysiere...";
     var result=await analyzeImage(imgs[i],fallback);
     if(!result){statusDiv.textContent="Fehler bei Bild "+(i+1);continue;}
-    var confirmed=await confirmDate(imgs[i],result,fallback,i+1,imgs.length);
+    var imgB64=await b64f(imgs[i].file);
+    var imgDataUrl="data:"+(imgs[i].file.type||"image/jpeg")+";base64,"+imgB64;
+    var confirmed=await confirmDate(imgDataUrl,result,fallback,i+1,imgs.length);
     if(confirmed===null)break;
     if(confirmed===-1)continue;
     if(!state.entries["P"+confirmed])state.entries["P"+confirmed]={};
@@ -703,7 +701,7 @@ function findPageByDateFull(day,month,year,allowOccupied){
   return pg;
 }
 
-function confirmDate(imgObj,result,fallback,num,total){
+function confirmDate(imgDataUrl,result,fallback,num,total){
   return new Promise(function(resolve){
     var old=document.getElementById("dcBox");if(old)old.remove();
     var suggestedDay=result.day||"";
@@ -741,7 +739,7 @@ function confirmDate(imgObj,result,fallback,num,total){
     box.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.88);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;";
     box.innerHTML="<div style='background:var(--c2);border:1px solid var(--c4);border-top:3px solid var(--neon);border-radius:14px;padding:20px;max-width:420px;width:100%;font-family:Space Grotesk,sans-serif;'>"
       +"<div style='font-size:10px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;font-family:Space Mono,monospace;margin-bottom:8px;'>Bild "+num+" von "+total+"</div>"
-      +"<img src='"+imgObj.url+"' style='width:100%;max-height:260px;object-fit:cover;object-position:top center;border-radius:8px;margin-bottom:14px;border:1px solid var(--c4);cursor:pointer;' onclick=\"this.style.maxHeight=this.style.maxHeight===\'none\'?\'260px\':\'none\'\"/>"
+      +"<img src='"+imgDataUrl+"' style='width:100%;max-height:260px;object-fit:cover;object-position:top center;border-radius:8px;margin-bottom:14px;border:1px solid var(--c4);cursor:pointer;' onclick=\"this.style.maxHeight=this.style.maxHeight===\'none\'?\'260px\':\'none\'\"/>"
       +"<div style='font-size:13px;color:var(--amber);font-weight:700;margin-bottom:12px;'>KI hat erkannt: "+dayStr+"</div>"
       +"<label style='font-size:11px;color:var(--dim);font-family:Space Mono,monospace;display:block;margin-bottom:6px;'>Montag-Datum dieser Woche (TT.MM.JJJJ):</label>"
       +"<div style='display:flex;gap:6px;align-items:center;margin-bottom:6px;'>"
