@@ -446,7 +446,16 @@ async function doScan(){
 }
 function checkAutoNewPage(){if(!state.startDate)return;if(new Date().getDay()!==1)return;var tp=getTodayPage();if(tp>state.totalPages){state.totalPages=tp;sv();}}
 function showHome(){hideAll();document.getElementById("home").style.display="block";var rb=document.getElementById("room-bg");if(rb)rb.style.display="block";document.getElementById("ownerMsg").textContent=rnd(OWNER);document.getElementById("spruchTxt").textContent=rnd(SPRUECHE);checkAutoNewPage();renderAll();}
-function renderAll(){try{rStats();}catch(e){console.error("rStats",e);}try{rWeekNav();}catch(e){console.error("rWeekNav",e);}try{rProgress();}catch(e){console.error("rProgress",e);}try{rBadges();}catch(e){console.error("rBadges",e);}try{rSpecial();}catch(e){console.error("rSpecial",e);}try{rResult();}catch(e){console.error("rResult",e);}try{rWList();}catch(e){console.error("rWList",e);}try{updBtn();}catch(e){console.error("updBtn",e);}try{updPdf();}catch(e){console.error("updPdf",e);}try{updBanner();}catch(e){console.error("updBanner",e);}}
+function renderAll(){
+  var fns=[
+    ["rStats",rStats],["rWeekNav",rWeekNav],["rProgress",rProgress],
+    ["rBadges",rBadges],["rSpecial",rSpecial],["rResult",rResult],
+    ["rWList",rWList],["updBtn",updBtn],["updPdf",updPdf],["updBanner",updBanner]
+  ];
+  fns.forEach(function(f){
+    try{f[1]();}catch(e){alert(f[0]+" Fehler: "+e.message);console.error(f[0],e);}
+  });
+}
 function rStats(){var t=state.totalPages,d=Object.values(state.entries).filter(function(e){return e&&e.done;}).length,b=t-d;document.getElementById("statsRow").innerHTML='<div class="stat"><div class="stat-n">'+t+'<\/div><div class="stat-l">Seiten<\/div><\/div><div class="stat"><div class="stat-n" style="color:var(--moss)">'+d+'<\/div><div class="stat-l">Fertig<\/div><\/div><div class="stat"><div class="stat-n" style="color:'+(b>0?"#e74c3c":"var(--moss)")+'">'+b+'<\/div><div class="stat-l">Rueckstand<\/div><\/div>';}
 function rWeekNav(){document.getElementById("wTitle").textContent="Seite "+active;var sub=pLabel(active);if(active===getTodayPage())sub+=" (Aktuelle Woche)";document.getElementById("wSub").textContent=sub;}
 function rProgress(){var e=state.entries["P"+active],pg=calcProg(e?e.text:null,active),c=pg===100?"var(--moss)":"var(--neon)";document.getElementById("progLbl").textContent="Fortschritt Seite "+active;document.getElementById("progPct").style.color=c;document.getElementById("progPct").textContent=pg+"%";document.getElementById("progFill").style.width=pg+"%";document.getElementById("progFill").style.background=c;}
