@@ -419,7 +419,7 @@ function resetPw(){if(confirm("Passwort zuruecksetzen?")){localStorage.removeIte
 function hideAll(){["loginScreen","apiScreen","firstStart","home","statsPanel","templatePanel","settingsPanel"].forEach(function(id){document.getElementById(id).style.display="none";});var rb=document.getElementById("room-bg");if(rb)rb.style.display="none";}
 function goTo(s){closeSB();hideAll();if(s==="home"){showHome();return;}if(s==="stats"){showStats();return;}if(s==="template"){document.getElementById("templatePanel").style.display="block";updTplStatus();return;}if(s==="settings"){document.getElementById("settingsPanel").style.display="block";var ss=document.getElementById("sigStatus");if(ss)ss.textContent=localStorage.getItem("bhz_sig")?"Unterschrift gespeichert ✓":"Keine Unterschrift hochgeladen";return;};}
 function hScan(files){Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(f){scanImgs.push({file:f,url:URL.createObjectURL(f)});});rScanPrev();}
-function rScanPrev(){var h="";scanImgs.forEach(function(im,x){h+='<div class="pw"><img class="pi" src="'+im.url+'"/><button class="pd" onclick="rmScan('+x+')">x</button></div>';});document.getElementById("sPrev").innerHTML=h;document.getElementById("scanBtn").disabled=scanImgs.length===0;document.getElementById("scanSt").textContent=scanImgs.length>0?scanImgs.length+" Fotos":"";}
+function rScanPrev(){var h="";scanImgs.forEach(function(im,x){if(im&&im.url)h+='<div class="pw"><img class="pi" src="'+im.url+'"/><button class="pd" onclick="rmScan('+x+')">x</button></div>';});document.getElementById("sPrev").innerHTML=h;document.getElementById("scanBtn").disabled=scanImgs.length===0;document.getElementById("scanSt").textContent=scanImgs.length>0?scanImgs.length+" Fotos":"";}
 function rmScan(i){scanImgs.splice(i,1);rScanPrev();}
 function manualStart(){var d=prompt("Aeltestes Datum (z.B. 19.08.2024):");if(!d)return;var sm=getMon(d.trim());var today=new Date();var tm=new Date(today);var tday=tm.getDay(),tdiff=tday===0?-6:1-tday;tm.setDate(tm.getDate()+tdiff);var weeks=Math.round((tm.getTime()-sm.getTime())/(7*24*3600*1000))+1;weeks=Math.max(1,weeks);state.startDate=d.trim();state.totalPages=weeks;state.currentPage=weeks;state.entries={};sv();active=getTodayPage();hideAll();showHome();}
 async function doScan(){
@@ -574,7 +574,7 @@ function saveDailyEntries(){
   }
 }
 function hFiles(files){Array.from(files).filter(function(f){return f.type.startsWith("image/");}).forEach(function(f){imgs.push({file:f,url:URL.createObjectURL(f)});});rPrev();updBtn();}
-function rPrev(){var h="";imgs.forEach(function(im,x){h+='<div class="pw"><img class="pi" src="'+im.url+'"/><button class="pd" onclick="rmImg('+x+')">x</button></div>';});document.getElementById("prevBox").innerHTML=h;updBtn();}
+function rPrev(){var h="";imgs.forEach(function(im,x){if(im&&im.url)h+='<div class="pw"><img class="pi" src="'+im.url+'"/><button class="pd" onclick="rmImg('+x+')">x</button></div>';});document.getElementById("prevBox").innerHTML=h;updBtn();}
 function rmImg(i){imgs.splice(i,1);rPrev();}
 function updBtn(){var hasTpl=!!localStorage.getItem("bhz_tpl");var btn=document.getElementById("mainBtn");if(!btn)return;if(curMode==="daily"){btn.style.display="none";return;}btn.style.display="block";btn.textContent=hasTpl?"Berichtsheft generieren":"Eintrag speichern";btn.disabled=imgs.length===0;}
 function handleMainBtn(){if(!!localStorage.getItem("bhz_tpl"))generate();else saveNoTpl();}
