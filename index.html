@@ -704,119 +704,143 @@ function findPageByDateFull(day,month,year,allowOccupied){
 function confirmDate(imgDataUrl,result,fallback,num,total){
   return new Promise(function(resolve){
     var old=document.getElementById("dcBox");if(old)old.remove();
-    var suggestedDay=result.day||"";
-    var suggestedMonth=result.month||"";
-    // Smart year: find which year still has empty pages for this day+month
+    
+    // Smart year detection
+    var suggestedDay=result.day||0;
+    var suggestedMonth=result.month||0;
     var suggestedYear=new Date().getFullYear();
     if(state.startDate){
       var startYr=+state.startDate.split(".")[2];
       if(startYr){
-        // Check each year from startYear onwards - use first year that has an empty page
-        var foundYr=false;
         for(var tryYr=startYr;tryYr<=startYr+5;tryYr++){
-          // Check if this year has any empty Monday pages for the detected day+month
-          var hasEmpty=false;
           var sm=getMon(state.startDate);
+          var hasEmpty=false;
           for(var w=0;w<state.totalPages+4;w++){
             var cand=new Date(sm.getTime()+w*7*24*3600*1000);
-            if(cand.getFullYear()===tryYr){
-              var pg=w+1;
-              if(!state.entries["P"+pg]||!state.entries["P"+pg].text){
-                hasEmpty=true;
-                break;
-              }
+            if(cand.getFullYear()===tryYr&&(!state.entries["P"+(w+1)]||!state.entries["P"+(w+1)].text||state.entries["P"+(w+1)].text.trim().length<10)){
+              hasEmpty=true;break;
             }
           }
-          if(hasEmpty){suggestedYear=tryYr;foundYr=true;break;}
+          if(hasEmpty){suggestedYear=tryYr;break;}
         }
-        if(!foundYr)suggestedYear=startYr;
       }
     }
-    var dayStr=result.day?(result.day+"."+(result.month||"??")):"nicht erkannt";
 
+    // Build dialog using DOM methods - no innerHTML string issues
     var box=document.createElement("div");
     box.id="dcBox";
     box.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.88);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;";
-    box.innerHTML="<div style='background:var(--c2);border:1px solid var(--c4);border-top:3px solid var(--neon);border-radius:14px;padding:20px;max-width:420px;width:100%;font-family:Space Grotesk,sans-serif;'>"
-      +"<div style='font-size:10px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;font-family:Space Mono,monospace;margin-bottom:8px;'>Bild "+num+" von "+total+"</div>"
-      +"<img src='"+imgDataUrl+"' style='width:100%;max-height:260px;object-fit:cover;object-position:top center;border-radius:8px;margin-bottom:14px;border:1px solid var(--c4);cursor:pointer;' onclick=\"this.style.maxHeight=this.style.maxHeight===\'none\'?\'260px\':\'none\'\"/>"
-      +"<div style='font-size:13px;color:var(--amber);font-weight:700;margin-bottom:12px;'>KI hat erkannt: "+dayStr+"</div>"
-      +"<label style='font-size:11px;color:var(--dim);font-family:Space Mono,monospace;display:block;margin-bottom:6px;'>Montag-Datum dieser Woche (TT.MM.JJJJ):</label>"
-      +"<div style='display:flex;gap:6px;align-items:center;margin-bottom:6px;'>"
-        +"<input id='dcDay' type='number' placeholder='TT' min='1' max='31' style='width:60px;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:10px 6px;color:var(--cream);font-size:16px;font-family:Space Mono,monospace;text-align:center;'/>"
-        +"<span style='color:var(--dim);font-size:18px;'>.</span>"
-        +"<input id='dcMonth' type='number' placeholder='MM' min='1' max='12' style='width:60px;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:10px 6px;color:var(--cream);font-size:16px;font-family:Space Mono,monospace;text-align:center;'/>"
-        +"<span style='color:var(--dim);font-size:18px;'>.</span>"
-        +"<input id='dcYear' type='number' placeholder='JJJJ' min='2020' max='2030' style='flex:1;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:10px 6px;color:var(--cream);font-size:16px;font-family:Space Mono,monospace;text-align:center;'/>"
-      +"</div>"
-      +"<div id='dcPageHint' style='font-size:12px;color:var(--moss);font-family:Space Mono,monospace;margin-bottom:14px;min-height:18px;'></div>"
-      +"<div style='display:flex;gap:8px;'>"
-        +"<button id='dcOk' style='flex:1;padding:12px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;'>Speichern ✓</button>"
-        +"<button id='dcSkip' style='padding:12px 14px;background:var(--c3);color:var(--dim);border:1px solid var(--c4);border-radius:8px;font-size:13px;cursor:pointer;'>Ueberspringen</button>"
-        +"<button id='dcAbort' style='padding:12px 14px;background:#1a0505;color:#e74c3c;border:1px solid #c0392b;border-radius:8px;font-size:13px;cursor:pointer;'>Abbrechen</button>"
-      +"</div>"
-    +"</div>";
+    
+    var inner=document.createElement("div");
+    inner.style.cssText="background:var(--c2);border:1px solid var(--c4);border-top:3px solid var(--neon);border-radius:14px;padding:20px;max-width:420px;width:100%;font-family:'Space Grotesk',sans-serif;max-height:90vh;overflow-y:auto;";
+    
+    var counter=document.createElement("div");
+    counter.style.cssText="font-size:10px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:8px;";
+    counter.textContent="Bild "+num+" von "+total;
+    inner.appendChild(counter);
+    
+    var img=document.createElement("img");
+    img.src=imgDataUrl;
+    img.style.cssText="width:100%;max-height:260px;object-fit:cover;object-position:top center;border-radius:8px;margin-bottom:14px;border:1px solid var(--c4);cursor:pointer;";
+    img.onclick=function(){this.style.maxHeight=this.style.maxHeight==="none"?"260px":"none";};
+    inner.appendChild(img);
+    
+    var detected=document.createElement("div");
+    detected.style.cssText="font-size:13px;color:var(--amber);font-weight:700;margin-bottom:12px;";
+    detected.textContent="KI hat erkannt: "+(suggestedDay&&suggestedMonth?suggestedDay+"."+suggestedMonth:"nicht erkannt");
+    inner.appendChild(detected);
+    
+    var lbl=document.createElement("label");
+    lbl.style.cssText="font-size:11px;color:var(--dim);font-family:'Space Mono',monospace;display:block;margin-bottom:6px;";
+    lbl.textContent="Montag-Datum dieser Woche (TT.MM.JJJJ):";
+    inner.appendChild(lbl);
+    
+    var inputRow=document.createElement("div");
+    inputRow.style.cssText="display:flex;gap:6px;align-items:center;margin-bottom:6px;";
+    
+    var inpStyle="background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:10px 6px;color:var(--cream);font-size:16px;font-family:'Space Mono',monospace;text-align:center;";
+    var dayInp=document.createElement("input");dayInp.type="number";dayInp.id="dcDay";dayInp.placeholder="TT";dayInp.min=1;dayInp.max=31;dayInp.style.cssText=inpStyle+"width:64px;";
+    var dot1=document.createElement("span");dot1.textContent=".";dot1.style.cssText="color:var(--dim);font-size:18px;";
+    var monInp=document.createElement("input");monInp.type="number";monInp.id="dcMonth";monInp.placeholder="MM";monInp.min=1;monInp.max=12;monInp.style.cssText=inpStyle+"width:64px;";
+    var dot2=document.createElement("span");dot2.textContent=".";dot2.style.cssText="color:var(--dim);font-size:18px;";
+    var yrInp=document.createElement("input");yrInp.type="number";yrInp.id="dcYear";yrInp.placeholder="JJJJ";yrInp.min=2020;yrInp.max=2030;yrInp.style.cssText=inpStyle+"flex:1;";
+    
+    inputRow.appendChild(dayInp);inputRow.appendChild(dot1);inputRow.appendChild(monInp);inputRow.appendChild(dot2);inputRow.appendChild(yrInp);
+    inner.appendChild(inputRow);
+    
+    var hint=document.createElement("div");
+    hint.id="dcPageHint";
+    hint.style.cssText="font-size:12px;color:var(--moss);font-family:'Space Mono',monospace;margin-bottom:14px;min-height:18px;";
+    inner.appendChild(hint);
+    
+    var btnRow=document.createElement("div");
+    btnRow.style.cssText="display:flex;gap:8px;";
+    
+    var okBtn=document.createElement("button");
+    okBtn.id="dcOk";
+    okBtn.textContent="Speichern ✓";
+    okBtn.style.cssText="flex:1;padding:12px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;";
+    
+    var skipBtn=document.createElement("button");
+    skipBtn.textContent="Ueberspringen";
+    skipBtn.style.cssText="padding:12px 14px;background:var(--c3);color:var(--dim);border:1px solid var(--c4);border-radius:8px;font-size:13px;cursor:pointer;";
+    
+    var abortBtn=document.createElement("button");
+    abortBtn.textContent="Abbrechen";
+    abortBtn.style.cssText="padding:12px 14px;background:#1a0505;color:#e74c3c;border:1px solid #c0392b;border-radius:8px;font-size:13px;cursor:pointer;";
+    
+    btnRow.appendChild(okBtn);btnRow.appendChild(skipBtn);btnRow.appendChild(abortBtn);
+    inner.appendChild(btnRow);
+    box.appendChild(inner);
     document.body.appendChild(box);
-
-    // Set values after DOM insertion to avoid parse errors
-    if(suggestedDay)document.getElementById("dcDay").value=suggestedDay;
-    if(suggestedMonth)document.getElementById("dcMonth").value=suggestedMonth;
-    if(suggestedYear)document.getElementById("dcYear").value=suggestedYear;
-
+    
+    // Set values after DOM insertion
+    if(suggestedDay)dayInp.value=suggestedDay;
+    if(suggestedMonth)monInp.value=suggestedMonth;
+    if(suggestedYear)yrInp.value=suggestedYear;
+    
     function updateHint(){
-      var d=parseInt(document.getElementById("dcDay").value)||0;
-      var m=parseInt(document.getElementById("dcMonth").value)||0;
-      var y=parseInt(document.getElementById("dcYear").value)||0;
-      var hint=document.getElementById("dcPageHint");
+      var d=parseInt(dayInp.value)||0;
+      var m=parseInt(monInp.value)||0;
+      var y=parseInt(yrInp.value)||0;
       if(d>0&&m>0){
-        var pg=y>2019?findPageByDateFull(d,m,y):findPageByDate(d,m);
+        var pg=y>2019?findPageByDateFull(d,m,y,true):findPageByDate(d,m,true);
         if(pg>0){
-          hint.textContent="→ Seite "+pg+" ("+pLabel(pg)+")";
-          hint.style.color="var(--moss)";
-        } else if(pg===-2){
-          var pgNum2=y>2019?findPageByDateFull(d,m,y,true):findPageByDate(d,m,true);
-          hint.textContent="⚠ Seite "+pgNum2+" hat Text - Speichern zum Ueberschreiben";
-          hint.style.color="#e67e22";
+          var hasText=state.entries["P"+pg]&&state.entries["P"+pg].text&&state.entries["P"+pg].text.trim().length>10;
+          hint.textContent=(hasText?"⚠ ":"")+"Seite "+pg+" ("+pLabel(pg)+")"+(hasText?" - hat Text, wird ueberschrieben":"");
+          hint.style.color=hasText?"#e67e22":"var(--moss)";
         } else {
-          hint.textContent="→ Datum nicht im bekannten Bereich";
+          hint.textContent="Datum nicht im bekannten Bereich";
           hint.style.color="#e74c3c";
         }
       } else {
         hint.textContent="";
       }
     }
-    document.getElementById("dcDay").oninput=updateHint;
-    document.getElementById("dcMonth").oninput=updateHint;
-    document.getElementById("dcYear").oninput=updateHint;
-    // Show hint immediately if KI already detected day+month
+    dayInp.oninput=updateHint;
+    monInp.oninput=updateHint;
+    yrInp.oninput=updateHint;
     if(suggestedDay&&suggestedMonth)updateHint();
-
-    document.getElementById("dcOk").onclick=function(){
-      var d=parseInt(document.getElementById("dcDay").value)||0;
-      var m=parseInt(document.getElementById("dcMonth").value)||0;
-      var y=parseInt(document.getElementById("dcYear").value)||0;
+    
+    okBtn.onclick=function(){
+      var d=parseInt(dayInp.value)||0;
+      var m=parseInt(monInp.value)||0;
+      var y=parseInt(yrInp.value)||0;
       if(d>0&&m>0){
-        // Always use allowOccupied=true to get the real page number
         var pg=y>2019?findPageByDateFull(d,m,y,true):findPageByDate(d,m,true);
         if(pg>0){
-          // Check if it has text - warn but still save
           var hasText=state.entries["P"+pg]&&state.entries["P"+pg].text&&state.entries["P"+pg].text.trim().length>10;
-          if(hasText){
-            if(!confirm("Seite "+pg+" ("+pLabel(pg)+") hat bereits Text. Ueberschreiben?"))return;
-          }
+          if(hasText&&!confirm("Seite "+pg+" hat bereits Text. Ueberschreiben?"))return;
           box.remove();resolve(pg);return;
         }
       }
-      if(confirm("Datum nicht gefunden. Trotzdem auf Seite "+fallback+" speichern?")){
-        box.remove();resolve(fallback);
-      }
+      if(confirm("Datum nicht gefunden. Auf Seite "+fallback+" speichern?")){box.remove();resolve(fallback);}
     };
-    document.getElementById("dcSkip").onclick=function(){box.remove();resolve(-1);};
-    document.getElementById("dcAbort").onclick=function(){box.remove();resolve(null);};
-    // Tab between fields
-    document.getElementById("dcDay").onkeydown=function(e){if(e.key==="Tab"){e.preventDefault();document.getElementById("dcMonth").focus();}};
-    document.getElementById("dcMonth").onkeydown=function(e){if(e.key==="Tab"){e.preventDefault();document.getElementById("dcYear").focus();}if(e.key==="Enter")document.getElementById("dcOk").click();};
-    document.getElementById("dcYear").onkeydown=function(e){if(e.key==="Enter")document.getElementById("dcOk").click();};
+    skipBtn.onclick=function(){box.remove();resolve(-1);};
+    abortBtn.onclick=function(){box.remove();resolve(null);};
+    dayInp.onkeydown=function(e){if(e.key==="Tab"){e.preventDefault();monInp.focus();}};
+    monInp.onkeydown=function(e){if(e.key==="Tab"){e.preventDefault();yrInp.focus();}if(e.key==="Enter")okBtn.click();};
+    yrInp.onkeydown=function(e){if(e.key==="Enter")okBtn.click();};
   });
 }
 
