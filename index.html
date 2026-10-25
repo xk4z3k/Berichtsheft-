@@ -982,7 +982,8 @@ function mergePhotoIntoEntry(entry,result){
         var oldText=stripDailyWorkHours(cleanDayPrefix(daily[day]||""));
         var newText=cleanDayPrefix(parsed[day]||"");
         var missing=!oldText||oldText==="[NICHT_ID]";
-        if((missing||isGenericWorkText(oldText))&&newText)daily[day]=newText;
+        var replaceFalseSick=result.type==="school"&&dayStatus(oldText)==="sick"&&newText&&newText!=="[NICHT_ID]"&&dayStatus(newText)!=="sick";
+        if((missing||isGenericWorkText(oldText)||replaceFalseSick)&&newText)daily[day]=newText;
       });
       entry.daily=daily;
       if(priorText&&!days.some(function(day){return String(fromText[day]||"").trim();})){
