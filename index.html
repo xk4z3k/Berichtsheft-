@@ -815,71 +815,146 @@ function findPageByDateFull(day,month,year,allowOccupied,allowFuture){
   return pg;
 }
 
+function dailyPhotoTextForDay(text,day){
+  var lines=String(text||"").split(/\r?\n/),days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
+  var collecting=false,out=[];
+  lines.forEach(function(line){
+    var match=line.match(/^\s*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)\s*:\s*(.*)$/i);
+    if(match){collecting=match[1].toLowerCase()===String(day||"").toLowerCase();if(collecting&&match[2])out.push(match[2]);}
+    else if(collecting)out.push(line);
+  });
+  if(!out.length&&!/^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)\s*:/i.test(String(text||"")))return String(text||"").trim();
+  return out.join("\n").trim();
+}
+function dailyPhotoItems(text){
+  var source=String(text||"").replace(/^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)\s*:\s*/i,"");
+  var items=[];
+  source.split(/\r?\n/).forEach(function(line){
+    line.trim().split(/\s+-\s+(?=\S)/g).forEach(function(part){
+      var clean=part.trim().replace(/^[-•*]+\s*/,"").trim();
+      if(clean)items.push(clean);
+    });
+  });
+  return items;
+}
+function dailyPhotoKey(text){
+  return String(text||"").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
+}
+function sameDailyPhotoItem(a,b){
+  var ka=dailyPhotoKey(a),kb=dailyPhotoKey(b);
+  if(!ka||!kb)return false;
+  if(ka===kb)return true;
+  var ta=ka.split(" "),tb=kb.split(" ");
+  if(Math.abs(ta.length-tb.length)>1||Math.min(ta.length,tb.length)<3)return false;
+  var na=ta.filter(function(x){return /^\d/.test(x);}).join("|");
+  var nb=tb.filter(function(x){return /^\d/.test(x);}).join("|");
+  if(na&&nb&&na!==nb)return false;
+  var common=ta.filter(function(x){return tb.indexOf(x)>=0;}).length;
+  return common/Math.max(ta.length,tb.length)>=0.82;
+}
 function mergePhotoIntoEntry(entry,result){
   entry=entry||{};
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
   var daily=Object.assign({},entry.daily||{});
   var qualityByDay=Object.assign({},entry.rawDailyQuality||{});
   var rawDaily=Object.assign({},entry.rawDaily||{});
+  var itemQualityByDay=Object.assign({},entry.rawDailyItems||{});
   var priorText=String(entry.text||"").trim();
   var fromText=parseTextToDays(priorText);
   days.forEach(function(d){if(!String(daily[d]||"").trim()&&String(fromText[d]||"").trim())daily[d]=fromText[d];});
   var hasDailyData=days.some(function(d){return String(daily[d]||"").trim();});
   var parsed=parseTextToDays(result.text||"");
   var skipped=false,replaced=false,addedSingleDay=false;
-  if(hasDailyData){
-    days.forEach(function(d){
-      var oldTxt=cleanDayPrefix(daily[d]||"");
-      var newTxt=cleanDayPrefix(parsed[d]||"");
-      var missing=!oldTxt||oldTxt==="[NICHT_ID]";
-      var replaceable=missing||(!result.singleDay&&isGenericWorkText(oldTxt));
-      if(result.singleDay&&d===result.workDay&&newTxt&&!missing&&oldTxt){
-        var hasStoredQuality=Object.prototype.hasOwnProperty.call(qualityByDay,d)&&isFinite(Number(qualityByDay[d]));
-        var oldRawTxt=cleanDayPrefix(rawDaily[d]||"");
-        var rawMatchesDisplayed=!!oldRawTxt&&oldRawTxt===oldTxt;
-        var hasOldQuality=hasStoredQuality||rawMatchesDisplayed;
-        var oldQuality=hasStoredQuality?Number(qualityByDay[d]):0;
-        var newQuality=isFinite(Number(result.quality))?Number(result.quality):0;
-        if(hasOldQuality&&newQuality>oldQuality){daily[d]=newTxt;addedSingleDay=true;replaced=true;}
-        else skipped=true;
-      }else if(replaceable&&newTxt){
-        daily[d]=newTxt;
-        if(result.singleDay&&d===result.workDay)addedSingleDay=true;
-      }
-    });
+  if(result.singleDay){
+    var d=result.workDay;
+    var oldTxt=cleanDayPrefix(daily[d]||"");
+    var newTxt=dailyPhotoTextForDay(result.text||"",d);
+    var missing=!oldTxt||oldTxt==="[NICHT_ID]";
+    var newItems=dailyPhotoItems(newTxt);
+    var incomingQuality=isFinite(Number(result.quality))?Number(result.quality):0;
+    if(missing){
+      if(newItems.length){daily[d]=newItems.map(function(x){return"- "+x;}).join("\n");addedSingleDay=true;}
+    }else{
+      var savedItems=Array.isArray(itemQualityByDay[d])?itemQualityByDay[d]:[];
+      var legacyQuality=null;
+      var oldRawTxt=cleanDayPrefix(rawDaily[d]||"");
+      if(Object.prototype.hasOwnProperty.call(qualityByDay,d)&&isFinite(Number(qualityByDay[d]))&&oldRawTxt===oldTxt)legacyQuality=Number(qualityByDay[d]);
+      var items=dailyPhotoItems(oldTxt).map(function(txt){
+        var quality=legacyQuality;
+        for(var i=0;i<savedItems.length;i++){
+          if(savedItems[i]&&sameDailyPhotoItem(txt,savedItems[i].text)){
+            quality=savedItems[i].quality!==null&&savedItems[i].quality!==undefined&&isFinite(Number(savedItems[i].quality))?Number(savedItems[i].quality):quality;
+            break;
+          }
+        }
+        return{text:txt,quality:quality};
+      });
+      newItems.forEach(function(txt){
+        var match=-1;
+        for(var i=0;i<items.length;i++){if(sameDailyPhotoItem(txt,items[i].text)){match=i;break;}}
+        if(match<0){
+          items.push({text:txt,quality:incomingQuality});
+          addedSingleDay=true;
+        }else{
+          skipped=true;
+          if(items[match].quality!==null&&items[match].quality!==undefined&&incomingQuality>Number(items[match].quality)){
+            items[match]={text:txt,quality:incomingQuality};
+            replaced=true;
+          }
+        }
+      });
+      daily[d]=items.map(function(x){return"- "+x.text;}).join("\n");
+      itemQualityByDay[d]=items;
+    }
+    if(addedSingleDay||replaced){
+      var currentItems=dailyPhotoItems(daily[d]||"");
+      itemQualityByDay[d]=currentItems.map(function(txt){
+        var found=null;
+        for(var i=0;i<(itemQualityByDay[d]||[]).length;i++){
+          var q=itemQualityByDay[d][i];
+          if(q&&sameDailyPhotoItem(txt,q.text)){found=q;break;}
+        }
+        return{text:txt,quality:found&&isFinite(Number(found.quality))?Number(found.quality):null};
+      });
+      rawDaily[d]=daily[d];
+      qualityByDay[d]=incomingQuality;
+    }
     entry.daily=daily;
     var merged="";
-    days.forEach(function(d){if(String(daily[d]||"").trim())merged+=d+": "+cleanDayPrefix(daily[d])+"\n";});
-    entry.text=merged.trim();
-  }else if(result.singleDay&&priorText){
-    entry.text=priorText+"\n"+String(result.text||"").trim();
-    entry.daily=parseTextToDays(entry.text);
-    addedSingleDay=true;
-  }else{
-    entry.text=result.text||entry.text||"";
-    if(result.singleDay){entry.daily=parsed;addedSingleDay=true;}
-  }
-  entry.done=false;
-  if(result.singleDay){
-    if(addedSingleDay){
-      rawDaily[result.workDay]=result.text||"";
-      qualityByDay[result.workDay]=isFinite(Number(result.quality))?Number(result.quality):0;
-    }
+    days.forEach(function(day){if(String(daily[day]||"").trim())merged+=day+": "+cleanDayPrefix(daily[day])+"\n";});
+    entry.text=days.filter(function(day){return String(daily[day]||"").trim();}).map(function(day){return day+": "+String(daily[day]).trim();}).join("\n");
     entry.rawDaily=rawDaily;
     entry.rawDailyQuality=qualityByDay;
+    entry.rawDailyItems=itemQualityByDay;
   }else{
+    if(hasDailyData){
+      days.forEach(function(day){
+        var oldText=cleanDayPrefix(daily[day]||"");
+        var newText=cleanDayPrefix(parsed[day]||"");
+        var missing=!oldText||oldText==="[NICHT_ID]";
+        if((missing||isGenericWorkText(oldText))&&newText)daily[day]=newText;
+      });
+      entry.daily=daily;
+      var mergedWeek="";
+      days.forEach(function(day){if(String(daily[day]||"").trim())mergedWeek+=day+": "+cleanDayPrefix(daily[day])+"\n";});
+      entry.text=mergedWeek.trim();
+    }else{
+      entry.text=result.text||entry.text||"";
+      entry.daily=parsed;
+    }
     entry.rawText=result.text||entry.rawText||"";
   }
-  return {entry:entry,skippedDay:skipped,replacedDay:replaced};
+  entry.done=false;
+  return {entry:entry,skippedDay:skipped,replacedDay:replaced,addedDay:addedSingleDay};
 }
-
 // Generate
 async function generate(){
   if(!imgs.length)return;
   var btn=document.getElementById("mainBtn");btn.disabled=true;
   var statusDiv=document.getElementById("genStatus");
   statusDiv.style.display="block";statusDiv.textContent="Starte...";
-  var results=[],skippedDays=[],replacedDays=[];
+  var results=[],skippedDays=[],replacedDays=[],addedDays=[];
   for(var i=0;i<imgs.length;i++){
     statusDiv.textContent="Bild "+(i+1)+"/"+imgs.length+" - analysiere...";
     var result=await analyzeImage(imgs[i],active+i);
@@ -895,6 +970,7 @@ async function generate(){
     var mergedPhoto=mergePhotoIntoEntry(state.entries["P"+confirmed],result);
     state.entries["P"+confirmed]=mergedPhoto.entry;
     if(mergedPhoto.skippedDay)skippedDays.push("S"+confirmed+" "+result.workDay);
+    if(mergedPhoto.addedDay)addedDays.push("S"+confirmed+" "+result.workDay);
     if(mergedPhoto.replacedDay)replacedDays.push("S"+confirmed+" "+result.workDay);
     try{
       var pp=parseEntries(state.entries["P"+confirmed].text||"");
@@ -908,7 +984,7 @@ async function generate(){
     statusDiv.textContent="Seite "+confirmed+" gespeichert"+(i<imgs.length-1?" - weiter...":"");
   }
   imgs=[];rPrev();
-  if(results.length>0){active=results[0];statusDiv.textContent=results.length+" Seiten: "+results.map(function(p){return"S"+p;}).join(", ")+(replacedDays.length?" | Besser lesbare Duplikate genommen: "+replacedDays.join(", "):"")+(skippedDays.length?" | Vorhandene Eintraege beibehalten: "+skippedDays.join(", "):"");}
+  if(results.length>0){active=results[0];statusDiv.textContent=results.length+" Seiten: "+results.map(function(p){return"S"+p;}).join(", ")+(addedDays.length?" | Weitere Taetigkeiten ergaenzt: "+addedDays.join(", "):"")+(replacedDays.length?" | Lesbarere doppelte Stichpunkte genommen: "+replacedDays.join(", "):"")+(skippedDays.length?" | Doppelte Angaben nicht erneut eingetragen: "+skippedDays.join(", "):"");}
   renderAll();btn.textContent="Berichtsheft generieren";btn.disabled=false;
 }
 
@@ -940,7 +1016,7 @@ async function analyzeImage(imgObj,fallbackPage){
         workDay=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][defaultDate.getDay()];
       }
       if(!/^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)$/.test(workDay))throw new Error("Der Arbeitstag konnte nicht bestimmt werden.");
-      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm den vorhandenen Inhalt so knapp und originalgetreu wie moeglich als kurze Stichpunkte. Keine ganzen Saetze, keine Einleitung, keine Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\\n- Stichpunkt","confidence":0}. confidence ist 0 bis 100 und bewertet nur, wie klar und vollstaendig die Handschrift im Foto lesbar ist, nicht wie plausibel der Inhalt klingt.';
+      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm alle unterschiedlichen ausgefuehrten Arbeiten aus diesem Feld knapp und originalgetreu als kurze Stichpunkte, auch wenn mehrere Baustellen oder Arbeitsbereiche genannt sind. Keine Taetigkeit weglassen, nur weil sie auf einem anderen Zettel oder zu einer anderen Baustelle gehoert. Keine ganzen Saetze, keine Einleitung, keine Baustellen- oder Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\n- Stichpunkt","confidence":0}. confidence ist 0 bis 100 und bewertet nur, wie klar und vollstaendig die Handschrift im Foto lesbar ist, nicht wie plausibel der Inhalt klingt.';
       var one=await apiCall([{role:"user",content:img.concat([{type:"text",text:onePrompt}])}],700,null);
       var oneRaw=(one&&one.content||[]).map(function(c){return c.text||"";}).join("\n").replace(/```json|```/g,"").trim();
       var oneJson=null;try{oneJson=JSON.parse(oneRaw);}catch(e){var om=oneRaw.match(/\{[\s\S]*\}/);if(om)try{oneJson=JSON.parse(om[0]);}catch(_oneErr){}}
@@ -1033,7 +1109,7 @@ function parseTextToDays(text){
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
   var lines=text.split("\n"),curDay=null,curLines=[];
   function flush(){if(!curDay||!curLines.length)return;var full=curLines.join(" ").trim();full=cleanDayPrefix(full);full=full.replace(/\s*-\s*\d{1,2}:\d{2}-\d{1,2}:\d{2}\s*$/,"").trim();full=full.replace(/\s*-\s*$/,"").trim();result[curDay]=full;curLines=[];}
-  lines.forEach(function(line){var matched=false;days.forEach(function(d){if(line.match(new RegExp("^"+d+"\\s*[:(]","i"))){flush();curDay=d;matched=true;curLines.push(line);}});if(!matched&&curDay)curLines.push(line);});
+  lines.forEach(function(line){var matched=false;days.forEach(function(d){if(line.match(new RegExp("^"+d+"\s*[:(]","i"))){flush();curDay=d;matched=true;curLines.push(line);}});if(!matched&&curDay)curLines.push(line);});
   flush();return result;
 }
 
@@ -1255,7 +1331,7 @@ function parseEntries(text){
   lines.forEach(function(line){
     var matched=false;
     days.forEach(function(d){d.names.forEach(function(name){
-      if(line.match(new RegExp("^"+name+"\\s*\\(","i"))||line.match(new RegExp("^"+name+"\\s*:","i"))){
+      if(line.match(new RegExp("^"+name+"\s*\\(","i"))||line.match(new RegExp("^"+name+"\s*:","i"))){
         flush();curKey=d.key;curTKey=d.tKey;matched=true;sawDay=true;curLines.push(line);
       }
     });});
@@ -1525,8 +1601,8 @@ function cleanDayPrefix(txt){
   // Entfernt versehentlich erkannte Tagesnamen am Anfang, auch mehrfach:
   // "Montag: Montag (19.8.): ..." -> "..."
   var day="(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend)";
-  var date="(?:\\s*(?:\\([^)]*\\)|\\d{1,2}[./]\\d{1,2}(?:[./]\\d{2,4})?))?";
-  var re=new RegExp("^(?:\\s*"+day+date+"\\s*:?\\s*)+","i");
+  var date="(?:\s*(?:\\([^)]*\\)|\d{1,2}[./]\d{1,2}(?:[./]\d{2,4})?))?";
+  var re=new RegExp("^(?:\s*"+day+date+"\s*:?\s*)+","i");
   var last;
   do{ last=s; s=s.replace(re,"").trim(); }while(s!==last);
   return s;
