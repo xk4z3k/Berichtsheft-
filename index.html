@@ -148,7 +148,66 @@ h1 span{color:var(--neon);}
 .share-page-item.selected{border-color:var(--neon);background:var(--c3);}
 .spi-check{width:18px;height:18px;border:2px solid var(--c4);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;}
 .share-page-item.selected .spi-check{background:var(--neon);border-color:var(--neon);}
-</style>
+
+/* Share tab: spacious desktop split, purpose-built phone layout */
+.share-panel{position:fixed;inset:0;z-index:200;background:var(--c1);}
+.share-shell{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;background:var(--c1);}
+.share-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--c4);flex-shrink:0;}
+.share-header h1{margin:0;font-size:20px;}
+.share-close{width:38px;height:38px;background:var(--c3);border:1px solid var(--c4);color:var(--dim);border-radius:10px;cursor:pointer;font-size:17px;}
+.share-workspace{display:flex;flex:1;min-height:0;overflow:hidden;}
+.share-preview-pane{flex:1;min-width:0;display:flex;flex-direction:column;padding:18px 20px;overflow:hidden;}
+.share-section-label{font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px;flex-shrink:0;}
+.share-preview-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;}
+.share-preview-list:empty::after{content:'Noch keine Seiten ausgewählt';color:var(--dim);font-size:13px;text-align:center;padding:28px 12px;border:1px dashed var(--c4);border-radius:12px;}
+.share-controls-pane{width:460px;min-width:400px;flex-shrink:0;background:var(--c2);border-left:1px solid var(--c4);display:flex;flex-direction:column;padding:16px 14px;gap:9px;overflow:hidden;}
+.share-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;flex-shrink:0;}
+.share-action{min-height:42px;padding:9px 10px;background:var(--c3);border-radius:9px;font-size:12px;cursor:pointer;line-height:1.25;}
+.share-primary{grid-column:1/-1;padding:12px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border:0;font-size:13px;font-weight:700;}
+.share-print{color:#6C63FF;border:1px solid #6C63FF;}
+.share-docx{color:#00cc66;border:1px solid #00cc66;}
+.share-times{color:#FFB347;border:1px solid #FFB347;font-family:'Space Mono',monospace;}
+.share-fill{color:#00e0ff;border:1px solid #00e0ff;font-family:'Space Mono',monospace;}
+.share-selection-label{margin:2px 0 0;}
+.share-filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0;}
+.share-filter-btn{padding:9px 10px;background:var(--c3);color:var(--cream);border:1px solid var(--c4);border-radius:8px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;width:100%;text-align:center;}
+.share-filter-btn.active{background:var(--neon2);color:#fff;border-color:var(--neon);}
+.share-clear{width:100%;padding:8px;background:var(--c3);color:var(--dim);border:1px solid var(--c4);border-radius:8px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;flex-shrink:0;}
+.share-view-tabs{display:none;}
+.share-page-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:5px;}
+.share-count{font-size:11px;color:var(--dim);font-family:'Space Mono',monospace;text-align:center;padding:9px;background:var(--c3);border-radius:8px;border:1px solid var(--c4);flex-shrink:0;}
+.share-page-item{display:flex;align-items:center;gap:10px;padding:11px 10px;border-radius:9px;cursor:pointer;border:1px solid var(--c4);background:var(--c2);user-select:none;min-height:54px;}
+.share-page-item:hover{border-color:var(--c5);}
+.share-page-item.selected{border-color:var(--neon);background:var(--c3);}
+.spi-check{width:20px;height:20px;border:2px solid var(--c4);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;}
+.share-page-item.selected .spi-check{background:var(--neon);border-color:var(--neon);}
+@media(max-width:760px){
+  #sharePanel{height:100dvh;}
+  .share-shell{height:100dvh;padding-bottom:env(safe-area-inset-bottom);}
+  .share-header{padding:calc(10px + env(safe-area-inset-top)) 14px 10px;}
+  .share-header h1{font-size:19px;}
+  .share-close{width:40px;height:40px;}
+  .share-workspace{flex-direction:column;padding:0 12px 10px;}
+  .share-preview-pane{display:none;}
+  .share-controls-pane{width:auto;min-width:0;flex:1;min-height:0;padding:10px 0 0;background:transparent;border:0;gap:9px;}
+  .share-action-grid{grid-template-columns:1fr 1fr;gap:7px;}
+  .share-action{min-height:46px;padding:10px 8px;font-size:12px;}
+  .share-primary{min-height:48px;font-size:13px;}
+  .share-selection-label{margin:2px 0 0;}
+  .share-filters{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;}
+  .share-filter-btn{padding:9px 4px;font-family:inherit;font-size:10px;line-height:1.15;min-height:40px;}
+  .share-clear{padding:9px 8px;font-size:10px;}
+  .share-view-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex-shrink:0;padding:4px;background:var(--c2);border:1px solid var(--c4);border-radius:10px;}
+  .share-view-tab{border:0;border-radius:7px;background:transparent;color:var(--dim);padding:9px 6px;font-weight:700;font-size:12px;cursor:pointer;}
+  .share-view-tab.active{background:var(--neon2);color:#fff;}
+  .share-page-list{padding-bottom:4px;}
+  .share-page-item{min-height:58px;padding:10px 11px;}
+  .share-count{font-size:10px;padding:8px;}
+  #sharePanel.show-preview .share-preview-pane{display:flex;flex:1;min-height:0;padding:4px 0 0;}
+  #sharePanel.show-preview .share-controls-pane{flex:0 0 auto;}
+  #sharePanel.show-preview .share-page-list{display:none;}
+  #sharePanel.show-preview .share-preview-list{min-height:0;}
+}</style>
 </head>
 <body>
 <div class="overlay" id="overlay" onclick="closeSB()"></div>
@@ -349,39 +408,40 @@ h1 span{color:var(--neon);}
   <button onclick="resetApp()" style="width:100%;padding:12px;background:none;border:1px solid #c0392b;color:#c0392b;border-radius:8px;font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;">Alle Daten loeschen</button>
 </div>
 
-<div id="sharePanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--c1);flex-direction:row;">
-  <div style="display:flex;flex-direction:row;width:100%;height:100%;overflow:hidden;">
-    <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding:16px 10px 16px 16px;overflow:hidden;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
-        <div><div class="eyebrow">Export</div><h1 style="margin:0;font-size:20px;">Teilen<span> &amp; Drucken</span></h1></div>
-        <button onclick="goTo('home')" style="background:var(--c3);border:1px solid var(--c4);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">&#x2715;</button>
+<div id="sharePanel" class="share-panel" style="display:none">
+  <div class="share-shell"><header class="share-header">
+    <div><div class="eyebrow">Export</div><h1>Teilen<span> &amp; Drucken</span></h1></div>
+    <button class="share-close" onclick="goTo('home')" aria-label="Teilen schließen">&#x2715;</button>
+  </header>
+  <div class="share-workspace">
+    <section class="share-preview-pane">
+      <div class="share-section-label">Ausgewählte Seiten</div>
+      <div id="sharePreviewCol" class="share-preview-list"></div>
+    </section>
+    <section class="share-controls-pane">
+      <div class="share-action-grid">
+        <button class="share-action share-primary" onclick="sharePages()">&#x1f4c4; PDF speichern / Drucken</button>
+        <button class="share-action share-print" onclick="printSelected()">&#x1f5a8; Drucken</button>
+        <button class="share-action share-docx" onclick="downloadMultiDocx(shareSelected.length?shareSelected:null)">&#x1f4e5; Alle DOCX</button>
+        <button class="share-action share-times" onclick="fixSelectedTimes()">&#x23f1; Uhrzeiten fixen</button>
+        <button class="share-action share-fill" onclick="fillSelectedEmptyDays()">&#x2728; Echttext behalten / auffüllen</button>
       </div>
-      <div style="font-size:9px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:8px;flex-shrink:0;">Ausgewaehlt</div>
-      <div id="sharePreviewCol" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding-right:4px;"></div>
-    </div>
-    <div style="width:460px;min-width:400px;flex-shrink:0;background:var(--c2);border-left:1px solid var(--c4);display:flex;flex-direction:column;padding:16px 14px;gap:8px;">
-      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-        <button onclick="sharePages()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">&#x1f4c4; PDF speichern / Drucken</button>
-        <div style="display:flex;gap:6px;">
-          <button onclick="printSelected()" style="flex:1;padding:10px;background:var(--c3);color:#6C63FF;border:1px solid #6C63FF;border-radius:8px;font-size:12px;cursor:pointer;">&#x1f5a8; Drucken</button>
-          <button onclick="downloadMultiDocx(shareSelected.length?shareSelected:null)" style="flex:1;padding:10px;background:var(--c3);color:#00cc66;border:1px solid #00cc66;border-radius:8px;font-size:12px;cursor:pointer;">&#x1f4e5; Alle DOCX</button>
-        </div>
-        <button onclick="fixSelectedTimes()" style="width:100%;padding:10px;background:var(--c3);color:#FFB347;border:1px solid #FFB347;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;">&#x23f1; Uhrzeiten fixen</button>
-        <button onclick="fillSelectedEmptyDays()" style="width:100%;padding:10px;background:var(--c3);color:#00e0ff;border:1px solid #00e0ff;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;">&#x2728; Echttext behalten / auffüllen</button>
-      </div>
-      <hr style="border:none;border-top:1px solid var(--c4);margin:0;flex-shrink:0;"/>
-      <div style="font-size:9px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;flex-shrink:0;">Auswahl</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0;">
+      <div class="share-section-label share-selection-label">Auswahl</div>
+      <div class="share-filters">
         <button class="share-filter-btn active" id="sfAll" onclick="setShareFilter('all')">Alle</button>
         <button class="share-filter-btn" id="sfWork" onclick="setShareFilter('work')">Arbeitswochen</button>
         <button class="share-filter-btn" id="sfSchool" onclick="setShareFilter('school')">Berufsschule</button>
         <button class="share-filter-btn" id="sfCustom" onclick="setShareFilter('custom')">Manuell leer</button>
       </div>
-      <button onclick="setShareFilter('custom')" style="width:100%;padding:8px;background:var(--c3);color:var(--dim);border:1px solid var(--c4);border-radius:8px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;flex-shrink:0;">Auswahl leeren / Schnell auswaehlen</button>
-      <div id="sharePageList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px;min-height:0;"></div>
-      <div id="shareSelCount" style="font-size:10px;color:var(--dim);font-family:'Space Mono',monospace;text-align:center;padding:7px;background:var(--c3);border-radius:8px;border:1px solid var(--c4);flex-shrink:0;"></div>
-    </div>
-  </div>
+      <button class="share-clear" onclick="setShareFilter('custom')">Auswahl leeren / Schnell auswählen</button>
+      <div class="share-view-tabs">
+        <button id="shareTabPages" class="share-view-tab active" onclick="setShareView('pages')">Seiten auswählen</button>
+        <button id="shareTabPreview" class="share-view-tab" onclick="setShareView('preview')">Vorschau</button>
+      </div>
+      <div id="sharePageList" class="share-page-list"></div>
+      <div id="shareSelCount" class="share-count"></div>
+    </section>
+  </div></div>
 </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1341,6 +1401,7 @@ function showShare(){
     var p=document.getElementById('sharePanel');
     if(!p){ alert('sharePanel fehlt'); return; }
     p.style.display='flex';
+    setShareView('pages');
     if(!shareSelected || !shareSelected.length){
       shareFilter='all';
       shareSelected=getSharePages('all');
@@ -1350,6 +1411,15 @@ function showShare(){
     console.error('showShare',e);
     alert('Share Fehler: '+e.message);
   }
+}
+
+function setShareView(view){
+  var panel=document.getElementById("sharePanel");
+  var preview=view==="preview";
+  if(panel)panel.classList.toggle("show-preview",preview);
+  var pagesBtn=document.getElementById("shareTabPages"),previewBtn=document.getElementById("shareTabPreview");
+  if(pagesBtn)pagesBtn.classList.toggle("active",!preview);
+  if(previewBtn)previewBtn.classList.toggle("active",preview);
 }
 
 function setShareFilter(f){
