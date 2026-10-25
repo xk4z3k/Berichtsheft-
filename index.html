@@ -982,7 +982,7 @@ function mergePhotoIntoEntry(entry,result){
         var oldText=stripDailyWorkHours(cleanDayPrefix(daily[day]||""));
         var newText=cleanDayPrefix(parsed[day]||"");
         var missing=!oldText||oldText==="[NICHT_ID]";
-        var replaceFalseSick=result.type==="school"&&dayStatus(oldText)==="sick"&&newText&&newText!=="[NICHT_ID]"&&dayStatus(newText)!=="sick";
+        var replaceFalseSick=dayStatus(oldText)==="sick"&&newText&&newText!=="[NICHT_ID]"&&dayStatus(newText)!=="sick";
         if((missing||isGenericWorkText(oldText)||replaceFalseSick)&&newText)daily[day]=newText;
       });
       entry.daily=daily;
@@ -1032,6 +1032,7 @@ async function generate(){
       if(cls==='school') state.entries["P"+confirmed].type='school';
       else if(cls==='sick') state.entries["P"+confirmed].type='sick';
       else if(cls==='vacation') state.entries["P"+confirmed].type='vacation';
+      else if(cls==='none'&&state.entries["P"+confirmed].type==='sick') state.entries["P"+confirmed].type='none';
     }catch(_e){}
     if(confirmed>state.totalPages){state.totalPages=confirmed;}
     sv();results.push(confirmed);
@@ -1051,7 +1052,7 @@ async function analyzeImage(imgObj,fallbackPage){
     var b=await b64f(imgObj.file);
     var mediaType=await detectImageMediaType(imgObj.file);
     var img=[{type:"image",source:{type:"base64",media_type:mediaType,data:b}}];
-    var metaPrompt='Bildtyp erkennen und Datum lesen. JSON: {"layout":"week/single_day","type":"sick/vacation/school/none","name":null,"day":null,"month":null,"year":null,"weekday":null}. "single_day" ist ein einzelner Arbeits-/Kundendienstnachweis mit einem Datum und einem Feld fuer ausgefuehrte Arbeiten; "week" ist ein Wochen-Berichtsheft. Bei week: day/month/year ist das Montag-Datum der Woche. Bei single_day: day/month/year ist das genaue Datum des Arbeitstages und weekday der Wochentag. year nur wenn lesbar, sonst null. type=sick nur, wenn auf dem Blatt ausdruecklich „krank“, „Erkrankung“, „AU“ oder „Krankmeldung“ steht. Wenn „Berufsschule“/„Wochenbericht Berufsschule“ im Kopf steht, muss type=school sein, ausser einzelne Tage sind ausdruecklich als krank markiert; eine unklare Handschrift ist niemals ein Krankheitsnachweis. vacation nur bei ausdruecklichem Urlaub/Feiertag/Betriebsurlaub. Nichts raten.';
+    var metaPrompt='Bildtyp erkennen und Datum lesen. JSON: {"layout":"week/single_day","type":"sick/vacation/school/none","name":null,"day":null,"month":null,"year":null,"weekday":null}. "single_day" ist ein einzelner Arbeits-/Kundendienstnachweis mit einem Datum und einem Feld fuer ausgefuehrte Arbeiten; "week" ist ein Wochen-Berichtsheft. Bei week: day/month/year ist das Montag-Datum der Woche. Bei single_day: day/month/year ist das genaue Datum des Arbeitstages und weekday der Wochentag. year nur wenn lesbar, sonst null. type=sick nur, wenn auf dem Blatt ausdruecklich „krank“, „Erkrankung“, „AU“ oder „Krankmeldung“ steht. Wenn „Berufsschule“/„Wochenbericht Berufsschule“ im Kopf steht, muss type=school sein, ausser einzelne Tage sind ausdruecklich als krank markiert; eine unklare Handschrift ist niemals ein Krankheitsnachweis. „Berufsschule“ ist kein Krankheitsbegriff. Ein Berufsschul-Wochenblatt darf niemals pauschal als Erkrankung fuer alle Tage klassifiziert werden. vacation nur bei ausdruecklichem Urlaub/Feiertag/Betriebsurlaub. Nichts raten.';
     var td=await apiCall([{role:"user",content:img.concat([{type:"text",text:metaPrompt}])}],180,null);
     var tr=(td&&td.content||[]).map(function(c){return c.text||"";}).join("").replace(/```json|```/g,"").trim();
     var meta=null;try{meta=JSON.parse(tr);}catch(e){var tm=tr.match(/\{[\s\S]*\}/);if(tm)try{meta=JSON.parse(tm[0]);}catch(_metaErr){}}
