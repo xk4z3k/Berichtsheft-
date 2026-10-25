@@ -854,6 +854,14 @@ function sameDailyPhotoItem(a,b){
   var common=ta.filter(function(x){return tb.indexOf(x)>=0;}).length;
   return common/Math.max(ta.length,tb.length)>=0.82;
 }
+function appendReportWithoutLosingOld(oldText,newText){
+  var oldValue=String(oldText||"").trim(),newValue=String(newText||"").trim();
+  if(!oldValue)return newValue;
+  if(!newValue||oldValue===newValue||oldValue.indexOf(newValue)>=0)return oldValue;
+  if(newValue.indexOf(oldValue)>=0)return newValue;
+  return oldValue+"\n\n"+newValue;
+}
+
 function mergePhotoIntoEntry(entry,result){
   entry=entry||{};
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
@@ -862,7 +870,7 @@ function mergePhotoIntoEntry(entry,result){
   var rawDaily=Object.assign({},entry.rawDaily||{});
   var itemQualityByDay=Object.assign({},entry.rawDailyItems||{});
   var priorText=String(entry.text||"").trim();
-  var fromText=parseTextToDays(priorText);
+  var fromText=parseTextToDays(cleanReportFormatting(priorText));
   days.forEach(function(d){if(!String(daily[d]||"").trim()&&String(fromText[d]||"").trim())daily[d]=fromText[d];});
   var hasDailyData=days.some(function(d){return String(daily[d]||"").trim();});
   var parsed=parseTextToDays(result.text||"");
@@ -924,7 +932,7 @@ function mergePhotoIntoEntry(entry,result){
     entry.daily=daily;
     var merged="";
     days.forEach(function(day){if(String(daily[day]||"").trim())merged+=day+": "+cleanDayPrefix(daily[day])+"\n";});
-    entry.text=days.filter(function(day){return String(daily[day]||"").trim();}).map(function(day){return day+": "+String(daily[day]).trim();}).join("\n");
+    if(priorText&&!days.some(function(day){return String(fromText[day]||"").trim();})){entry.text=appendReportWithoutLosingOld(priorText,d+": "+String(daily[d]||"").trim());}else{entry.text=days.filter(function(day){return String(daily[day]||"").trim();}).map(function(day){return day+": "+String(daily[day]).trim();}).join("\n");}
     entry.rawDaily=rawDaily;
     entry.rawDailyQuality=qualityByDay;
     entry.rawDailyItems=itemQualityByDay;
@@ -937,12 +945,16 @@ function mergePhotoIntoEntry(entry,result){
         if((missing||isGenericWorkText(oldText))&&newText)daily[day]=newText;
       });
       entry.daily=daily;
-      var mergedWeek="";
-      days.forEach(function(day){if(String(daily[day]||"").trim())mergedWeek+=day+": "+cleanDayPrefix(daily[day])+"\n";});
-      entry.text=mergedWeek.trim();
+      if(priorText&&!days.some(function(day){return String(fromText[day]||"").trim();})){
+        entry.text=appendReportWithoutLosingOld(priorText,cleanReportFormatting(result.text||""));
+      }else{
+        var mergedWeek="";
+        days.forEach(function(day){if(String(daily[day]||"").trim())mergedWeek+=day+": "+cleanDayPrefix(daily[day])+"\n";});
+        entry.text=mergedWeek.trim();
+      }
     }else{
-      entry.text=result.text||entry.text||"";
-      entry.daily=parsed;
+      entry.text=appendReportWithoutLosingOld(priorText,cleanReportFormatting(result.text||""));
+      entry.daily=Object.assign({},daily,parsed);
     }
     entry.rawText=result.text||entry.rawText||"";
   }
@@ -1121,7 +1133,7 @@ function parseTextToDays(text){
 function buildDaily(){
   var e=state.entries["P"+active]||{},daily=e.daily||{};
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
-  var parsed={};if(e.text&&Object.keys(daily).length===0)parsed=parseTextToDays(e.text);
+  var parsed=e.text?parseTextToDays(cleanReportFormatting(e.text)):{};
   var todayIdx=new Date().getDay();
   var box=document.getElementById("dailyDays");box.innerHTML="";
   days.forEach(function(d,i){
@@ -1139,17 +1151,35 @@ function buildDaily(){
 function saveDailyEntries(){
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
   if(!state.entries["P"+active])state.entries["P"+active]={};
-  if(!state.entries["P"+active].daily)state.entries["P"+active].daily={};
+  var entry=state.entries["P"+active];
+  if(!entry.daily)entry.daily={};
+  var priorText=String(entry.text||"");
+  var parsed=priorText?parseTextToDays(cleanReportFormatting(priorText)):{};
   var filled=0;
-  days.forEach(function(d){var el=document.getElementById("dd_"+d);if(el&&el.value.trim()){state.entries["P"+active].daily[d]=el.value.trim();filled++;}});
+  days.forEach(function(d){
+    var el=document.getElementById("dd_"+d),value=el?el.value.trim():"";
+    if(value){entry.daily[d]=value;filled++;}
+    else if(!String(entry.daily[d]||"").trim()&&String(parsed[d]||"").trim())entry.daily[d]=parsed[d];
+  });
   if(filled>0){
-    var fullText="";days.forEach(function(d){var v=state.entries["P"+active].daily[d];if(v)fullText+=d+": "+cleanDayPrefix(v)+"\n";});
-    state.entries["P"+active].text=fullText.trim();
+    var hasParsedDays=days.some(function(d){return String(parsed[d]||"").trim();});
+    if(priorText&&!hasParsedDays){
+      // If the old format cannot be parsed, keep it and append only new text.
+      var additions=[];
+      days.forEach(function(d){
+        var el=document.getElementById("dd_"+d),value=el?el.value.trim():"";
+        if(value&&priorText.indexOf(value)<0)additions.push(d+": "+cleanDayPrefix(value));
+      });
+      if(additions.length)entry.text=priorText+"\n"+additions.join("\n");
+    }else{
+      var fullText="";
+      days.forEach(function(d){var v=entry.daily[d]||parsed[d];if(v)fullText+=d+": "+cleanDayPrefix(v)+"\n";});
+      entry.text=fullText.trim();
+    }
   }
-  if(filled>=5){state.entries["P"+active].done=true;sv();renderAll();alert("Alle 5 Tage - als fertig markiert!");}
+  if(filled>=5){entry.done=true;sv();renderAll();alert("Alle 5 Tage - als fertig markiert!");}
   else if(filled>0){sv();renderAll();alert("Gespeichert! Noch "+(5-filled)+" Tage offen.");}
 }
-
 // Result actions
 function markDone(){if(!state.entries["P"+active])return;state.entries["P"+active].done=true;sv();rResult();var dt=document.getElementById("doneTag");if(dt)dt.style.display="block";var db=document.getElementById("doneBtn");if(db)db.style.display="none";}
 function toggleSentHome(){var e=state.entries["P"+active];if(!e||!e.text)return;var was=e.sentHome||e.type==="sent_home";e.sentHome=!was;if(was&&e.type==="sent_home")e.type="none";sv();renderAll();}
