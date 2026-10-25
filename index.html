@@ -2200,22 +2200,59 @@ async function recoverLegacyReports(){
     if(!e||typeof e!=="object")return false;
     return Object.keys(e).some(function(k){var v=e[k];if(typeof v==="string")return !!v.trim();if(Array.isArray(v))return v.length>0;if(v&&typeof v==="object")return Object.keys(v).length>0;return v!==null&&v!==undefined&&v!==false&&v!==0;});
   }
-  function unwrap(p){if(!p||typeof p!=="object")return null;if(p.entries&&typeof p.entries==="object")return p;if(p.state&&p.state.entries)return p.state;if(p.data&&p.data.entries)return p.data;return null;}
-  var candidates=[],keys=[];
-  for(var i=0;i<localStorage.length;i++){
-    var key=localStorage.key(i);if(!key)continue;
-    keys.push(key);
-    try{var parsed=JSON.parse(localStorage.getItem(key)),src=unwrap(parsed);if(!src)continue;var ec=Object.keys(src.entries||{}).filter(function(k){return meaningful(src.entries[k]);}).length;if(ec)candidates.push({key:key,data:src,count:ec});}catch(_e){}
+  var candidates=[],checked=0,storesChecked=0;
+  function addCandidate(src,label){
+    if(!src||typeof src!=="object")return;
+    var entries=src.entries&&typeof src.entries==="object"?src.entries:null;
+    if(!entries&&src.pages&&typeof src.pages==="object"){
+      entries={};var pages=src.pages;
+      (Array.isArray(pages)?pages:Object.keys(pages).map(function(k){return pages[k]&&typeof pages[k]==="object"?Object.assign({__key:k},pages[k]):{__key:k,text:pages[k]};})).forEach(function(v,i){if(!v)return;var n=v.pageNum||v.page||v.number||v.__key||i+1;entries["P"+(String(n).replace(/\D/g,"")||i+1)]=v;});
+    }
+    if(!entries){var pageKeys=Object.keys(src).filter(function(k){return /^P\d+$/.test(k);});if(pageKeys.length){entries={};pageKeys.forEach(function(k){entries[k]=src[k];});}}
+    if(!entries)return;
+    var count=Object.keys(entries).filter(function(k){return meaningful(entries[k]);}).length;
+    if(count)candidates.push({key:label,data:{startDate:src.startDate||null,totalPages:src.totalPages||src.pageCount||1,userName:src.userName||"",entries:entries},count:count});
   }
+  function walk(value,label,depth,seen){
+    if(depth>6||value==null)return;
+    if(typeof value==="string"){
+      var t=value.trim();if(t.length<2||!(t[0]==="{"||t[0]==="["))return;
+      try{walk(JSON.parse(t),label,depth+1,seen);}catch(_e){}return;
+    }
+    if(typeof value!=="object"||seen.indexOf(value)>=0)return;seen.push(value);
+    if(Array.isArray(value)){value.forEach(function(v,i){walk(v,label+"["+i+"]",depth+1,seen);});return;}
+    addCandidate(value,label);
+    Object.keys(value).forEach(function(k){if(k==="entries"||k==="pages")return;walk(value[k],label+"."+k,depth+1,seen);});
+  }
+  function scanStorage(storage,label){
+    try{for(var i=0;i<storage.length;i++){var key=storage.key(i);if(!key)continue;checked++;var raw=storage.getItem(key);walk(raw,label+":"+key,0,[]);var m=/^(?:P|page[_-]?)(\d+)$/i.exec(key);if(m&&raw&&raw.length>20){try{var v=JSON.parse(raw);walk(v,label+":"+key,0,[]);if(typeof v==="string")addCandidate({entries:{["P"+m[1]]:{text:v}}},label+":"+key);}catch(_e){addCandidate({entries:{["P"+m[1]]:{text:raw}}},label+":"+key);}}}}catch(_e){}
+  }
+  scanStorage(localStorage,"localStorage");
+  try{if(typeof sessionStorage!=="undefined")scanStorage(sessionStorage,"sessionStorage");}catch(_e){}
+  var dbCount=0;
+  try{
+    if(window.indexedDB&&typeof window.indexedDB.databases==="function"){
+      var dbs=await window.indexedDB.databases();dbCount=dbs.length;
+      for(var di=0;di<dbs.length;di++){
+        if(!dbs[di].name)continue;
+        var db=await new Promise(function(resolve){var req=window.indexedDB.open(dbs[di].name);req.onsuccess=function(){resolve(req.result);};req.onerror=function(){resolve(null);};req.onblocked=function(){resolve(null);};});
+        if(!db)continue;
+        for(var si=0;si<db.objectStoreNames.length;si++){
+          var sn=db.objectStoreNames[si];try{var rows=await new Promise(function(resolve){var tx=db.transaction(sn,"readonly"),rq=tx.objectStore(sn).getAll();rq.onsuccess=function(){resolve(rq.result||[]);};rq.onerror=function(){resolve([]);};});storesChecked++;rows.forEach(function(row,ri){walk(row,"IndexedDB:"+db.name+"/"+sn+"["+ri+"]",0,[]);});}catch(_e){}
+        }
+        db.close();
+      }
+    }
+  }catch(_e){}
   candidates.sort(function(a,b){return b.count-a.count;});
-  if(!candidates.length){alert("Ich habe in diesem Browser "+keys.length+" passende Speicher-Eintraege gefunden, aber keine gespeicherten Berichtstexte darin. Deine Cloud-Daten wurden nicht veraendert. Die alten Berichte muessen noch im Browser gefunden werden, in dem du sie frueher bearbeitet hast.");return;}
+  if(!candidates.length){alert("Ich habe "+checked+" Eintraege in lokalem und Sitzungsspeicher sowie "+dbCount+" IndexedDB-Datenbanken ("+storesChecked+" Speicherbereiche) geprueft. Dabei wurden keine alten Berichtstexte gefunden. Cloud-Daten wurden nicht veraendert. Die alten Berichte liegen vermutlich unter einer anderen App-Adresse oder in einem anderen Browser-Profil.");return;}
   var best=candidates[0],merged=copyAppState(state);merged.entries=merged.entries||{};var added=0;
   Object.keys(best.data.entries).forEach(function(k){var src=best.data.entries[k];if(meaningful(src)&&!meaningful(merged.entries[k])){merged.entries[k]=JSON.parse(JSON.stringify(src));added++;}});
   if(!merged.startDate&&best.data.startDate)merged.startDate=best.data.startDate;
   merged.totalPages=Math.max(+merged.totalPages||1,+best.data.totalPages||1,...Object.keys(merged.entries).map(function(k){var m=/^P(\d+)$/.exec(k);return m?+m[1]:1;}));
   if(!added){alert("In "+best.key+" sind "+best.count+" alte Seiten mit Inhalt, aber sie sind bereits in deinem Cloud-Konto vorhanden. Es wurde nichts ueberschrieben.");return;}
   if(!confirm("Ich habe "+best.count+" alte Seiten mit Inhalt in "+best.key+" gefunden. Davon werden "+added+" Seiten in dein Cloud-Konto kopiert. Vorhandene Inhalte bleiben erhalten. Jetzt wiederherstellen?"))return;
-  state=merged;await writeCloudState(true);active=getTodayPage();showHome();setCloudStatus("Wiederhergestellt und synchronisiert ✓",false);alert(added+" alte Seiten wurden wiederhergestellt und synchronisiert.");
+  state=merged;try{await writeCloudState(true);}catch(e){alert("Die Berichte wurden lokal wiederhergestellt, aber die Cloud-Synchronisierung ist fehlgeschlagen: "+(e.message||e));return;}active=getTodayPage();showHome();setCloudStatus("Wiederhergestellt und synchronisiert ✓",false);alert(added+" alte Seiten wurden wiederhergestellt und synchronisiert.");
 }
 
 function toggleDebug(){
