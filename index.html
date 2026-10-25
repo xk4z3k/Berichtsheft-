@@ -341,6 +341,9 @@ h1 span{color:var(--neon);}
 <div id="settingsPanel" style="display:none">
   <div class="hdr"><div><div class="eyebrow">Konfiguration</div><h1>Einstel<span>lungen</span></h1></div><button class="icon-btn" onclick="goTo('home')">&#x2715;</button></div>
   <div id="cloudAccountInfo" class="info-banner" style="border-left-color:var(--moss)">Cloud-Konto verbunden</div>
+  <div class="info-banner" style="border-left-color:#6C63FF"><strong>Alte Berichte übernehmen</strong><br>Textbasierte Berichts-PDFs direkt importieren. Seiten werden nach ihrer Nachweisnummer zugeordnet; vorhandene Einträge bleiben geschützt.</div>
+  <button class="btn-wood" onclick="document.getElementById('reportPdfInput').click()" style="width:100%;margin:0 0 18px;">Alte Berichts-PDF(s) importieren</button>
+  <input type="file" id="reportPdfInput" accept="application/pdf,.pdf" multiple style="display:none" onchange="importReportPdfs(this.files)"/>
   <button class="btn-neon" onclick="recoverLegacyReports()" style="width:100%;margin:0 0 18px;">Alte Berichte aus diesem Browser suchen</button>
   <div id="apiKeySection">
   <div class="info-banner" style="border-left-color:var(--neon)"><strong>API Key</strong></div>
@@ -1281,6 +1284,79 @@ function exportAllPdf(){
 }
 
 function uploadTpl(files){if(!files||!files.length)return;var r=new FileReader();r.onload=function(ev){localStorage.setItem("bhz_tpl",ev.target.result);updTplStatus();alert("Vorlage gespeichert!");};r.readAsDataURL(files[0]);}
+
+// Import already-finished report PDFs without regenerating their wording.
+var reportPdfJsPromise=null;
+function loadReportPdfJs(){
+  if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
+  if(reportPdfJsPromise)return reportPdfJsPromise;
+  reportPdfJsPromise=new Promise(function(resolve,reject){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload=function(){if(!window.pdfjsLib){reject(new Error('PDF-Leser konnte nicht geladen werden.'));return;}window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';resolve(window.pdfjsLib);};
+    s.onerror=function(){reject(new Error('PDF-Leser konnte nicht geladen werden. Bitte Internetverbindung pruefen.'));};
+    document.head.appendChild(s);
+  });
+  return reportPdfJsPromise;
+}
+function cleanImportedPdfDay(value){
+  return String(value||'').replace(/Sonnaben\s*d[\s\S]*$/i,'').replace(/Wochenstunden[\s\S]*$/i,'')
+    .replace(/\b\d{1,2}\s*:\s*\d{2}\s*[-–]\s*\d{1,2}\s*:\s*\d{2}\b/g,' ')
+    .replace(/\b\d{1,2}\s*:\s*\d{2}\b/g,' ').replace(/\s+([,.;:!?])/g,'$1')
+    .replace(/[|*_]/g,' ').replace(/\s+/g,' ').trim();
+}
+function parseImportedReportPdfPage(rawText){
+  var raw=String(rawText||'').replace(/\u00a0/g,' ');
+  var numberMatch=raw.match(/T[aä]tigkeitsnachweis\s*Nr\.?\s*(\d+)/i);
+  if(!numberMatch)return null;
+  var pageNum=parseInt(numberMatch[1],10);if(!pageNum||pageNum>500)return null;
+  var days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag'],keys=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag'];
+  var marker=/(Montag|Dienstag|Mittwoch|Donnerst\s*ag|Freitag)(?=\s|$)/gi,m,found=[];
+  while((m=marker.exec(raw))!==null){var label=m[1].replace(/\s+/g,'').toLowerCase();var idx=label==='montag'?0:label==='dienstag'?1:label==='mittwoch'?2:label==='donnerstag'?3:label==='freitag'?4:-1;if(idx>=0)found.push({idx:idx,labelStart:m.index,start:marker.lastIndex});}
+  if(!found.length)return null;
+  var daily={};days.forEach(function(d){daily[d]='';});
+  found.forEach(function(f,i){var end=i+1<found.length?found[i+1].labelStart:raw.length;
+    daily[keys[f.idx]]=cleanImportedPdfDay(raw.slice(f.start,end));
+  });
+  var text=days.filter(function(d){return daily[d];}).map(function(d){return d+': '+daily[d];}).join('\n');
+  return {pageNum:pageNum,daily:daily,text:text};
+}
+async function importReportPdfs(files){
+  var input=document.getElementById('reportPdfInput');if(!files||!files.length){if(input)input.value='';return;}
+  if(!cloudUser||!cloudReady){alert('Melde dich zuerst an, damit die importierten Seiten in deinem Konto gespeichert werden.');if(input)input.value='';return;}
+  try{
+    var pdfjs=await loadReportPdfJs(),byNumber={},duplicates=0,unreadable=0;
+    for(var fi=0;fi<files.length;fi++){
+      var bytes=new Uint8Array(await files[fi].arrayBuffer());
+      var pdf=await pdfjs.getDocument({data:bytes}).promise;
+      for(var pn=1;pn<=pdf.numPages;pn++){
+        var page=await pdf.getPage(pn),tc=await page.getTextContent();
+        var raw=tc.items.map(function(x){return x.str||'';}).filter(Boolean).join(' ');
+        var entry=parseImportedReportPdfPage(raw);
+        if(!entry||!entry.text){unreadable++;continue;}
+        if(byNumber[entry.pageNum]){duplicates++;continue;}
+        byNumber[entry.pageNum]=entry;
+      }
+      await pdf.destroy();
+    }
+    var pageNums=Object.keys(byNumber).map(Number).sort(function(a,b){return a-b;});
+    if(!pageNums.length){alert('Keine Berichtseiten mit lesbarem Text und Nachweisnummer gefunden. Scans ohne Textebene werden noch nicht importiert.');return;}
+    var ready=pageNums.filter(function(n){var e=state.entries['P'+n];return !e||!String(e.text||'').trim();});
+    var occupied=pageNums.length-ready.length,lo=pageNums[0],hi=pageNums[pageNums.length-1],missing=[];
+    for(var n=lo;n<=hi;n++)if(!byNumber[n])missing.push(n);
+    var summary='Erkannt: '+pageNums.length+' unterschiedliche Berichtseiten (Nr. '+lo+' bis '+hi+').\n'+
+      'Davon neu importierbar: '+ready.length+'; bereits vorhandene Seiten werden nicht ueberschrieben: '+occupied+'.\n'+
+      'Doppelte Seiten in den PDFs: '+duplicates+'; nicht lesbare/keine Berichtseiten: '+unreadable+'.'+
+      (missing.length?'\nFehlende Nummern in den PDFs: '+missing.join(', ')+'.':'')+
+      '\n\nDie importierten Texte bleiben ausstehend, bis du sie selbst als fertig markierst. Fortfahren?';
+    if(!confirm(summary))return;
+    var imported=[];
+    ready.forEach(function(n){var src=byNumber[n];state.entries['P'+n]={text:src.text,daily:src.daily,done:false,type:'none',importedFromPdf:true};imported.push(n);});
+    if(imported.length){state.totalPages=Math.max(state.totalPages||1,imported[imported.length-1]);sv();active=imported[0];renderAll();}
+    alert(imported.length+' Berichtsseiten importiert und als ausstehend gespeichert.'+(occupied?'\n'+occupied+' vorhandene Seiten wurden uebersprungen.':'')+(missing.length?'\nIn den PDFs fehlen die Nummern: '+missing.join(', ')+'.':''));
+  }catch(err){console.error('importReportPdfs',err);alert('PDF-Import fehlgeschlagen: '+(err&&err.message?err.message:'Unbekannter Fehler'));}
+  finally{if(input)input.value='';}
+}
 
 function uploadSig(files){
   if(!files||!files.length)return;
