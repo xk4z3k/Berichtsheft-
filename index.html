@@ -1766,7 +1766,7 @@ function prepareParsedForDocx(parsed, entry, fillMissingWork){
   var pageNum=(entry&&entry.__pageNum)||0;
   var cls=classifyParsedWeek(out, entry||{});
 
-  // Status-Tage normalisieren: Krankheit/Urlaub/Feiertag behalten ihren Namen und bekommen keine Arbeitszeit.
+  // Krankheit, Urlaub und Feiertag als Status beibehalten.
   keys.forEach(function(k){
     var st=dayStatus(out[k]);
     if(st==='sick' || st==='vacation' || st==='holiday'){
@@ -1775,7 +1775,7 @@ function prepareParsedForDocx(parsed, entry, fillMissingWork){
     }
   });
 
-  // Echte Schulwoche: Schule gewinnt immer. Keine Arbeitstexte erfinden.
+  // Schulwochen nicht mit Arbeitstexten auffuellen.
   if(cls==='school' || (entry&&entry.type==='school')){
     keys.forEach(function(k){
       var st=dayStatus(out[k]);
@@ -1786,14 +1786,16 @@ function prepareParsedForDocx(parsed, entry, fillMissingWork){
         out[k]=canonicalStatusText(st,out[k]);
         out[tKeys[k]]='';
       } else if(st==='empty'){
-        // unbekannte freie Schultage leer lassen, aber NIE mit Arbeit fuellen
         out[k]='';
         out[tKeys[k]]='';
       }
     });
     out.__classifiedType='school';
-      // Originaltexte fuer Anzeige und Export bewahren; leere Tage bleiben leer.
-  // Auffuellen passiert nur nach ausdruecklichem Klick auf „Echttext behalten / auffuellen“.
+    return out;
+  }
+
+  // Berichte beim Anzeigen und Export unveraendert lassen; leere Tage bleiben leer.
+  // Nur die ausdrueckliche Auffuellen-Funktion darf fehlende Arbeitstage ergaenzen.
   if(fillMissingWork){
     var used={};
     keys.forEach(function(k){
@@ -1805,9 +1807,6 @@ function prepareParsedForDocx(parsed, entry, fillMissingWork){
       if(st==='work' || st==='empty') out[k]=makeWorkText(out[k], out, used, pageNum, k);
     });
   }
- k);
-    }
-  });
   out.__classifiedType=classifyParsedWeek(out, entry||{});
   return out;
 }
