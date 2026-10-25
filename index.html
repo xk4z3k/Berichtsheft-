@@ -783,7 +783,7 @@ function manualStart(){
   var dow=dt.getDay(),df=dow===0?-6:1-dow;dt.setDate(dt.getDate()+df);
   var d2=dt.getDate(),m2=dt.getMonth()+1,y2=dt.getFullYear();
   state.startDate=(d2<10?"0":"")+d2+"."+(m2<10?"0":"")+m2+"."+y2;
-  var today=new Date(),weeks=Math.ceil((today.getTime()-dt.getTime())/(7*24*3600*1000));
+  var today=new Date(),weeks=Math.ceil((calendarDayNumber(today)-calendarDayNumber(dt))/7);
   state.totalPages=Math.max(1,weeks);sv();active=getTodayPage();hideAll();showHome();
 }
 
