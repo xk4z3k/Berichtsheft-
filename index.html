@@ -1047,6 +1047,19 @@ function cleanReportFormatting(text){
   return String(text||"").replace(/^\s*[-*_]{3,}\s*$/gm,"").replace(/^\s*#{1,6}\s*/gm,"").replace(/^\s*(?:Berichtsheft|Bericht)\s*$/gim,"").replace(/\*\*(.*?)\*\*/g,"$1").replace(/__(.*?)__/g,"$1").replace(/\n{3,}/g,"\n\n").trim();
 }
 
+async function verifyPhotoDraft(img,draft,kind){
+  var task=kind==="single_day"
+    ?"Pruefe diese Tages-Stichpunkte erneut anhand des Fotos."
+    :"Pruefe diesen Wochenbericht erneut anhand des Fotos.";
+  var prompt=task+" Vergleiche jeden Begriff, besonders Kabeltypen, Material, Geraete und Elektro-Fachwoerter, Buchstabe fuer Buchstabe mit der Handschrift. Korrigiere klare Lesefehler und offensichtlich sinnlose OCR-Begriffe anhand des Bildes (z.B. NYM, wenn dort eindeutig NYM steht und der Entwurf irrtuemlich etwas wie SDV schreibt). NYM niemals nur aus dem Zusammenhang erraten. Wenn ein Wort nicht sicher lesbar ist, weglassen statt ein plausibel klingendes Wort zu erfinden. Erhalte alle sichtbaren Taetigkeiten, Wochentage und Zeiten. Bei Wochenblaettern nur sichtbare Tage ausgeben; unsichtbare Tage nicht ergaenzen. Bei Zeiten nur ersten Arbeitsbeginn und Tagesende verwenden, keine Zwischenzeiten. Kurze Stichpunkte, keine ganzen Saetze oder Kommentare. Gib nur den korrigierten vollstaendigen Berichtstext aus.\n\nEntwurf:\n"+String(draft||"");
+  try{
+    var checked=await apiCall([{role:"user",content:img.concat([{type:"text",text:prompt}])}],kind==="single_day"?900:2200,
+      "Du pruefst OCR aus einem Foto eines deutschen Elektriker-Berichtshefts. Das Foto ist die Quelle. Korrigiere nur anhand sichtbarer Buchstaben. Erfinde keine technischen Begriffe. Gib nur den bereinigten Bericht aus.");
+    var text=cleanReportFormatting((checked&&checked.content||[]).map(function(c){return c.text||"";}).join("\n"));
+    return text||draft;
+  }catch(err){console.warn("Bild-Gegencheck fehlgeschlagen; verwende ersten Entwurf.",err);return draft;}
+}
+
 async function analyzeImage(imgObj,fallbackPage){
   try{
     var b=await b64f(imgObj.file);
@@ -1084,6 +1097,8 @@ async function analyzeImage(imgObj,fallbackPage){
       var quality=oneJson&&oneJson.confidence!==undefined?Number(oneJson.confidence):0;
       if(!isFinite(quality))quality=0;quality=Math.max(0,Math.min(100,quality));
       if(!activity)throw new Error("Kein lesbarer Arbeitstext erkannt.");
+      activity=await verifyPhotoDraft(img,activity,"single_day");
+      if(!activity)throw new Error("Kein lesbarer Arbeitstext erkannt.");
       return {text:workDay+":\n"+activity,type:pt,day:day,month:month,year:year,singleDay:true,workDay:workDay,mediaType:mediaType,quality:quality};
     }
     var extra="";
@@ -1093,6 +1108,8 @@ async function analyzeImage(imgObj,fallbackPage){
     var c3=img.concat([{type:"text",text:"Berichtsheft-Text fuer diese Woche schreiben. Woche: "+pLabel(fallbackPage)+extra+"\nDas Foto kann nur einen Ausschnitt der Woche zeigen. Ausschliesslich Wochentage bearbeiten, die im Bild sichtbar sind; unsichtbare oder abgeschnittene Tage als [NICHT_ID] lassen und niemals ergaenzen. Bestehende Inhalte fuer solche nicht sichtbaren Tage muessen beim Zusammenfuehren erhalten bleiben. Nur die Taetigkeiten/Lerninhalte jedes sichtbaren Tages und je Tag Arbeitsbeginn plus Tagesende uebernehmen. Einzelne Unterrichts- oder Zwischenuhrzeiten nicht als Arbeitszeit ausgeben. Arbeitszeit je Tag auf eigener Zeile als „Arbeitszeit: HH:MM-HH:MM“ ausgeben. Andere Angaben wie Namen, Baustellen/Orte, Seitennummern oder allgemeine Notizen weglassen. Lesbare Wochentage direkt bei einer Taetigkeit haben Vorrang vor der gedruckten Spalte. Montag im freien Samstagsfeld bleibt Montag."}]);
     var data=await apiCall([{role:"user",content:c3}],2000,SYSGEN);
     var text=cleanReportFormatting((data&&data.content||[]).map(function(c){return c.text||"";}).join("\n"));
+    if(!text)throw new Error("Die KI hat keinen Berichtstext zurueckgegeben.");
+    text=await verifyPhotoDraft(img,text,"week");
     if(!text)throw new Error("Die KI hat keinen Berichtstext zurueckgegeben.");
     return {text:text,type:pt,day:day,month:month,year:year,mediaType:mediaType};
   }catch(err){console.error("analyzeImage",err);return {error:err&&err.message?err.message:"Unbekannter Fehler"};}
