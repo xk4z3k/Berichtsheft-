@@ -51,7 +51,8 @@ Deno.serve(async (req) => {
     global: { headers: { Authorization: authorization } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: { user }, error: authError } = await userClient.auth.getUser();
+  const accessToken = authorization.slice("Bearer ".length);
+  const { data: { user }, error: authError } = await userClient.auth.getUser(accessToken);
   if (authError || !user) return json({ error: "Anmeldung ungueltig." }, 401);
 
   const declaredLength = Number(req.headers.get("content-length") || 0);
