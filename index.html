@@ -341,6 +341,7 @@ h1 span{color:var(--neon);}
 <div id="settingsPanel" style="display:none">
   <div class="hdr"><div><div class="eyebrow">Konfiguration</div><h1>Einstel<span>lungen</span></h1></div><button class="icon-btn" onclick="goTo('home')">&#x2715;</button></div>
   <div id="cloudAccountInfo" class="info-banner" style="border-left-color:var(--moss)">Cloud-Konto verbunden</div>
+  <button class="btn-neon" onclick="recoverLegacyReports()" style="width:100%;margin:0 0 18px;">Alte Berichte aus diesem Browser suchen</button>
   <div id="apiKeySection">
   <div class="info-banner" style="border-left-color:var(--neon)"><strong>API Key</strong></div>
   <label class="lbl">Neuen Key eingeben</label>
@@ -2191,6 +2192,31 @@ function rescueData(){
   }
 }
 
+
+async function recoverLegacyReports(){
+  if(!cloudUser||!cloudReady){alert("Melde dich zuerst in deinem Cloud-Konto an.");return;}
+  function meaningful(e){
+    if(typeof e==="string")return !!e.trim();
+    if(!e||typeof e!=="object")return false;
+    return Object.keys(e).some(function(k){var v=e[k];if(typeof v==="string")return !!v.trim();if(Array.isArray(v))return v.length>0;if(v&&typeof v==="object")return Object.keys(v).length>0;return v!==null&&v!==undefined&&v!==false&&v!==0;});
+  }
+  function unwrap(p){if(!p||typeof p!=="object")return null;if(p.entries&&typeof p.entries==="object")return p;if(p.state&&p.state.entries)return p.state;if(p.data&&p.data.entries)return p.data;return null;}
+  var candidates=[],keys=[];
+  for(var i=0;i<localStorage.length;i++){
+    var key=localStorage.key(i);if(!key)continue;
+    keys.push(key);
+    try{var parsed=JSON.parse(localStorage.getItem(key)),src=unwrap(parsed);if(!src)continue;var ec=Object.keys(src.entries||{}).filter(function(k){return meaningful(src.entries[k]);}).length;if(ec)candidates.push({key:key,data:src,count:ec});}catch(_e){}
+  }
+  candidates.sort(function(a,b){return b.count-a.count;});
+  if(!candidates.length){alert("Ich habe in diesem Browser "+keys.length+" passende Speicher-Eintraege gefunden, aber keine gespeicherten Berichtstexte darin. Deine Cloud-Daten wurden nicht veraendert. Die alten Berichte muessen noch im Browser gefunden werden, in dem du sie frueher bearbeitet hast.");return;}
+  var best=candidates[0],merged=copyAppState(state);merged.entries=merged.entries||{};var added=0;
+  Object.keys(best.data.entries).forEach(function(k){var src=best.data.entries[k];if(meaningful(src)&&!meaningful(merged.entries[k])){merged.entries[k]=JSON.parse(JSON.stringify(src));added++;}});
+  if(!merged.startDate&&best.data.startDate)merged.startDate=best.data.startDate;
+  merged.totalPages=Math.max(+merged.totalPages||1,+best.data.totalPages||1,...Object.keys(merged.entries).map(function(k){var m=/^P(\d+)$/.exec(k);return m?+m[1]:1;}));
+  if(!added){alert("In "+best.key+" sind "+best.count+" alte Seiten mit Inhalt, aber sie sind bereits in deinem Cloud-Konto vorhanden. Es wurde nichts ueberschrieben.");return;}
+  if(!confirm("Ich habe "+best.count+" alte Seiten mit Inhalt in "+best.key+" gefunden. Davon werden "+added+" Seiten in dein Cloud-Konto kopiert. Vorhandene Inhalte bleiben erhalten. Jetzt wiederherstellen?"))return;
+  state=merged;await writeCloudState(true);active=getTodayPage();showHome();setCloudStatus("Wiederhergestellt und synchronisiert ✓",false);alert(added+" alte Seiten wurden wiederhergestellt und synchronisiert.");
+}
 
 function toggleDebug(){
   var p=document.getElementById("debugPanel");
