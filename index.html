@@ -480,7 +480,7 @@ async function apiCall(messages,maxTokens,sysPrompt){
   var body={model:"claude-sonnet-4-6",max_tokens:maxTokens||1000,messages:messages};
   if(sysPrompt)body.system=sysPrompt;
   var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":gKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify(body)});
-  if(!r.ok)throw new Error("API "+r.status);
+  if(!r.ok){var msg="";try{var errBody=await r.json();msg=errBody&&errBody.error&&errBody.error.message?String(errBody.error.message):"";}catch(_apiErr){}throw new Error("API "+r.status+(msg?": "+msg:""));}
   return r.json();
 }
 
@@ -815,7 +815,7 @@ async function generate(){
   for(var i=0;i<imgs.length;i++){
     statusDiv.textContent="Bild "+(i+1)+"/"+imgs.length+" - analysiere...";
     var result=await analyzeImage(imgs[i],active+i);
-    if(!result){statusDiv.textContent="Fehler bei Bild "+(i+1);continue;}
+    if(!result||result.error){statusDiv.textContent="Bild "+(i+1)+" Fehler: "+(result&&result.error?result.error:"Unbekannter Fehler");continue;}
     var imgB64=await b64f(imgs[i].file);
     var imgDataUrl="data:"+(imgs[i].file.type||"image/jpeg")+";base64,"+imgB64;
     var confirmed=await confirmDate(imgDataUrl,result,active+i,i+1,imgs.length);
@@ -869,26 +869,48 @@ async function analyzeImage(imgObj,fallbackPage){
   try{
     var b=await b64f(imgObj.file);
     var img=[{type:"image",source:{type:"base64",media_type:imgObj.file.type||"image/jpeg",data:b}}];
-    var c0=img.concat([{type:"text",text:'Stundenbuch analysieren. JSON: {"type":"sick/vacation/school/none","name":null,"day":null,"month":null,"year":null}. school NUR bei echter Berufsschule/Schule/Unterricht/Innung. Feiertag, schulfrei, frei oder Urlaub sind NICHT school. sick=krank/erkrankt, vacation=Urlaub/Feiertag/schulfrei/Betriebsurlaub/Betriebsferien. Wenn ein Wort abgeschnitten ist wie Betriebs-, NICHT Betriebsausflug erfinden; im Zweifel Urlaub, wenn Urlaub/Betriebs-Kontext sichtbar ist. day+month=Montag dieser Woche. year=Jahreszahl, falls auf dem Bild eindeutig lesbar, sonst null.'}]);
-    var td=await apiCall([{role:"user",content:c0}],80,null);
+    var metaPrompt='Bildtyp erkennen und Datum lesen. JSON: {"layout":"week/single_day","type":"sick/vacation/school/none","name":null,"day":null,"month":null,"year":null,"weekday":null}. "single_day" ist ein einzelner Arbeits-/Kundendienstnachweis mit einem Datum und einem Feld fuer ausgefuehrte Arbeiten; "week" ist ein Wochen-Berichtsheft. Bei week: day/month/year ist das Montag-Datum der Woche. Bei single_day: day/month/year ist das genaue Datum des Arbeitstages und weekday der Wochentag. year nur wenn lesbar, sonst null. type=sick nur bei Krankheit, vacation bei Urlaub/Feiertag/Betriebsurlaub, school nur bei Berufsschule/Unterricht/Innung, sonst none. Nichts raten.';
+    var td=await apiCall([{role:"user",content:img.concat([{type:"text",text:metaPrompt}])}],180,null);
     var tr=(td&&td.content||[]).map(function(c){return c.text||"";}).join("").replace(/```json|```/g,"").trim();
-    var meta=null;try{meta=JSON.parse(tr);}catch(e){}
-    var pt=(meta&&meta.type)||"none";
-    var day=meta&&meta.day?+meta.day:0;
-    var month=meta&&meta.month?+meta.month:0;
-    var year=meta&&meta.year?+meta.year:0;if(year<2000||year>2100)year=0;
-    if(meta&&meta.name&&!state.userName){state.userName=meta.name;sv();}
+    var meta=null;try{meta=JSON.parse(tr);}catch(e){var tm=tr.match(/\{[\s\S]*\}/);if(tm)try{meta=JSON.parse(tm[0]);}catch(_metaErr){}}
+    if(!meta)throw new Error("Datums-/Layout-Erkennung lieferte keine lesbaren Daten.");
+    var pt=meta.type||"none";
+    var day=meta.day?+meta.day:0,month=meta.month?+meta.month:0,year=meta.year?+meta.year:0;
+    if(year<2000||year>2100)year=0;
+    var layout=String(meta.layout||"week").toLowerCase().replace(/[- ]/g,"_");
+    var singleDay=layout==="single_day"||layout==="day";
+    if(meta.name&&!state.userName){state.userName=meta.name;sv();}
+    if(singleDay){
+      if(!day||!month)throw new Error("Einzeltages-Layout erkannt, aber das Datum war nicht lesbar.");
+      var workDay=String(meta.weekday||"").trim();
+      if(year){
+        var dt=new Date(year,month-1,day);
+        if(dt.getFullYear()!==year||dt.getMonth()!==month-1||dt.getDate()!==day)throw new Error("Das erkannte Datum ist ungueltig.");
+        workDay=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][dt.getDay()];
+      }else if(!/^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)$/.test(workDay)){
+        var defaultDate=new Date(new Date().getFullYear(),month-1,day);
+        workDay=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][defaultDate.getDay()];
+      }
+      if(!/^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)$/.test(workDay))throw new Error("Der Arbeitstag konnte nicht bestimmt werden.");
+      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm den vorhandenen Inhalt so knapp und originalgetreu wie moeglich als kurze Stichpunkte. Keine ganzen Saetze, keine Einleitung, keine Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\\n- Stichpunkt"}.';
+      var one=await apiCall([{role:"user",content:img.concat([{type:"text",text:onePrompt}])}],700,null);
+      var oneRaw=(one&&one.content||[]).map(function(c){return c.text||"";}).join("\n").replace(/```json|```/g,"").trim();
+      var oneJson=null;try{oneJson=JSON.parse(oneRaw);}catch(e){var om=oneRaw.match(/\{[\s\S]*\}/);if(om)try{oneJson=JSON.parse(om[0]);}catch(_oneErr){}}
+      var activity=oneJson&&oneJson.activity?String(oneJson.activity).trim():oneRaw;
+      activity=activity.replace(/^["']|["']$/g,"").trim();
+      if(!activity)throw new Error("Kein lesbarer Arbeitstext erkannt.");
+      return {text:workDay+":\n"+activity,type:pt,day:day,month:month,year:year,singleDay:true,workDay:workDay};
+    }
     var extra="";
     if(pt==="sick")extra="\nErkrankung diese Woche - alle Tage: Erkrankung. - 0 Std.";
     if(pt==="vacation")extra="\nUrlaub diese Woche - alle Tage: Urlaub. - 0 Std.";
     if(pt==="school")extra="\nSchulwoche: Echte Schul-/Berufsschultage als Berufsschule. Kranktage als Erkrankung. Urlaub als Urlaub. Feiertag/schulfrei als Feiertag. Keine Montage-/Arbeitstexte in Schulwochen erfinden; leere unbekannte Tage: [NICHT_ID].";
     var c3=img.concat([{type:"text",text:"Berichtsheft-Text fuer diese Woche schreiben. Woche: "+pLabel(fallbackPage)+extra}]);
     var data=await apiCall([{role:"user",content:c3}],2000,SYSGEN);
-    if(!data)return null;
-    var text=(data.content||[]).map(function(c){return c.text||"";}).join("\n");
-    if(!text)return null;
+    var text=(data&&data.content||[]).map(function(c){return c.text||"";}).join("\n").trim();
+    if(!text)throw new Error("Die KI hat keinen Berichtstext zurueckgegeben.");
     return {text:text,type:pt,day:day,month:month,year:year};
-  }catch(err){console.error("analyzeImage",err);return null;}
+  }catch(err){console.error("analyzeImage",err);return {error:err&&err.message?err.message:"Unbekannter Fehler"};}
 }
 
 function confirmDate(imgDataUrl,result,fallback,num,total){
@@ -905,7 +927,7 @@ function confirmDate(imgDataUrl,result,fallback,num,total){
     var cnt=document.createElement("div");cnt.style.cssText="font-size:10px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;font-family:'Space Mono',monospace;";cnt.textContent="Bild "+num+" von "+total;inn.appendChild(cnt);
     var img=document.createElement("img");img.src=imgDataUrl;img.style.cssText="width:100%;max-height:260px;object-fit:cover;object-position:top;border-radius:8px;margin-bottom:14px;border:1px solid var(--c4);cursor:pointer;";img.onclick=function(){this.style.maxHeight=this.style.maxHeight==="none"?"260px":"none";};inn.appendChild(img);
     var det=document.createElement("div");det.style.cssText="font-size:13px;color:var(--amber);font-weight:700;margin-bottom:12px;";det.textContent="KI erkannt: "+(sd&&sm3?sd+"."+sm3:"nicht erkannt");inn.appendChild(det);
-    var lbl=document.createElement("label");lbl.textContent="Montag-Datum dieser Woche (TT.MM.JJJJ):";lbl.style.cssText="font-size:11px;color:var(--dim);display:block;margin-bottom:6px;font-family:'Space Mono',monospace;";inn.appendChild(lbl);
+    var lbl=document.createElement("label");lbl.textContent=result.singleDay?"Datum des Arbeitstages (TT.MM.JJJJ):":"Montag-Datum dieser Woche (TT.MM.JJJJ):";lbl.style.cssText="font-size:11px;color:var(--dim);display:block;margin-bottom:6px;font-family:'Space Mono',monospace;";inn.appendChild(lbl);
     var rw=document.createElement("div");rw.style.cssText="display:flex;gap:6px;align-items:center;margin-bottom:6px;";
     var s2="background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:10px 6px;color:var(--cream);font-size:16px;text-align:center;outline:none;";
     var di=document.createElement("input");di.type="number";di.id="dcDay";di.placeholder="TT";di.min=1;di.max=31;di.style.cssText=s2+"width:64px;";
