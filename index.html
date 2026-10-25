@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 472920)
-... 843102 bytes omitted ...
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -40,7 +37,594 @@ h1 span{color:var(--neon);}
 .stat-n{font-size:24px;font-weight:900;color:var(--neon);font-family:'Space Mono',monospace;line-height:1;}
 .stat-l{font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:3px;text-transform:uppercase;}
 .spruch-box{padding:12px 14px;margin-bottom:14px;cursor:pointer;border-left:3px solid var(--moss);background:linear-gradient(135deg,var(--c3),var(--c2));border-radius:0 10px 10px 0;border:1px solid var(--c4);}
-.spruch-lbl{font-size:9px;color:var(--moss);letter-spacing:3px;text-transform:uppercase;font-fami…212152 tokens truncated…t=e.type==="school"?"Berufsschulthema / Inhalt":e.type==="sick"?"Krankheitstage":"Urlaubstage";
+.spruch-lbl{font-size:9px;color:var(--moss);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:5px;}
+.spruch-txt{font-size:13px;color:var(--cream);line-height:1.5;}
+.wnav{background:linear-gradient(135deg,var(--c3),var(--c2));border:1px solid var(--c4);border-radius:12px;border-top:2px solid var(--neon);margin-bottom:14px;overflow:hidden;}
+.wnav-main{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;}
+.wnav-jumps{display:flex;gap:8px;padding:0 14px 12px;}
+.arr{background:var(--c4);border:1px solid var(--beam);color:var(--cream);font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;}
+.jmp{flex:1;padding:6px;background:var(--c1);border:1px solid var(--c4);color:var(--dim);font-size:11px;border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;}
+.wtitle{font-size:18px;font-weight:700;color:var(--cream);text-align:center;font-family:'Space Mono',monospace;}
+.wsub{font-size:11px;color:var(--dim);text-align:center;margin-top:2px;}
+.page-badges{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.bdg{padding:4px 10px;border-radius:20px;font-size:10px;font-family:'Space Mono',monospace;border:1px solid;}
+.bdg-school{background:rgba(74,124,89,.15);color:var(--moss);border-color:var(--moss2);}
+.bdg-sick{background:rgba(192,57,43,.15);color:#e74c3c;border-color:#c0392b;}
+.bdg-vac{background:rgba(52,152,219,.15);color:#3498db;border-color:#2980b9;}
+.bdg-today{background:rgba(255,107,0,.25);color:var(--neon);border-color:var(--neon);}
+.prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-bottom:5px;font-family:'Space Mono',monospace;}
+.prog-bar{height:4px;background:var(--c3);border-radius:2px;margin-bottom:14px;}
+.prog-fill{height:100%;border-radius:2px;transition:width .5s;}
+.mode-toggle{display:flex;margin-bottom:12px;border:1px solid var(--c4);border-radius:8px;overflow:hidden;}
+.mode-btn{flex:1;padding:10px;background:var(--c2);color:var(--dim);border:none;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;}
+.mode-btn.active{background:var(--neon2);color:#fff;}
+.special-box{background:linear-gradient(135deg,#0a1a10,var(--c2));border:1px solid var(--moss2);border-radius:10px;padding:14px;margin-bottom:12px;}
+.special-box label{display:block;font-size:10px;color:var(--moss);letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:8px;}
+.special-inp{width:100%;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:10px;color:var(--cream);font-size:13px;outline:none;resize:vertical;min-height:60px;}
+.daily-box{background:linear-gradient(135deg,#0d1020,var(--c2));border:1px solid var(--c4);border-radius:12px;padding:14px;margin-bottom:12px;border-left:3px solid var(--neon);}
+.daily-title{font-size:10px;color:var(--neon);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px;}
+.daily-days{display:flex;flex-direction:column;gap:8px;}
+.daily-day{display:flex;align-items:flex-start;gap:8px;}
+.daily-lbl{font-size:11px;color:var(--dim);font-family:'Space Mono',monospace;width:72px;padding-top:8px;flex-shrink:0;}
+.daily-inp{flex:1;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:8px;color:var(--cream);font-size:12px;outline:none;resize:none;min-height:34px;}
+.daily-inp.ok{border-color:var(--moss);}
+.upload-row{display:flex;gap:10px;margin-bottom:10px;}
+.btn-wood{flex:1;padding:11px 8px;background:linear-gradient(160deg,var(--c4),var(--c3));color:var(--cream);border:1px solid var(--beam);border-radius:10px;font-size:13px;font-family:'Space Grotesk',sans-serif;font-weight:600;cursor:pointer;}
+.drop-zone{border:2px dashed var(--c4);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;margin-bottom:10px;background:linear-gradient(135deg,var(--c2),var(--c1));}
+.drop-zone.drag-over{border-color:var(--neon);}
+.dz-icon{font-size:28px;margin-bottom:6px;}
+.dz-txt{font-size:13px;color:var(--dim);}
+.dz-sub{font-size:10px;color:var(--c5);margin-top:3px;font-family:'Space Mono',monospace;}
+.previews{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.pw{position:relative;}
+.pi{width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--c4);display:block;}
+.pd{position:absolute;top:-5px;right:-5px;background:var(--neon);border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;color:#fff;font-weight:900;line-height:18px;text-align:center;}
+.btn-neon{width:100%;padding:15px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;cursor:pointer;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+.btn-neon:disabled{opacity:.3;cursor:not-allowed;}
+.btn-moss{width:100%;padding:11px;background:linear-gradient(135deg,var(--moss2),#1e3828);color:var(--moss);border:1px solid var(--moss2);border-radius:10px;font-size:12px;font-family:'Space Mono',monospace;cursor:pointer;margin-bottom:18px;}
+.btn-xs{background:var(--c4);color:var(--dim);border:1px solid var(--beam);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;}
+.btn-done{background:var(--moss2);color:var(--moss);border-color:var(--moss2);}
+.btn-pdf{background:#1a1a2e;color:#6C63FF;border-color:#6C63FF;}
+.result-box{background:linear-gradient(145deg,var(--c3),var(--c2));border:1px solid var(--c4);border-radius:12px;overflow:hidden;margin-bottom:12px;}
+.result-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:linear-gradient(90deg,rgba(255,107,0,.12),transparent);border-bottom:1px solid var(--c4);}
+.result-lbl{font-size:9px;color:var(--neon);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;}
+.result-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.result-txt{padding:14px;font-size:12px;line-height:1.9;white-space:pre-wrap;color:var(--cream);font-family:'Space Mono',monospace;}
+.result-warn{padding:8px 14px;background:rgba(255,107,0,.1);border-top:1px solid rgba(255,107,0,.2);font-size:11px;color:var(--amber);}
+.result-ok{padding:8px 14px;background:rgba(74,124,89,.15);border-top:1px solid var(--moss2);font-size:11px;color:var(--moss);}
+.improve-box{background:var(--c2);border:1px solid var(--c4);border-radius:10px;padding:12px;margin:0 0 12px;}
+.improve-lbl{font-size:10px;color:var(--amber);letter-spacing:2px;font-family:'Space Mono',monospace;margin-bottom:8px;}
+.improve-row{display:flex;gap:8px;}
+.improve-inp{flex:1;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:9px;color:var(--cream);font-size:12px;outline:none;}
+.improve-btn{padding:9px 14px;background:var(--neon2);border:none;border-radius:6px;color:#fff;font-size:12px;cursor:pointer;}
+.pdf-panel{background:linear-gradient(135deg,#100a20,var(--c2));border:1px solid var(--c4);border-radius:12px;padding:14px;margin-bottom:12px;border-left:3px solid #6C63FF;}
+.pdf-title{font-size:10px;color:#6C63FF;letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px;}
+.pdf-opt{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--c4);border-radius:8px;cursor:pointer;background:var(--c2);margin-bottom:8px;}
+.pdf-opt-lbl{font-size:13px;color:var(--cream);}
+.pdf-opt-sub{font-size:10px;color:var(--dim);margin-top:2px;}
+.ndiv{height:1px;background:linear-gradient(90deg,var(--neon),transparent 60%);margin:18px 0;border:none;}
+.wlist-lbl{font-size:9px;color:var(--c5);letter-spacing:3px;margin-bottom:8px;font-family:'Space Mono',monospace;text-transform:uppercase;}
+.wlist{display:flex;flex-direction:column;gap:4px;}
+.wi{display:flex;align-items:center;padding:9px 12px;border-radius:8px;cursor:pointer;border:1px solid transparent;background:var(--c2);}
+.wi-title{flex:1;font-size:13px;color:var(--dim);font-weight:600;}
+.wi-sub{font-size:10px;color:var(--c5);font-family:'Space Mono',monospace;}
+.lbl{display:block;font-size:11px;color:var(--dim);margin-bottom:5px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;}
+.inp{width:100%;background:var(--c3);border:1px solid var(--c4);border-radius:8px;padding:11px 13px;color:var(--cream);font-size:14px;font-family:'Space Mono',monospace;margin-bottom:14px;outline:none;}
+.inp:focus{border-color:var(--neon);}
+.info-banner{padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--amber);background:linear-gradient(135deg,#2a1e08,var(--c2));border-radius:0 10px 10px 0;border:1px solid var(--c4);font-size:13px;color:var(--dim);line-height:1.6;}
+.info-banner strong{color:var(--amber);}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;display:none;}
+.overlay.open{display:block;}
+.sidebar{position:fixed;top:0;left:-290px;width:270px;bottom:0;background:linear-gradient(160deg,#1a1000,var(--c2));border-right:1px solid var(--c4);z-index:101;transition:left .3s;overflow-y:auto;padding-bottom:40px;}
+.sidebar.open{left:0;}
+.sb-hdr{padding:24px 18px 16px;border-bottom:1px solid var(--c4);}
+.sb-user{font-size:14px;font-weight:700;color:var(--amber);font-family:'Space Mono',monospace;}
+.sb-role{font-size:10px;color:var(--moss);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+.sb-sec{padding:12px 18px 4px;font-size:9px;color:var(--c5);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;}
+.sb-item{display:flex;align-items:center;gap:12px;padding:12px 18px;cursor:pointer;border-left:3px solid transparent;}
+.sb-item:hover{background:rgba(255,107,0,.08);}
+.sb-icon{font-size:18px;width:24px;text-align:center;}
+.sb-txt{font-size:13px;color:var(--cream);}
+.sb-sub{font-size:10px;color:var(--dim);margin-top:1px;}
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.tsw{width:100%;aspect-ratio:1;border-radius:8px;cursor:pointer;border:2px solid transparent;}
+.tsw.sel{border-color:var(--cream);}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes sp{to{transform:rotate(360deg);}}
+@media(min-width:900px){
+  body{padding:0!important;display:flex!important;flex-direction:row;height:100vh;overflow:hidden;background:#0f0d09;}
+  .sidebar{position:relative!important;left:0!important;width:220px!important;min-width:220px;height:100vh;overflow-y:auto;flex-shrink:0;order:0;}
+  .overlay{display:none!important;}
+  #app{flex:1;min-width:0;max-width:520px;overflow-y:auto;height:100vh;padding:24px 24px 60px!important;border-left:1px solid var(--c4);order:1;}
+  #room-bg{flex:1;min-width:0;height:100vh;position:relative;overflow:hidden;order:2;}
+  .icon-btn{display:none;}
+}
+@media(max-width:899px){#room-bg{display:none;}}
+
+.share-filter-btn{padding:9px 14px;background:var(--c3);color:var(--cream);border:1px solid var(--c4);border-radius:8px;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;width:100%;text-align:center;}
+.share-filter-btn.active{background:var(--neon2);color:#fff;border-color:var(--neon);}
+.share-page-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;border:1px solid var(--c4);background:var(--c2);user-select:none;}
+.share-page-item:hover{border-color:var(--c5);}
+.share-page-item.selected{border-color:var(--neon);background:var(--c3);}
+.spi-check{width:18px;height:18px;border:2px solid var(--c4);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;}
+.share-page-item.selected .spi-check{background:var(--neon);border-color:var(--neon);}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay" onclick="closeSB()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sb-hdr"><div class="sb-user">Berichtsheft</div><div class="sb-role">Cloud-Konto</div><div id="syncStatus" style="font-size:10px;color:var(--moss);margin-top:5px;">Cloud bereit</div></div>
+  <div class="sb-sec">Navigation</div>
+  <div class="sb-item" onclick="goTo('home')"><div class="sb-icon">&#x26a1;</div><div><div class="sb-txt">Berichtsheft</div><div class="sb-sub">Alle Seiten</div></div></div>
+  <div class="sb-item" onclick="goTo('share')"><div class="sb-icon">&#x1f4e4;</div><div><div class="sb-txt">Teilen</div><div class="sb-sub">PDF &amp; DOCX exportieren</div></div></div>
+  <div class="sb-item" onclick="goTo('stats')"><div class="sb-icon">&#x1f4ca;</div><div><div class="sb-txt">Statistiken</div><div class="sb-sub">Krank, Urlaub, Schule</div></div></div>
+  <div class="sb-item" onclick="goTo('template')"><div class="sb-icon">&#x1f4cb;</div><div><div class="sb-txt">Vorlage</div><div class="sb-sub">DOCX-Vorlage &amp; Unterschrift</div></div></div>
+  <div class="sb-item" onclick="goTo('settings')"><div class="sb-icon">&#x2699;&#xfe0f;</div><div><div class="sb-txt">Einstellungen</div><div class="sb-sub">Theme, Reset</div></div></div>
+  <div class="sb-sec">Account</div>
+  <div class="sb-item" onclick="doLogout()"><div class="sb-icon">&#x1f6aa;</div><div><div class="sb-txt">Ausloggen</div></div></div>
+  <div id="ownerSection" style="display:none;">
+    <div class="sb-sec" style="margin-top:16px;cursor:pointer;user-select:none;" onclick="toggleDebug()"><span id="debugLbl" style="color:#444;">&#x25b6; debug</span></div>
+    <div id="debugPanel" style="display:none;">
+      <div class="sb-item" onclick="recheckAll();closeSB();" style="border-left:3px solid #00ff88;"><div class="sb-icon">&#x1f916;</div><div><div class="sb-txt" style="color:#00ff88;">KI Recheck All</div></div></div>
+      <div class="sb-item" onclick="markAllDone();closeSB();" style="border-left:3px solid var(--moss);"><div class="sb-icon">&#x2705;</div><div><div class="sb-txt" style="color:var(--moss);">Alle fertig markieren</div></div></div>
+      <div class="sb-item" onclick="convertAllToNewLayout();closeSB();" style="border-left:3px solid #3498db;"><div class="sb-icon">&#x1f504;</div><div><div class="sb-txt" style="color:#3498db;">Alle ins neue Layout</div></div></div>
+      <div class="sb-item" onclick="cleanFuturePages();closeSB();" style="border-left:3px solid #e67e22;"><div class="sb-icon">&#x1f6ab;</div><div><div class="sb-txt" style="color:#e67e22;">Zukunfts-Seiten loeschen</div></div></div>
+      <div class="sb-item" onclick="console.log('rescue clicked');window.rescueData();" style="border-left:3px solid #ff00ff;"><div class="sb-icon">&#x1f4be;</div><div><div class="sb-txt" style="color:#ff00ff;">Daten retten</div><div class="sb-sub">Aus alten Keys laden</div></div></div>
+      <div class="sb-item" onclick="console.log('debug clicked');window.debugState();" style="border-left:3px solid #888;"><div class="sb-icon">&#x1f50d;</div><div><div class="sb-txt" style="color:#888;">Debug State</div><div class="sb-sub">localStorage pruefen</div></div></div>
+    </div>
+  </div>
+  <div class="sb-item" style="border-left:3px solid #333;opacity:0.4;cursor:not-allowed;margin-top:8px;"><div class="sb-icon">&#x2753;</div><div><div class="sb-txt" style="color:#666;">Incoming</div><div class="sb-sub">Kommt bald</div></div></div>
+</div>
+<div id="room-bg" style="display:none;background:radial-gradient(ellipse at 50% 45%,#18251b 0%,#080a08 72%);"></div>
+<div id="app">
+
+<div id="loginScreen">
+  <div style="text-align:center;padding:50px 0 24px;">
+    <div style="font-size:52px;margin-bottom:8px;">&#x26a1;</div>
+    <h1 style="margin-bottom:4px;">Bericht<span>sheftez</span></h1>
+    <div class="eyebrow" style="text-align:center;margin-top:4px;">Elektroniker &middot; E&amp;G</div>
+  </div>
+  <form onsubmit="try{submitAuth();}catch(e){console.error('[auth submit]',e);setAuthMessage('Anmeldung fehlgeschlagen: '+e.message,true);} return false;">
+    <label class="lbl">E-Mail</label>
+    <input class="inp" type="email" id="lEmail" placeholder="name@beispiel.de" autocomplete="email" required/>
+    <label class="lbl">Passwort</label>
+    <input class="inp" type="password" id="lPass" placeholder="Mindestens 8 Zeichen" autocomplete="current-password" minlength="8" required/>
+    <label id="importLocalWrap" style="display:none;font-size:12px;color:var(--dim);margin:4px 0 12px;"><input id="importLocalData" type="checkbox" checked/> Berichte aus diesem Browser in mein neues Konto übernehmen</label>
+    <div id="lErr" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:10px;font-family:'Space Mono',monospace;"></div>
+    <button class="btn-neon" id="authSubmitBtn" type="submit">Einloggen</button>
+  </form>
+  <div style="display:flex;justify-content:center;gap:14px;margin-top:10px;">
+    <button id="authModeBtn" onclick="toggleAuthMode()" style="background:none;border:none;color:var(--c5);font-size:11px;cursor:pointer;text-decoration:underline;">Neues Konto erstellen</button>
+    <button onclick="resetPw()" style="background:none;border:none;color:var(--c5);font-size:11px;cursor:pointer;text-decoration:underline;">Passwort vergessen?</button>
+  </div>
+  <div id="cloudSetupNote" class="info-banner" style="margin-top:18px;border-left-color:var(--amber);">Cloud-Anmeldung wird eingerichtet.</div>
+</div>
+
+<div id="passwordUpdatePanel" style="display:none">
+  <div class="info-banner"><strong>Neues Passwort</strong><br>Lege hier dein neues Passwort für dieses Konto fest.</div>
+  <label class="lbl" for="newPassInp">Neues Passwort</label>
+  <input class="inp" id="newPassInp" type="password" minlength="8" autocomplete="new-password" placeholder="Mindestens 8 Zeichen"/>
+  <button class="btn-neon" onclick="saveNewPassword()">Passwort speichern</button>
+  <div id="passwordUpdateMsg" style="margin-top:10px;font-size:12px;"></div>
+</div>
+
+<div id="apiScreen" style="display:none">
+  <div class="info-banner"><strong>API Key einrichten</strong><br>Einmalig. Findest du auf console.anthropic.com.</div>
+  <label class="lbl">Anthropic API Key</label>
+  <input class="inp" type="password" id="apiInp" placeholder="sk-ant-..."/>
+  <button class="btn-neon" onclick="doSaveKey()">Speichern &amp; weiter</button>
+</div>
+
+<div id="firstStart" style="display:none">
+  <div class="info-banner"><strong>Erster Start</strong><br>Lad dein Stundenbuch-Foto hoch. Die KI erkennt das Datum automatisch.</div>
+  <div class="drop-zone" id="scanDrop" onclick="document.getElementById('sGal').click()">
+    <div class="dz-icon">&#x1f5bc;&#xfe0f;</div>
+    <div class="dz-txt">Stundenbuch-Foto hochladen</div>
+    <div class="dz-sub">oder tippen</div>
+  </div>
+  <div class="upload-row">
+    <button class="btn-wood" onclick="document.getElementById('sGal').click()">Galerie</button>
+    <button class="btn-wood" onclick="document.getElementById('sCam').click()">Kamera</button>
+  </div>
+  <input type="file" id="sGal" accept="image/*" multiple style="display:none" onchange="hScan(this.files)"/>
+  <input type="file" id="sCam" accept="image/*" capture="environment" style="display:none" onchange="hScan(this.files)"/>
+  <div class="previews" id="sPrev"></div>
+  <button class="btn-neon" id="scanBtn" onclick="doScan()" disabled>Datum erkennen &amp; starten</button>
+  <div id="scanSt" style="font-size:11px;color:var(--dim);text-align:center;margin-top:-6px;margin-bottom:12px;font-family:'Space Mono',monospace;"></div>
+  <div style="text-align:center;margin-top:8px;">
+    <button onclick="manualStart()" style="background:none;border:none;color:var(--c5);font-size:11px;cursor:pointer;text-decoration:underline;">Datum manuell eingeben</button>
+  </div>
+</div>
+
+<div id="home" style="display:none">
+  <div class="hdr">
+    <div><div class="eyebrow">Elektroniker &middot; E&amp;G &middot; Ausbildung</div><h1>Bericht<span>sheftez</span></h1></div>
+    <button class="icon-btn" onclick="openSB()">&#x2630;</button>
+  </div>
+  <div class="owner-msg" id="ownerMsg"></div>
+  <div class="stats" id="statsRow"></div>
+  <div class="spruch-box" onclick="newSpruch()">
+    <div class="spruch-lbl">Holz-Weisheit &mdash; tippen</div>
+    <div class="spruch-txt" id="spruchTxt"></div>
+  </div>
+  <div class="wnav">
+    <div class="wnav-main">
+      <button class="arr" onclick="chWeek(-1)">&#x2039;</button>
+      <div><div class="wtitle" id="wTitle"></div><div class="wsub" id="wSub"></div></div>
+      <button class="arr" onclick="chWeek(1)">&#x203a;</button>
+    </div>
+    <div class="wnav-jumps">
+      <button class="jmp" onclick="selPage(1)">Seite 1</button>
+      <button class="jmp" onclick="selPage(state.totalPages)">Letzte</button>
+      <button class="jmp" onclick="goToday()">Heute</button>
+    </div>
+  </div>
+  <div class="page-badges" id="pageBadges"></div>
+  <div class="prog-row"><span id="progLbl">Fortschritt</span><span id="progPct" style="font-weight:700"></span></div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modePhotoBtn" onclick="setMode('photo')">&#x1f4f7; Foto</button>
+    <button class="mode-btn" id="modeDailyBtn" onclick="setMode('daily')">&#x270f; Tages-Eingabe</button>
+  </div>
+  <div id="specialBox" style="display:none" class="special-box">
+    <label id="specialLbl">Zusatzinfo</label>
+    <textarea class="special-inp" id="specialInp" placeholder="Was war der Inhalt?"></textarea>
+  </div>
+  <div id="dailyBox" style="display:none" class="daily-box">
+    <div class="daily-title">Tages-Eintraege</div>
+    <div class="daily-days" id="dailyDays"></div>
+    <button class="btn-moss" onclick="saveDailyEntries()" style="margin-top:10px;">Speichern</button>
+  </div>
+  <div id="uploadArea">
+    <div class="drop-zone" id="mainDrop" onclick="document.getElementById('fGal').click()">
+      <div class="dz-icon">&#x1f4c4;</div>
+      <div class="dz-txt">Stundenbuch-Foto hier reinziehen</div>
+      <div class="dz-sub">oder tippen &middot; mehrere auf einmal</div>
+    </div>
+    <div class="upload-row">
+      <button class="btn-wood" onclick="document.getElementById('fGal').click()">Galerie</button>
+      <button class="btn-wood" onclick="document.getElementById('fCam').click()">Kamera</button>
+    </div>
+    <input type="file" id="fGal" accept="image/*" multiple style="display:none" onchange="hFiles(this.files)"/>
+    <input type="file" id="fCam" accept="image/*" capture="environment" style="display:none" onchange="hFiles(this.files)"/>
+    <div class="previews" id="prevBox"></div>
+  </div>
+  <button class="btn-neon" id="mainBtn" onclick="handleMainBtn()" disabled>Eintrag speichern</button>
+  <div id="genStatus" style="display:none;padding:12px 14px;margin-bottom:12px;background:linear-gradient(135deg,#0a1a0a,var(--c2));border:1px solid var(--moss2);border-radius:10px;font-size:12px;color:var(--moss);font-family:'Space Mono',monospace;"></div>
+  <div id="resultBox" style="display:none" class="result-box">
+    <div class="result-hdr">
+      <span class="result-lbl" id="resultLbl"></span>
+      <div class="result-btns">
+        <button class="btn-xs" onclick="copyTxt()">Kopieren</button>
+        <button class="btn-xs btn-pdf" onclick="printOnePage(active)">&#x1f5a8; Drucken</button>
+        <button class="btn-xs" onclick="movePage()">&#x2194; Verschieben</button>
+        <button class="btn-xs btn-done" id="doneBtn" onclick="markDone()">&#x2713; Fertig</button>
+        <button class="btn-xs" id="sentHomeBtn" onclick="toggleSentHome()" style="display:none;background:#281a30;color:#d6a7f2;border-color:#8c5aa8;">Nach Hause geschickt</button>
+        <button class="btn-xs" id="deleteBtn" onclick="deletePage()" style="background:#2a0a0a;color:#e74c3c;border-color:#c0392b;display:none;">&#x1f5d1;</button>
+        <button class="btn-xs" onclick="downloadDocx(active)" style="background:#0a1a2e;color:#6C63FF;border-color:#6C63FF;" title="Als Word-Datei herunterladen">&#x1f4e5; DOCX</button>
+      </div>
+    </div>
+    <div id="unklar" style="display:none" class="result-warn">&#x26a0; Einige Tage nicht erkannt</div>
+    <div id="doneTag" style="display:none" class="result-ok">Als fertig markiert &#x2713;</div>
+    <div class="improve-box">
+      <div class="improve-lbl">Was verbessern?</div>
+      <div class="improve-row">
+        <input class="improve-inp" id="improveInp" placeholder='z.B. "Montag: Bewegungsmelder statt Schalter"'/>
+        <button class="improve-btn" onclick="improveText()">&#x27a4;</button>
+      </div>
+    </div>
+  </div>
+  <div id="pdfPanel" style="display:none" class="pdf-panel">
+    <div class="pdf-title">Drucken / PDF</div>
+    <div id="pdfOpts"></div>
+  </div>
+  <button class="btn-moss" id="notifBtn" onclick="reqNotif()">Erinnerungen aktivieren</button>
+  <hr class="ndiv"/>
+  <div class="wlist-lbl">Alle Seiten</div>
+  <div class="wlist" id="wList"></div>
+</div>
+
+<div id="statsPanel" style="display:none">
+  <div class="hdr"><div><div class="eyebrow">Auswertung</div><h1>Statistik<span>en</span></h1></div><button class="icon-btn" onclick="goTo('home')">&#x2715;</button></div>
+  <div id="statsContent"></div>
+</div>
+
+<div id="templatePanel" style="display:none">
+  <div class="hdr"><div><div class="eyebrow">Einrichtung</div><h1>Vor<span>lage</span></h1></div><button class="icon-btn" onclick="goTo('home')">&#x2715;</button></div>
+  <div class="info-banner"><strong>Berichtsheft-Vorlage</strong><br>Einmal hochladen, immer verwenden.</div>
+  <div id="tplStatus" style="margin-bottom:12px;font-size:12px;color:var(--moss);font-family:'Space Mono',monospace;"></div>
+  <button class="btn-wood" style="width:100%;margin-bottom:10px;" onclick="document.getElementById('tplFile').click()">Vorlage hochladen</button>
+  <input type="file" id="tplFile" accept=".pdf,image/*" style="display:none" onchange="uploadTpl(this.files)"/>
+  <button class="btn-moss" onclick="goTo('home')">Zurueck</button>
+</div>
+
+<div id="settingsPanel" style="display:none">
+  <div class="hdr"><div><div class="eyebrow">Konfiguration</div><h1>Einstel<span>lungen</span></h1></div><button class="icon-btn" onclick="goTo('home')">&#x2715;</button></div>
+  <div id="cloudAccountInfo" class="info-banner" style="border-left-color:var(--moss)">Cloud-Konto verbunden</div>
+  <div id="apiKeySection">
+  <div class="info-banner" style="border-left-color:var(--neon)"><strong>API Key</strong></div>
+  <label class="lbl">Neuen Key eingeben</label>
+  <input class="inp" type="password" id="newKeyInp" placeholder="sk-ant-..."/>
+  <button class="btn-neon" onclick="updKey()" style="margin-bottom:18px;">Key aktualisieren</button>
+  </div>
+  <div class="info-banner" style="border-left-color:var(--amber)"><strong>Ausbildungsbeginn</strong><br>Das Datum wird mit deinem Konto synchronisiert und kann hier spaeter geaendert werden.</div>
+  <label class="lbl" for="trainingStartInput">Erster Ausbildungstag</label>
+  <input class="inp" type="date" id="trainingStartInput"/>
+  <button class="btn-moss" onclick="saveTrainingStartDate()" style="width:100%;margin-bottom:18px;">Ausbildungsbeginn speichern</button>
+  <div class="info-banner" style="border-left-color:var(--moss)"><strong>App Theme</strong></div>
+  <div class="theme-grid" id="themeGrid"></div>
+  <div class="info-banner" style="border-left-color:#e74c3c"><strong>Gefahrenzone</strong></div>
+  <button onclick="resetApp()" style="width:100%;padding:12px;background:none;border:1px solid #c0392b;color:#c0392b;border-radius:8px;font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;">Alle Daten loeschen</button>
+</div>
+
+<div id="sharePanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--c1);flex-direction:row;">
+  <div style="display:flex;flex-direction:row;width:100%;height:100%;overflow:hidden;">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding:16px 10px 16px 16px;overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
+        <div><div class="eyebrow">Export</div><h1 style="margin:0;font-size:20px;">Teilen<span> &amp; Drucken</span></h1></div>
+        <button onclick="goTo('home')" style="background:var(--c3);border:1px solid var(--c4);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">&#x2715;</button>
+      </div>
+      <div style="font-size:9px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:8px;flex-shrink:0;">Ausgewaehlt</div>
+      <div id="sharePreviewCol" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding-right:4px;"></div>
+    </div>
+    <div style="width:460px;min-width:400px;flex-shrink:0;background:var(--c2);border-left:1px solid var(--c4);display:flex;flex-direction:column;padding:16px 14px;gap:8px;">
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+        <button onclick="sharePages()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">&#x1f4c4; PDF speichern / Drucken</button>
+        <div style="display:flex;gap:6px;">
+          <button onclick="printSelected()" style="flex:1;padding:10px;background:var(--c3);color:#6C63FF;border:1px solid #6C63FF;border-radius:8px;font-size:12px;cursor:pointer;">&#x1f5a8; Drucken</button>
+          <button onclick="downloadMultiDocx(shareSelected.length?shareSelected:null)" style="flex:1;padding:10px;background:var(--c3);color:#00cc66;border:1px solid #00cc66;border-radius:8px;font-size:12px;cursor:pointer;">&#x1f4e5; Alle DOCX</button>
+        </div>
+        <button onclick="fixSelectedTimes()" style="width:100%;padding:10px;background:var(--c3);color:#FFB347;border:1px solid #FFB347;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;">&#x23f1; Uhrzeiten fixen</button>
+        <button onclick="fillSelectedEmptyDays()" style="width:100%;padding:10px;background:var(--c3);color:#00e0ff;border:1px solid #00e0ff;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;">&#x2728; Echttext behalten / auffüllen</button>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--c4);margin:0;flex-shrink:0;"/>
+      <div style="font-size:9px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;flex-shrink:0;">Auswahl</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0;">
+        <button class="share-filter-btn active" id="sfAll" onclick="setShareFilter('all')">Alle</button>
+        <button class="share-filter-btn" id="sfWork" onclick="setShareFilter('work')">Arbeitswochen</button>
+        <button class="share-filter-btn" id="sfSchool" onclick="setShareFilter('school')">Berufsschule</button>
+        <button class="share-filter-btn" id="sfCustom" onclick="setShareFilter('custom')">Manuell leer</button>
+      </div>
+      <button onclick="setShareFilter('custom')" style="width:100%;padding:8px;background:var(--c3);color:var(--dim);border:1px solid var(--c4);border-radius:8px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;flex-shrink:0;">Auswahl leeren / Schnell auswaehlen</button>
+      <div id="sharePageList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px;min-height:0;"></div>
+      <div id="shareSelCount" style="font-size:10px;color:var(--dim);font-family:'Space Mono',monospace;text-align:center;padding:7px;background:var(--c3);border-radius:8px;border:1px solid var(--c4);flex-shrink:0;"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+var OWNER=["Ey owner was geht! Alles chill heute?","k4z3k_owner im Haus - lass mal Berichtsheft cracken","Yo Stern, Strom fliesst und das Berichtsheft auch","Owner-Mode aktiviert. Die App gehoert dir!","Was geht Meister - noch eine Seite dann bist du done","k4z3k online - die App ist ready wenn du es bist","Ey Stern lass heute mal richtig Seiten schreiben","Strom an, Berichtsheft an, let's go k4z3k","Azubi-Leben: Kabel ziehen tagsuebers, Berichtsheft nachts","Was schreibst du heute Schoenes rein Meister?"];
+
+var SPRUECHE=["Das Holz lacht nicht, wenn der Nagel schief sitzt.","Wer frueh aufsteht, schreibt das Berichtsheft vor dem Fruehstueck.","Ein Elektriker ohne Berichtsheft ist wie ein Kabel ohne Strom.","Ordnung im Heft bedeutet Ordnung im Kopf.","Lieber drei Zeilen Wahrheit als zehn Zeilen Fantasie.","Wer schreibt, der bleibt - im Gedaechtnis des Ausbilders.","Das Berichtsheft ist dein bester Zeuge nach drei Jahren.","Heute geschrieben, morgen vergessen, uebernacht froh.","Ein leeres Heft ist wie eine offene Steckdose - gefaehrlich.","Meister werden ist nicht schwer, Berichtsheft schreiben auch nicht.","Kabel koennen kurzschliessen, Saetze nicht.","Wer seinen Tag aufschreibt, versteht ihn besser.","Die beste Seite ist die, die heute fertig wird.","Strom fliesst, Zeit auch - beide nicht aufhalten.","Im Berichtsheft steckt mehr Wissen als im Kopf."];
+
+var THEMES=[
+  {n:"Amber",c1:"#110d07",c2:"#1c1408",c3:"#2a1f0e",c4:"#3d2c14",neon:"#FF6B00",neon2:"#c45200",moss:"#4a7c59",moss2:"#2d4d38",amber:"#FFB347",sw:"#FF6B00"},
+  {n:"Neon Green",c1:"#050f05",c2:"#091509",c3:"#0f200f",c4:"#1a3a1a",neon:"#00ff88",neon2:"#00cc66",moss:"#4a9c6a",moss2:"#2d6040",amber:"#88ffaa",sw:"#00ff88"},
+  {n:"Electric Blue",c1:"#050810",c2:"#090d1c",c3:"#0f1528",c4:"#1a2240",neon:"#00aaff",neon2:"#0077cc",moss:"#4a6a9c",moss2:"#2d4060",amber:"#aaccff",sw:"#00aaff"},
+  {n:"Purple",c1:"#0a0510",c2:"#12091c",c3:"#1c0f28",c4:"#2d1a40",neon:"#aa55ff",neon2:"#7722cc",moss:"#6a4a9c",moss2:"#402d60",amber:"#cc99ff",sw:"#aa55ff"},
+  {n:"Red",c1:"#100505",c2:"#1c0909",c3:"#280f0f",c4:"#401a1a",neon:"#ff3355",neon2:"#cc0022",moss:"#9c4a4a",moss2:"#602d2d",amber:"#ffaaaa",sw:"#ff3355"},
+  {n:"Cyan",c1:"#051010",c2:"#091c1c",c3:"#0f2828",c4:"#1a4040",neon:"#00ffee",neon2:"#00ccbb",moss:"#4a9c8a",moss2:"#2d6055",amber:"#aaffee",sw:"#00ffee"},
+  {n:"Gold",c1:"#100d00",c2:"#1c1800",c3:"#282300",c4:"#403800",neon:"#ffcc00",neon2:"#cc9900",moss:"#9c8a00",moss2:"#605500",amber:"#ffee88",sw:"#ffcc00"},
+  {n:"White",c1:"#f5f5f5",c2:"#eeeeee",c3:"#e0e0e0",c4:"#cccccc",neon:"#222222",neon2:"#444444",moss:"#336633",moss2:"#224422",amber:"#664400",sw:"#222222"}
+];
+
+var SYSGEN="Du hilfst einem Elektroniker-Azubi beim Berichtsheft.\n\nABSOLUT VERBOTEN - NIEMALS:\n- Firmennamen, Kundennamen, Ortsnamen (Wittislingen, Muster GmbH etc.)\n- Den Wochentag im Fliesstext nennen (NICHT: 'Am Montag...' oder 'Mittwoch (23.10):')\n- Das Datum im Fliesstext\n- Jeden Satz gleich beginnen\n- Aus unvollstaendigen Woertern etwas erfinden (NIEMALS aus 'Betriebs-' 'Betriebsausflug' machen)\n\nFORMAT:\nMontag (DD.MM): [Taetigkeitstext ohne Wochentag/Datum im Text] - HH:MM-HH:MM\nDienstag (DD.MM): [Text] - HH:MM-HH:MM\n\nARBEITSZEITEN wenn nicht lesbar:\n- Mo-Do: 07:30-16:30\n- Fr: 07:30-12:00\n\nFORTLAUFENDE STRICHE / WIEDERHOLUNGEN:\n- Wenn ein Eintrag mit einem senkrechten Strich/Weiterfuehrungsstrich ueber mehrere Tage geht, denselben Text fuer diese Tage wiederholen.\n- Wenn z.B. Montag bis Donnerstag Berufsschule ist und Freitag krank, dann Montag-Donnerstag Berufsschule und Freitag Erkrankung.\n- Wenn nur ein Status wie Urlaub/Krank/Berufsschule steht und die folgenden Tage durch Strich/Leerfeld fortlaufen, denselben Status bis zum naechsten anderen Eintrag setzen.\n- Wenn ein Wort abgeschnitten ist (z.B. 'Betriebs-'), auf der Seite nach dem vollstaendigen Sinn suchen. 'Betriebs-' mit Urlaub/Betriebsurlaub-Kontext bedeutet Urlaub, NICHT Betriebsausflug.\n\nSATZANFAENGE abwechseln: 'Anschliessend...', 'Im Rahmen der Installation...', 'Die Montage...', 'Dabei wurden...', 'Weiterhin...', 'Zuletzt...'\n\nFACHBEGRIFFE: Unterputzdose, Leerrohr, NYM-Kabel, FI-Schutzschalter, Leitungsschutzschalter, Kabeltrasse, Schaltschrank, Klemmleiste, Potentialausgleich\n\nSPEZIAL:\n- Tag leer: [NICHT_ID]\n- krank/erkrankt: Erkrankung. - 0 Std.\n- Urlaub/Betriebsurlaub/Betriebsferien: Urlaub. - 0 Std.\n- Berufsschule/Innung/echter Unterricht: Berufsschule. - 07:00-16:30\n- Feiertag/schulfrei: Feiertag. - 0 Std. (nicht als Schule werten)\nNIEMALS krank mit Urlaub verwechseln! NIEMALS Feiertag/Schulfrei als Berufsschule werten! NIEMALS Betriebsausflug erfinden!\n\nNur den Text. Kein Kommentar. Deutsch.";
+
+var KEY_VAR="bhz_k";
+var state={entries:{},totalPages:1,startDate:null,userName:"",sickDays:[],vacDays:[],schoolDays:[],isOwner:false};
+var active=1,imgs=[],scanImgs=[],currentMode="photo";
+var SUPABASE_URL="https://rvaxhnemqxizwrulcbya.supabase.co",SUPABASE_ANON_KEY="sb_publishable_mUaYnJEfS_5e-kVFErkVkw_fywSnN65",supabaseClient=null,cloudUser=null,cloudReady=false,cloudLoadedUid="",cloudLoadingUid="",cloudSaveTimer=null,authMode="login",allowLegacyImport=false,legacyStateSnapshot=null;
+function emptyAppState(){return {entries:{},totalPages:1,startDate:null,userName:"",sickDays:[],vacDays:[],schoolDays:[],isOwner:false};}
+function copyAppState(src){var x=JSON.parse(JSON.stringify(src||{}));delete x.isOwner;return x;}
+function hasLegacyAppData(src){return !!(src&&(src.startDate||Object.keys(src.entries||{}).length));}
+function accountCacheKey(uid){return "bhz_user_"+uid;}
+function setAuthMessage(msg,bad){var el=document.getElementById("lErr");if(el){el.textContent=msg||"";el.style.display=msg?"block":"none";el.style.color=bad?"#e74c3c":"var(--moss)";}}
+function setCloudStatus(msg,bad){var el=document.getElementById("syncStatus");if(el){el.textContent=msg||"";el.style.color=bad?"#e74c3c":"var(--moss)";}}
+function initSupabaseClient(){var note=document.getElementById("cloudSetupNote");if(!SUPABASE_URL||!SUPABASE_ANON_KEY){if(note)note.textContent="Cloud-Anmeldung wartet auf das Supabase-Projekt. Deine Berichte werden nach der Einrichtung einem Konto zugeordnet.";return false;}if(!window.supabase||!window.supabase.createClient){if(note)note.textContent="Cloud-Bibliothek nicht geladen. Bitte Seite neu laden.";return false;}supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);if(note)note.style.display="none";return true;}
+function toggleAuthMode(){authMode=authMode==="login"?"signup":"login";var b=document.getElementById("authSubmitBtn"),m=document.getElementById("authModeBtn"),w=document.getElementById("importLocalWrap");if(b)b.textContent=authMode==="login"?"Einloggen":"Konto erstellen";if(m)m.textContent=authMode==="login"?"Neues Konto erstellen":"Zur Anmeldung";if(w)w.style.display=authMode==="signup"&&hasLegacyAppData(legacyStateSnapshot)?"block":"none";setAuthMessage("",false);}
+async function submitAuth(){if(!supabaseClient){setAuthMessage("Cloud ist noch nicht verbunden. Erst das Supabase-Projekt einrichten.",true);return;}var email=document.getElementById("lEmail").value.trim(),password=document.getElementById("lPass").value,btn=document.getElementById("authSubmitBtn");if(btn){btn.disabled=true;btn.textContent="Einen Moment…";}try{if(authMode==="signup"){allowLegacyImport=!!(document.getElementById("importLocalData")&&document.getElementById("importLocalData").checked);var a=await supabaseClient.auth.signUp({email:email,password:password,options:{emailRedirectTo:location.origin+location.pathname}});if(a.error)throw a.error;if(a.data&&a.data.session)await loadAccountData(a.data.session);else{if(authMode==="signup")toggleAuthMode();setAuthMessage("Konto erstellt. Bestätige den Link aus deiner E-Mail und melde dich danach hier an.",false);}}else{allowLegacyImport=false;var l=await supabaseClient.auth.signInWithPassword({email:email,password:password});if(l.error)throw l.error;if(l.data&&l.data.session)await loadAccountData(l.data.session);}}catch(e){setAuthMessage(e.message||"Anmeldung fehlgeschlagen.",true);}finally{if(btn){btn.disabled=false;btn.textContent=authMode==="login"?"Einloggen":"Konto erstellen";}}}
+async function resetPw(){if(!supabaseClient){setAuthMessage("Cloud ist noch nicht eingerichtet.",true);return;}var email=document.getElementById("lEmail").value.trim();if(!email){setAuthMessage("Trag zuerst deine E-Mail ein.",true);return;}var r=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});setAuthMessage(r.error?r.error.message:"Wenn die Adresse registriert ist, erhältst du eine Mail zum Zurücksetzen.",!!r.error);}
+async function saveNewPassword(){var inp=document.getElementById("newPassInp"),msg=document.getElementById("passwordUpdateMsg");if(!inp||inp.value.length<8){if(msg)msg.textContent="Mindestens 8 Zeichen eingeben.";return;}var r=await supabaseClient.auth.updateUser({password:inp.value});if(r.error){if(msg)msg.textContent=r.error.message;return;}inp.value="";if(msg)msg.textContent="Passwort aktualisiert. Berichte werden geladen…";var s=await supabaseClient.auth.getSession();if(s.data&&s.data.session)await loadAccountData(s.data.session);}
+async function initCloudAuth(){if(!initSupabaseClient())return;supabaseClient.auth.onAuthStateChange(function(event,session){if(event==="SIGNED_OUT"){cloudUser=null;cloudReady=false;cloudLoadedUid="";cloudLoadingUid="";state=emptyAppState();hideAll();document.getElementById("loginScreen").style.display="block";}else if(event==="PASSWORD_RECOVERY"){hideAll();document.getElementById("passwordUpdatePanel").style.display="block";}else if(session&&session.user)setTimeout(function(){loadAccountData(session);},0);});try{var s=await supabaseClient.auth.getSession();if(s.error)throw s.error;if(s.data&&s.data.session)await loadAccountData(s.data.session);else{hideAll();document.getElementById("loginScreen").style.display="block";}}catch(e){hideAll();document.getElementById("loginScreen").style.display="block";setAuthMessage("Cloud-Verbindung fehlgeschlagen: "+e.message,true);}}
+async function loadAccountData(session){if(!session||!session.user||!supabaseClient)return;var uid=session.user.id;if(cloudLoadedUid===uid||cloudLoadingUid===uid)return;cloudLoadingUid=uid;cloudUser=session.user;cloudReady=false;setAuthMessage("Deine Berichte werden geladen…",false);setCloudStatus("Cloud wird geladen…",false);try{var r=await supabaseClient.from("berichtsheft_data").select("data").eq("user_id",uid).maybeSingle();if(r.error)throw r.error;if(r.data&&r.data.data)state=Object.assign(emptyAppState(),r.data.data);else{var local=localStorage.getItem(accountCacheKey(uid));if(local){try{state=Object.assign(emptyAppState(),JSON.parse(local));}catch(_e){state=emptyAppState();}}else if(hasLegacyAppData(legacyStateSnapshot)&&(allowLegacyImport||confirm("Auf diesem Gerät liegen alte Berichte ohne Konto. Sollen sie in dein Konto übernommen werden?")))state=Object.assign(emptyAppState(),copyAppState(legacyStateSnapshot));else state=emptyAppState();await writeCloudState(true);}state.isOwner=false;cloudLoadedUid=uid;cloudReady=true;allowLegacyImport=false;try{localStorage.setItem(accountCacheKey(uid),JSON.stringify(copyAppState(state)));}catch(_e){}cloudLoadingUid="";if(!gKey()){afterLogin();return;}if(!state.startDate&&!Object.keys(state.entries||{}).length){hideAll();document.getElementById("firstStart").style.display="block";return;}active=getTodayPage();showHome();setCloudStatus("Synchronisiert ✓",false);}catch(e){cloudUser=null;cloudReady=false;cloudLoadingUid="";hideAll();document.getElementById("loginScreen").style.display="block";setAuthMessage("Cloud-Daten konnten nicht geladen werden: "+(e.message||"Setup-SQL fehlt noch?"),true);}}
+async function writeCloudState(immediate){if(!supabaseClient||!cloudUser||(!cloudReady&&!immediate))return;var uid=cloudUser.id,payload=copyAppState(state);try{localStorage.setItem(accountCacheKey(uid),JSON.stringify(payload));}catch(_e){}if(!immediate){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(function(){writeCloudState(true).catch(function(){});},700);return;}setCloudStatus("Speichert…",false);var r=await supabaseClient.from("berichtsheft_data").upsert({user_id:uid,data:payload,updated_at:new Date().toISOString()},{onConflict:"user_id"});if(r.error){setCloudStatus("Cloud-Speichern fehlgeschlagen",true);throw r.error;}setCloudStatus("Synchronisiert ✓",false);}
+
+// Storage
+function sv(){try{if(cloudUser){localStorage.setItem(accountCacheKey(cloudUser.id),JSON.stringify(copyAppState(state)));setCloudStatus("Änderung wird synchronisiert…",false);writeCloudState(false);}else localStorage.setItem("bhz_v1",JSON.stringify(state));}catch(e){console.warn("local save failed",e);}}
+function ld(){
+  try{
+    var keys=["bhz_v1","bhz_state","berichtsheft_v1","bhz"],candidates=[];
+    keys.forEach(function(key,index){var raw=localStorage.getItem(key);if(!raw)return;try{var p=JSON.parse(raw);if(p&&typeof p==="object")candidates.push({data:p,index:index,count:Object.keys(p.entries||{}).length});}catch(_e){}});
+    if(candidates.length){
+      candidates.sort(function(a,b){return b.count-a.count||a.index-b.index;});
+      var p=candidates[0].data;Object.assign(state,p);state.entries=state.entries||{};
+      if(!state.startDate){for(var i=0;i<candidates.length;i++){if(candidates[i].data.startDate){state.startDate=candidates[i].data.startDate;break;}}}
+      var nums=Object.keys(state.entries).map(function(k){var m=/^P(\d+)$/.exec(k);return m?+m[1]:0;});
+      var maxNum=nums.length?Math.max.apply(Math,nums):0;
+      state.totalPages=Math.max(1,parseInt(state.totalPages,10)||1,maxNum,candidates.reduce(function(n,c){return Math.max(n,+c.data.totalPages||0);},1));
+      console.log("[bhz] State loaded: startDate="+state.startDate+", pages="+state.totalPages+", entries="+Object.keys(state.entries).length);
+    } else {
+      console.log("[bhz] No saved state found in localStorage");
+      // Log all keys for debugging
+      var allKeys=[];for(var k in localStorage){if(localStorage.hasOwnProperty(k))allKeys.push(k);}
+      console.log("[bhz] All localStorage keys:", allKeys.join(", "));
+    }
+  }catch(e){console.error("[bhz] ld() error:",e);}
+}
+function gKey(){return localStorage.getItem(KEY_VAR)||"";}
+function sKey(k){localStorage.setItem(KEY_VAR,k);}
+function afterLogin(){
+  try{
+    hideAll();
+    if(!gKey()){document.getElementById("apiScreen").style.display="block";return;}
+    if(!state.startDate&&!Object.keys(state.entries||{}).length){document.getElementById("firstStart").style.display="block";return;}
+    active=getTodayPage();
+    showHome();
+  }catch(e){alert("Login Fehler: "+e.message);}
+}
+
+async function doLogout(){closeSB();if(supabaseClient)await supabaseClient.auth.signOut();}
+function doSaveKey(){var k=document.getElementById("apiInp").value.trim();if(!k||k.length<10){alert("Ungueltiger Key.");return;}sKey(k);alert("Key gespeichert!");afterLogin();}
+function updKey(){var k=document.getElementById("newKeyInp").value.trim();if(!k||k.length<10){alert("Ungueltiger Key.");return;}sKey(k);alert("Key aktualisiert!");}
+function saveTrainingStartDate(){var v=document.getElementById("trainingStartInput").value;if(!v){alert("Bitte zuerst ein Datum auswaehlen.");return;}var p=v.split("-").map(Number),d=new Date(p[0],p[1]-1,p[2]);if(!p[0]||d.getFullYear()!==p[0]||d.getMonth()!==p[1]-1||d.getDate()!==p[2]){alert("Das Datum ist ungueltig.");return;}var dow=d.getDay();d.setDate(d.getDate()+(dow===0?-6:1-dow));state.startDate=(d.getDate()<10?"0":"")+d.getDate()+"."+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"."+d.getFullYear();var today=new Date();today.setHours(0,0,0,0);var weeks=Math.max(1,Math.floor((today-d)/(7*24*3600*1000))+1);state.totalPages=Math.max(state.totalPages||1,weeks);sv();active=Math.min(getTodayPage(),state.totalPages);alert("Ausbildungsbeginn gespeichert: "+state.startDate);}
+async function resetApp(){if(!confirm("Alle Berichtsheft-Daten dieses Kontos loeschen?"))return;try{if(supabaseClient&&cloudUser){var r=await supabaseClient.from("berichtsheft_data").delete().eq("user_id",cloudUser.id);if(r.error)throw r.error;localStorage.removeItem(accountCacheKey(cloudUser.id));}["bhz_v1","bhz_state","berichtsheft_v1","bhz","bhz_k","bhz_tpl","bhz_theme","bhz_sig"].forEach(function(k){localStorage.removeItem(k);});location.reload();}catch(e){alert("Cloud-Daten konnten nicht geloescht werden: "+e.message);}}
+
+// API
+async function apiCall(messages,maxTokens,sysPrompt){
+  var body={model:"claude-sonnet-4-6",max_tokens:maxTokens||1000,messages:messages};
+  if(sysPrompt)body.system=sysPrompt;
+  var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":gKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error("API "+r.status);
+  return r.json();
+}
+
+// Date helpers
+function getMon(s){var p=s.split(".");if(p.length<3)return new Date();var dt=new Date(+p[2],+p[1]-1,+p[0]);var dy=dt.getDay(),df=dy===0?-6:1-dy;dt.setDate(dt.getDate()+df);return dt;}
+function getTodayPage(){if(!state.startDate)return active;var s=getMon(state.startDate),t=new Date(),d=Math.floor((t.getTime()-s.getTime())/(7*24*3600*1000));return Math.max(1,Math.min(d+1,state.totalPages));}
+function pLabel(n){if(!state.startDate)return "Seite "+n;var sm=getMon(state.startDate);var ms=new Date(sm.getTime()+(n-1)*7*24*3600*1000);var me=new Date(ms.getTime()+4*24*3600*1000);function fmt(d){return d.getDate()+"."+(d.getMonth()+1)+".";}return fmt(ms)+" - "+fmt(me);}
+function isPageInFuture(p){if(!state.startDate)return false;var sm=getMon(state.startDate);var pd=new Date(sm.getTime()+(p-1)*7*24*3600*1000);var t=new Date();t.setHours(0,0,0,0);return pd>t;}
+function getAusbildungsjahr(pageNum){if(!state.startDate)return "1";var s=getMon(state.startDate);var pm=new Date(s.getTime()+(pageNum-1)*7*24*3600*1000);var sy=s.getFullYear();var sc=new Date(sy,8,1);// Sep 1
+if(s<sc)sc=new Date(sy-1,8,1);var diff=pm.getFullYear()-sc.getFullYear()+(pm<new Date(pm.getFullYear(),8,1)?0:0);var yr=Math.floor((pm.getTime()-sc.getTime())/(365.25*24*3600*1000))+1;return Math.max(1,Math.min(yr,3)).toString();}
+
+// Navigation
+function hideAll(){["loginScreen","passwordUpdatePanel","apiScreen","firstStart","home","statsPanel","templatePanel","settingsPanel","sharePanel"].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display="none";});var rb=document.getElementById("room-bg");if(rb)rb.style.display="none";}
+function showHome(){try{
+  hideAll();
+  document.getElementById("home").style.display="block";
+  var rb=document.getElementById("room-bg");if(rb)rb.style.display="block";
+  var os=document.getElementById("ownerSection");
+  if(os)os.style.display=state.isOwner?"block":"none";
+  var su=document.querySelector(".sb-user");if(su)su.textContent=cloudUser?(cloudUser.email||"Mein Konto"):(state.isOwner?"k4z3k_owner":"Azubi");
+  var sr=document.querySelector(".sb-role");if(sr)sr.textContent=cloudUser?"Cloud-Konto":(state.isOwner?"Owner · Admin":"Azubi");
+  document.getElementById("ownerMsg").textContent=state.isOwner?rnd(OWNER):"Willkommen im Berichtsheft!";
+  document.getElementById("spruchTxt").textContent=rnd(SPRUECHE);
+  checkAutoNewPage();renderAll();
+}catch(e){alert("showHome: "+e.message);}}
+function goTo(s){
+  closeSB();hideAll();
+  if(s==="home"){showHome();return;}
+  if(s==="stats"){showStats();return;}
+  if(s==="settings"){
+    document.getElementById("settingsPanel").style.display="block";
+    var ci=document.getElementById("cloudAccountInfo");if(ci)ci.textContent=cloudUser?"Cloud-Konto: "+(cloudUser.email||"verbunden")+" · automatische Synchronisierung aktiv.":"Kein Cloud-Konto verbunden.";
+    var ti=document.getElementById("trainingStartInput"),sp=(state.startDate||"").split(".");if(ti)ti.value=sp.length===3?sp[2]+"-"+sp[1]+"-"+sp[0]:"";
+    return;
+  }
+  if(s==="share"){showShare();return;}
+  if(s==="template"){
+    document.getElementById("templatePanel").style.display="block";
+    updTplStatus();
+    var sts=document.getElementById("sigStatusTpl");
+    if(sts)sts.textContent=localStorage.getItem("bhz_sig")?"Unterschrift gespeichert ✓":"Keine Unterschrift";
+    var existSig=localStorage.getItem("bhz_sig");
+    var prev=document.getElementById("sigPreview");
+    if(prev){
+      prev.innerHTML="";
+      if(existSig){
+        var img=document.createElement("img");
+        img.src=existSig;
+        img.style.cssText="max-height:50px;max-width:220px;object-fit:contain;border-radius:4px;border:1px solid var(--c4);background:#fff;padding:4px;";
+        prev.appendChild(img);
+      }
+    }
+    return;
+  }
+}
+function openSB(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open");}
+function closeSB(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
+function rnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function newSpruch(){document.getElementById("spruchTxt").textContent=rnd(SPRUECHE);}
+function chWeek(d){selPage(Math.max(1,Math.min(state.totalPages,active+d)));}
+function selPage(n){active=n;renderAll();}
+function goToday(){active=getTodayPage();renderAll();}
+function checkAutoNewPage(){
+  if(!state.startDate)return;
+  if(!state.isOwner)return; // azubi cannot create new pages
+  if(new Date().getDay()!==1)return;
+  var tp=getTodayPage();
+  if(tp>state.totalPages){state.totalPages=tp;sv();}
+}
+function setMode(m){currentMode=m;document.getElementById("modePhotoBtn").className="mode-btn"+(m==="photo"?" active":"");document.getElementById("modeDailyBtn").className="mode-btn"+(m==="daily"?" active":"");document.getElementById("uploadArea").style.display=m==="photo"?"block":"none";document.getElementById("dailyBox").style.display=m==="daily"?"block":"none";document.getElementById("specialBox").style.display="none";if(m==="daily")buildDaily();updBtn();}
+function handleMainBtn(){if(currentMode==="photo")generate();else saveDailyEntries();}
+function reqNotif(){if("Notification" in window)Notification.requestPermission().then(function(r){document.getElementById("notifBtn").style.display=r==="granted"?"none":"block";});else document.getElementById("notifBtn").style.display="none";}
+
+// Render functions
+function renderAll(){
+  var fns=[["rStats",rStats],["rWeekNav",rWeekNav],["rProgress",rProgress],["rBadges",rBadges],["rSpecial",rSpecial],["rResult",rResult],["rWList",rWList],["updBtn",updBtn],["updPdf",updPdf],["updBanner",updBanner]];
+  fns.forEach(function(f){try{f[1]();}catch(e){console.error(f[0],e);}});
+}
+
+function rStats(){
+  var el=document.getElementById("statsRow");if(!el)return;
+  var total=state.totalPages,done=0,school=0,missing=0,future=0;
+  for(var i=1;i<=total;i++){
+    var e=state.entries["P"+i];
+    if(isPageInFuture(i)){future++;continue;}
+    if(!e||!e.text){missing++;continue;}
+    if(e.type==="school")school++;
+    if(e.done)done++;
+  }
+  el.innerHTML="";
+  function mkStat(n,l,col){var d=document.createElement("div");d.className="stat";d.innerHTML="<div class='stat-n' style='color:"+(col||"var(--neon)")+"'>"+n+"<\/div><div class='stat-l'>"+l+"<\/div>";el.appendChild(d);}
+  mkStat(done,"Fertig");
+  mkStat(missing,"Fehlen","#e74c3c");
+  mkStat(school,"Schule","var(--moss)");
+  mkStat(total-future,"Gesamt");
+}
+
+function rWeekNav(){
+  var wt=document.getElementById("wTitle"),ws=document.getElementById("wSub");
+  if(!wt)return;
+  wt.textContent="Seite "+active;
+  ws.textContent=pLabel(active);
+}
+
+function calcProg(txt,pageNum){
+  var e=pageNum?state.entries["P"+pageNum]:null;
+  if(e&&(e.type==="sick"||e.type==="vacation"))return 100;
+  if(e&&e.type==="school"&&!txt)return 100;
+  if(e&&e.daily){
+    var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"],filled=0;
+    days.forEach(function(d){if(e.daily[d]&&e.daily[d].trim()&&e.daily[d].trim()!=="[NICHT_ID]")filled++;});
+    if(filled>0)return Math.round(filled/5*100);
+  }
+  if(!txt)return 0;
+  var d=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"],n=0;
+  for(var i=0;i<d.length;i++)if(txt.indexOf(d[i])>=0)n++;
+  if(n===0&&txt.length>20)return 100; // all NICHT_ID
+  return Math.round(n/5*100);
+}
+
+function rProgress(){
+  var e=state.entries["P"+active],pg=calcProg(e?e.text:null,active);
+  var c=pg===100?"var(--moss)":"var(--neon)";
+  var pf=document.getElementById("progFill");if(pf){pf.style.width=pg+"%";pf.style.background=c;}
+  var pp=document.getElementById("progPct");if(pp){pp.textContent=pg+"%";pp.style.color=c;}
+  var pl=document.getElementById("progLbl");if(pl)pl.textContent="Fortschritt Seite "+active;
+}
+
+function rBadges(){
+  var el=document.getElementById("pageBadges");if(!el)return;el.innerHTML="";
+  var e=state.entries["P"+active];
+  if(!e)return;
+  if(e.type==="sick")el.innerHTML+="<span class='bdg bdg-sick'>Krank<\/span>";
+  if(e.type==="vacation")el.innerHTML+="<span class='bdg bdg-vac'>Urlaub<\/span>";
+  if(e.type==="school")el.innerHTML+="<span class='bdg bdg-school'>Berufsschule<\/span>";
+  if(e.sentHome||e.type==="sent_home")el.innerHTML+="<span class='bdg' style='background:#5b3b68;color:#fff'>Nach Hause geschickt<\/span>";
+  if(active===getTodayPage())el.innerHTML+="<span class='bdg bdg-today'>Aktuelle Woche<\/span>";
+}
+
+function rSpecial(){
+  var e=state.entries["P"+active];
+  var sb=document.getElementById("specialBox");
+  var sl=document.getElementById("specialLbl");
+  var si=document.getElementById("specialInp");
+  if(!sb)return;
+  if(e&&(e.type==="school"||e.type==="sick"||e.type==="vacation")){
+    sb.style.display="block";
+    if(sl)sl.textContent=e.type==="school"?"Berufsschulthema / Inhalt":e.type==="sick"?"Krankheitstage":"Urlaubstage";
     if(si)si.value=e.specialNote||"";
   } else {sb.style.display="none";}
 }
