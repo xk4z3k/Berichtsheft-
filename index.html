@@ -209,7 +209,7 @@ h1 span{color:var(--neon);}
 </div>
 
 <div id="apiScreen" style="display:none">
-  <div class="info-banner"><strong>API Key einrichten</strong><br>Einmalig. Findest du auf console.anthropic.com.</div>
+  <div class="info-banner"><strong>Gemeinsamer KI-Zugang wird eingerichtet</strong><br>Sobald der Supabase-KI-Dienst aktiviert ist, brauchst du auf diesem Gerät keinen API-Key. Bis dahin kannst du vorübergehend deinen eigenen Key eingeben.</div>
   <label class="lbl">Anthropic API Key</label>
   <input class="inp" type="password" id="apiInp" placeholder="sk-ant-..."/>
   <button class="btn-neon" onclick="doSaveKey()">Speichern &amp; weiter</button>
@@ -420,7 +420,7 @@ var SYSGEN="Du hilfst einem Elektroniker-Azubi beim Berichtsheft.\n\nPRIORITAET:
 var KEY_VAR="bhz_k";
 var state={entries:{},totalPages:1,startDate:null,userName:"",sickDays:[],vacDays:[],schoolDays:[],isOwner:false};
 var active=1,imgs=[],scanImgs=[],currentMode="photo";
-var SUPABASE_URL="https://rvaxhnemqxizwrulcbya.supabase.co",SUPABASE_ANON_KEY="sb_publishable_mUaYnJEfS_5e-kVFErkVkw_fywSnN65",supabaseClient=null,cloudUser=null,cloudReady=false,cloudLoadedUid="",cloudLoadingUid="",cloudSaveTimer=null,authMode="login",allowLegacyImport=false,legacyStateSnapshot=null;
+var SUPABASE_URL="https://rvaxhnemqxizwrulcbya.supabase.co",SUPABASE_ANON_KEY="sb_publishable_mUaYnJEfS_5e-kVFErkVkw_fywSnN65",supabaseClient=null,cloudUser=null,cloudReady=false,sharedAiReady=false,cloudLoadedUid="",cloudLoadingUid="",cloudSaveTimer=null,authMode="login",allowLegacyImport=false,legacyStateSnapshot=null;
 function emptyAppState(){return {entries:{},totalPages:1,startDate:null,userName:"",sickDays:[],vacDays:[],schoolDays:[],isOwner:false};}
 function copyAppState(src){var x=JSON.parse(JSON.stringify(src||{}));delete x.isOwner;return x;}
 function hasLegacyAppData(src){return !!(src&&(src.startDate||Object.keys(src.entries||{}).length));}
@@ -460,10 +460,20 @@ function ld(){
 }
 function gKey(){return localStorage.getItem(KEY_VAR)||"";}
 function sKey(k){localStorage.setItem(KEY_VAR,k);}
-function afterLogin(){
+async function checkSharedAi(){
+  sharedAiReady=false;
+  if(!cloudReady||!supabaseClient)return false;
+  try{
+    var r=await supabaseClient.functions.invoke("anthropic-proxy",{body:{ping:true}});
+    sharedAiReady=!r.error&&!!(r.data&&r.data.ready);
+  }catch(_e){sharedAiReady=false;}
+  return sharedAiReady;
+}
+async function afterLogin(){
   try{
     hideAll();
-    if(!gKey()){document.getElementById("apiScreen").style.display="block";return;}
+    await checkSharedAi();
+    if(!gKey()&&!sharedAiReady){document.getElementById("apiScreen").style.display="block";return;}
     if(!state.startDate&&!Object.keys(state.entries||{}).length){document.getElementById("firstStart").style.display="block";return;}
     active=getTodayPage();
     showHome();
@@ -480,7 +490,14 @@ async function resetApp(){if(!confirm("Alle Berichtsheft-Daten dieses Kontos loe
 async function apiCall(messages,maxTokens,sysPrompt){
   var body={model:"claude-sonnet-4-6",max_tokens:maxTokens||1000,messages:messages};
   if(sysPrompt)body.system=sysPrompt;
-  var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":gKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify(body)});
+  if(sharedAiReady&&cloudReady&&supabaseClient){
+    var proxy=await supabaseClient.functions.invoke("anthropic-proxy",{body:body});
+    if(proxy.error)throw new Error("Gemeinsamer KI-Zugang: "+(proxy.error.message||proxy.error));
+    return proxy.data;
+  }
+  var key=gKey();
+  if(!key)throw new Error("Der gemeinsame KI-Zugang ist noch nicht eingerichtet. Bitte richte die Supabase-Edge-Function „anthropic-proxy“ ein; dann wird kein Geräte-API-Key mehr benötigt.");
+  var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify(body)});
   if(!r.ok){var msg="";try{var errBody=await r.json();msg=errBody&&errBody.error&&errBody.error.message?String(errBody.error.message):"";}catch(_apiErr){}throw new Error("API "+r.status+(msg?": "+msg:""));}
   return r.json();
 }
