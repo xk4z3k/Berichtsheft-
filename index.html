@@ -209,10 +209,7 @@ h1 span{color:var(--neon);}
 </div>
 
 <div id="apiScreen" style="display:none">
-  <div class="info-banner"><strong>Gemeinsamer KI-Zugang wird eingerichtet</strong><br>Sobald der Supabase-KI-Dienst aktiviert ist, brauchst du auf diesem Gerät keinen API-Key. Bis dahin kannst du vorübergehend deinen eigenen Key eingeben.</div>
-  <label class="lbl">Anthropic API Key</label>
-  <input class="inp" type="password" id="apiInp" placeholder="sk-ant-..."/>
-  <button class="btn-neon" onclick="doSaveKey()">Speichern &amp; weiter</button>
+  <div class="info-banner"><strong>Gemeinsamer KI-Zugang wird eingerichtet</strong><br>Die Anmeldung funktioniert ohne API-Key auf dem Gerät. KI-Funktionen sind aktiv, sobald der Supabase-KI-Dienst eingerichtet ist.</div>
 </div>
 
 <div id="firstStart" style="display:none">
@@ -346,12 +343,6 @@ h1 span{color:var(--neon);}
   <button class="btn-wood" onclick="document.getElementById('reportPdfInput').click()" style="width:100%;margin:0 0 18px;">Alte Berichts-PDF(s) importieren</button>
   <input type="file" id="reportPdfInput" accept="application/pdf,.pdf" multiple style="display:none" onchange="importReportPdfs(this.files)"/>
   <button class="btn-neon" onclick="recoverLegacyReports()" style="width:100%;margin:0 0 18px;">Alte Berichte aus diesem Browser suchen</button>
-  <div id="apiKeySection">
-  <div class="info-banner" style="border-left-color:var(--neon)"><strong>API Key</strong></div>
-  <label class="lbl">Neuen Key eingeben</label>
-  <input class="inp" type="password" id="newKeyInp" placeholder="sk-ant-..."/>
-  <button class="btn-neon" onclick="updKey()" style="margin-bottom:18px;">Key aktualisieren</button>
-  </div>
   <div class="info-banner" style="border-left-color:var(--amber)"><strong>Ausbildungsbeginn</strong><br>Das Datum wird mit deinem Konto synchronisiert und kann hier spaeter geaendert werden.</div>
   <label class="lbl" for="trainingStartInput">Erster Ausbildungstag</label>
   <input class="inp" type="date" id="trainingStartInput"/>
@@ -473,7 +464,7 @@ async function afterLogin(){
   try{
     hideAll();
     await checkSharedAi();
-    if(!gKey()&&!sharedAiReady){document.getElementById("apiScreen").style.display="block";return;}
+    
     if(!state.startDate&&!Object.keys(state.entries||{}).length){document.getElementById("firstStart").style.display="block";return;}
     active=getTodayPage();
     showHome();
@@ -495,11 +486,7 @@ async function apiCall(messages,maxTokens,sysPrompt){
     if(proxy.error)throw new Error("Gemeinsamer KI-Zugang: "+(proxy.error.message||proxy.error));
     return proxy.data;
   }
-  var key=gKey();
-  if(!key)throw new Error("Der gemeinsame KI-Zugang ist noch nicht eingerichtet. Bitte richte die Supabase-Edge-Function „anthropic-proxy“ ein; dann wird kein Geräte-API-Key mehr benötigt.");
-  var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify(body)});
-  if(!r.ok){var msg="";try{var errBody=await r.json();msg=errBody&&errBody.error&&errBody.error.message?String(errBody.error.message):"";}catch(_apiErr){}throw new Error("API "+r.status+(msg?": "+msg:""));}
-  return r.json();
+  throw new Error("Der gemeinsame KI-Zugang ist noch nicht eingerichtet. Bitte aktiviere die Supabase-Edge-Function „anthropic-proxy“. Ein API-Key auf diesem Gerät ist nicht erforderlich.");
 }
 
 // Date helpers
