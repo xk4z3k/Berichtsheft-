@@ -815,13 +815,55 @@ function findPageByDateFull(day,month,year,allowOccupied){
   return pg;
 }
 
+function mergePhotoIntoEntry(entry,result){
+  entry=entry||{};
+  var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
+  var daily=Object.assign({},entry.daily||{});
+  var priorText=String(entry.text||"").trim();
+  var fromText=parseTextToDays(priorText);
+  days.forEach(function(d){if(!String(daily[d]||"").trim()&&String(fromText[d]||"").trim())daily[d]=fromText[d];});
+  var hasDailyData=days.some(function(d){return String(daily[d]||"").trim();});
+  var parsed=parseTextToDays(result.text||"");
+  var skipped=false;
+  if(hasDailyData){
+    days.forEach(function(d){
+      var oldTxt=cleanDayPrefix(daily[d]||"");
+      var newTxt=cleanDayPrefix(parsed[d]||"");
+      var missing=!oldTxt||oldTxt==="[NICHT_ID]";
+      var replaceable=missing||(!result.singleDay&&isGenericWorkText(oldTxt));
+      if(replaceable&&newTxt)daily[d]=newTxt;
+      else if(result.singleDay&&d===result.workDay&&newTxt&&oldTxt)skipped=true;
+    });
+    entry.daily=daily;
+    var merged="";
+    days.forEach(function(d){if(String(daily[d]||"").trim())merged+=d+": "+cleanDayPrefix(daily[d])+"\n";});
+    entry.text=merged.trim();
+  }else if(result.singleDay&&priorText){
+    // Auch alten, nicht sauber nach Tagen formatierten Text stehen lassen.
+    entry.text=priorText+"\n"+String(result.text||"").trim();
+    entry.daily=parseTextToDays(entry.text);
+  }else{
+    entry.text=result.text||entry.text||"";
+    if(result.singleDay)entry.daily=parsed;
+  }
+  entry.done=false;
+  if(result.singleDay){
+    var rawDaily=Object.assign({},entry.rawDaily||{});
+    if(!rawDaily[result.workDay])rawDaily[result.workDay]=result.text||"";
+    entry.rawDaily=rawDaily;
+  }else{
+    entry.rawText=result.text||entry.rawText||"";
+  }
+  return {entry:entry,skippedDay:skipped};
+}
+
 // Generate
 async function generate(){
   if(!imgs.length)return;
   var btn=document.getElementById("mainBtn");btn.disabled=true;
   var statusDiv=document.getElementById("genStatus");
   statusDiv.style.display="block";statusDiv.textContent="Starte...";
-  var results=[];
+  var results=[],skippedDays=[];
   for(var i=0;i<imgs.length;i++){
     statusDiv.textContent="Bild "+(i+1)+"/"+imgs.length+" - analysiere...";
     var result=await analyzeImage(imgs[i],active+i);
@@ -834,31 +876,9 @@ async function generate(){
     if(isPageInFuture(confirmed)){alert("Seite "+confirmed+" liegt in der Zukunft!");continue;}
     if(!state.entries["P"+confirmed])state.entries["P"+confirmed]={};
     state.entries["P"+confirmed].type=result.type||"none";
-    var isSick=result.type==="sick",isVac=result.type==="vacation",isSchool=result.type==="school";
-    var hasIncomplete=result.text.indexOf("[NICHT_ID]")>=0;
-    var existDaily=state.entries["P"+confirmed].daily||{};
-    var hasDailyData=Object.keys(existDaily).some(function(k){return existDaily[k]&&existDaily[k].trim();});
-    if(hasDailyData){
-      var parsed2=parseTextToDays(result.text);
-      ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"].forEach(function(d){
-        var oldTxt=cleanDayPrefix(existDaily[d]||'');
-        var newTxt=cleanDayPrefix(parsed2[d]||'');
-        // Beim Neu-Scannen echte Bildinhalte wieder ueber alte Fuelltexte legen, aber echte vorhandene Texte nie loeschen.
-        if((!oldTxt || oldTxt==='[NICHT_ID]' || isGenericWorkText(oldTxt)) && newTxt){ existDaily[d]=newTxt; }
-      });
-      state.entries["P"+confirmed].daily=existDaily;
-      var merged="";["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"].forEach(function(d){if(existDaily[d])merged+=d+": "+cleanDayPrefix(existDaily[d])+"\n";});
-      state.entries["P"+confirmed].text=merged.trim();
-      var fc=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"].filter(function(d){return existDaily[d]&&existDaily[d].trim();}).length;
-      state.entries["P"+confirmed].done=false;
-    } else {
-      state.entries["P"+confirmed].text=result.text;
-      state.entries["P"+confirmed].done=false;
-    }
-    try{
-      // Originale KI-Ausgabe aus dem Bild separat behalten, damit spaetere Fuell-Fixes echte Bildinhalte wieder nutzen koennen.
-      state.entries["P"+confirmed].rawText=result.text||state.entries["P"+confirmed].rawText||"";
-    }catch(_raw){}
+    var mergedPhoto=mergePhotoIntoEntry(state.entries["P"+confirmed],result);
+    state.entries["P"+confirmed]=mergedPhoto.entry;
+    if(mergedPhoto.skippedDay)skippedDays.push("S"+confirmed+" "+result.workDay);
     try{
       var pp=parseEntries(state.entries["P"+confirmed].text||"");
       var cls=classifyParsedWeek(pp,state.entries["P"+confirmed]);
@@ -871,7 +891,7 @@ async function generate(){
     statusDiv.textContent="Seite "+confirmed+" gespeichert"+(i<imgs.length-1?" - weiter...":"");
   }
   imgs=[];rPrev();
-  if(results.length>0){active=results[0];statusDiv.textContent=results.length+" Seiten: "+results.map(function(p){return"S"+p;}).join(", ");}
+  if(results.length>0){active=results[0];statusDiv.textContent=results.length+" Seiten: "+results.map(function(p){return"S"+p;}).join(", ")+(skippedDays.length?" | Bereits befuellte Tage nicht ueberschrieben: "+skippedDays.join(", "):"");}
   renderAll();btn.textContent="Berichtsheft generieren";btn.disabled=false;
 }
 
