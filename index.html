@@ -703,6 +703,16 @@ function updTplStatus(){var el=document.getElementById("tplStatus");if(!el)retur
 
 // File handling
 function b64f(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(e){res(e.target.result.split(",")[1]);};r.onerror=rej;r.readAsDataURL(file);});}
+async function detectImageMediaType(file){
+  var bytes=new Uint8Array(await file.slice(0,16).arrayBuffer());
+  if(bytes.length>=3&&bytes[0]===0xFF&&bytes[1]===0xD8&&bytes[2]===0xFF)return "image/jpeg";
+  if(bytes.length>=8&&bytes[0]===0x89&&bytes[1]===0x50&&bytes[2]===0x4E&&bytes[3]===0x47&&bytes[4]===0x0D&&bytes[5]===0x0A&&bytes[6]===0x1A&&bytes[7]===0x0A)return "image/png";
+  if(bytes.length>=6&&String.fromCharCode.apply(null,bytes.slice(0,6)).match(/^GIF8[79]a$/))return "image/gif";
+  if(bytes.length>=12&&String.fromCharCode.apply(null,bytes.slice(0,4))==="RIFF"&&String.fromCharCode.apply(null,bytes.slice(8,12))==="WEBP")return "image/webp";
+  var declared=String(file.type||"image/jpeg").toLowerCase().split(";")[0].trim();
+  return declared||"image/jpeg";
+}
+
 function dov(e,id){e.preventDefault();document.getElementById(id).classList.add("drag-over");}
 function dlv(id){document.getElementById(id).classList.remove("drag-over");}
 function ddr(e,ctx){e.preventDefault();dlv(ctx==="scan"?"scanDrop":"mainDrop");var files=e.dataTransfer.files;if(ctx==="scan")hScan(files);else hFiles(files);}
@@ -817,7 +827,7 @@ async function generate(){
     var result=await analyzeImage(imgs[i],active+i);
     if(!result||result.error){statusDiv.textContent="Bild "+(i+1)+" Fehler: "+(result&&result.error?result.error:"Unbekannter Fehler");continue;}
     var imgB64=await b64f(imgs[i].file);
-    var imgDataUrl="data:"+(imgs[i].file.type||"image/jpeg")+";base64,"+imgB64;
+    var imgDataUrl="data:"+(result.mediaType||imgs[i].file.type||"image/jpeg")+";base64,"+imgB64;
     var confirmed=await confirmDate(imgDataUrl,result,active+i,i+1,imgs.length);
     if(confirmed===null)break;
     if(confirmed===-1)continue;
@@ -868,7 +878,8 @@ async function generate(){
 async function analyzeImage(imgObj,fallbackPage){
   try{
     var b=await b64f(imgObj.file);
-    var img=[{type:"image",source:{type:"base64",media_type:imgObj.file.type||"image/jpeg",data:b}}];
+    var mediaType=await detectImageMediaType(imgObj.file);
+    var img=[{type:"image",source:{type:"base64",media_type:mediaType,data:b}}];
     var metaPrompt='Bildtyp erkennen und Datum lesen. JSON: {"layout":"week/single_day","type":"sick/vacation/school/none","name":null,"day":null,"month":null,"year":null,"weekday":null}. "single_day" ist ein einzelner Arbeits-/Kundendienstnachweis mit einem Datum und einem Feld fuer ausgefuehrte Arbeiten; "week" ist ein Wochen-Berichtsheft. Bei week: day/month/year ist das Montag-Datum der Woche. Bei single_day: day/month/year ist das genaue Datum des Arbeitstages und weekday der Wochentag. year nur wenn lesbar, sonst null. type=sick nur bei Krankheit, vacation bei Urlaub/Feiertag/Betriebsurlaub, school nur bei Berufsschule/Unterricht/Innung, sonst none. Nichts raten.';
     var td=await apiCall([{role:"user",content:img.concat([{type:"text",text:metaPrompt}])}],180,null);
     var tr=(td&&td.content||[]).map(function(c){return c.text||"";}).join("").replace(/```json|```/g,"").trim();
@@ -899,7 +910,7 @@ async function analyzeImage(imgObj,fallbackPage){
       var activity=oneJson&&oneJson.activity?String(oneJson.activity).trim():oneRaw;
       activity=activity.replace(/^["']|["']$/g,"").trim();
       if(!activity)throw new Error("Kein lesbarer Arbeitstext erkannt.");
-      return {text:workDay+":\n"+activity,type:pt,day:day,month:month,year:year,singleDay:true,workDay:workDay};
+      return {text:workDay+":\n"+activity,type:pt,day:day,month:month,year:year,singleDay:true,workDay:workDay,mediaType:mediaType};
     }
     var extra="";
     if(pt==="sick")extra="\nErkrankung diese Woche - alle Tage: Erkrankung. - 0 Std.";
@@ -909,7 +920,7 @@ async function analyzeImage(imgObj,fallbackPage){
     var data=await apiCall([{role:"user",content:c3}],2000,SYSGEN);
     var text=(data&&data.content||[]).map(function(c){return c.text||"";}).join("\n").trim();
     if(!text)throw new Error("Die KI hat keinen Berichtstext zurueckgegeben.");
-    return {text:text,type:pt,day:day,month:month,year:year};
+    return {text:text,type:pt,day:day,month:month,year:year,mediaType:mediaType};
   }catch(err){console.error("analyzeImage",err);return {error:err&&err.message?err.message:"Unbekannter Fehler"};}
 }
 
