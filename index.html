@@ -819,42 +819,58 @@ function mergePhotoIntoEntry(entry,result){
   entry=entry||{};
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
   var daily=Object.assign({},entry.daily||{});
+  var qualityByDay=Object.assign({},entry.rawDailyQuality||{});
+  var rawDaily=Object.assign({},entry.rawDaily||{});
   var priorText=String(entry.text||"").trim();
   var fromText=parseTextToDays(priorText);
   days.forEach(function(d){if(!String(daily[d]||"").trim()&&String(fromText[d]||"").trim())daily[d]=fromText[d];});
   var hasDailyData=days.some(function(d){return String(daily[d]||"").trim();});
   var parsed=parseTextToDays(result.text||"");
-  var skipped=false;
+  var skipped=false,replaced=false,addedSingleDay=false;
   if(hasDailyData){
     days.forEach(function(d){
       var oldTxt=cleanDayPrefix(daily[d]||"");
       var newTxt=cleanDayPrefix(parsed[d]||"");
       var missing=!oldTxt||oldTxt==="[NICHT_ID]";
       var replaceable=missing||(!result.singleDay&&isGenericWorkText(oldTxt));
-      if(replaceable&&newTxt)daily[d]=newTxt;
-      else if(result.singleDay&&d===result.workDay&&newTxt&&oldTxt)skipped=true;
+      if(result.singleDay&&d===result.workDay&&newTxt&&!missing&&oldTxt){
+        var hasStoredQuality=Object.prototype.hasOwnProperty.call(qualityByDay,d)&&isFinite(Number(qualityByDay[d]));
+        var oldRawTxt=cleanDayPrefix(rawDaily[d]||"");
+        var rawMatchesDisplayed=!!oldRawTxt&&oldRawTxt===oldTxt;
+        var hasOldQuality=hasStoredQuality||rawMatchesDisplayed;
+        var oldQuality=hasStoredQuality?Number(qualityByDay[d]):0;
+        var newQuality=isFinite(Number(result.quality))?Number(result.quality):0;
+        if(hasOldQuality&&newQuality>oldQuality){daily[d]=newTxt;addedSingleDay=true;replaced=true;}
+        else skipped=true;
+      }else if(replaceable&&newTxt){
+        daily[d]=newTxt;
+        if(result.singleDay&&d===result.workDay)addedSingleDay=true;
+      }
     });
     entry.daily=daily;
     var merged="";
     days.forEach(function(d){if(String(daily[d]||"").trim())merged+=d+": "+cleanDayPrefix(daily[d])+"\n";});
     entry.text=merged.trim();
   }else if(result.singleDay&&priorText){
-    // Auch alten, nicht sauber nach Tagen formatierten Text stehen lassen.
     entry.text=priorText+"\n"+String(result.text||"").trim();
     entry.daily=parseTextToDays(entry.text);
+    addedSingleDay=true;
   }else{
     entry.text=result.text||entry.text||"";
-    if(result.singleDay)entry.daily=parsed;
+    if(result.singleDay){entry.daily=parsed;addedSingleDay=true;}
   }
   entry.done=false;
   if(result.singleDay){
-    var rawDaily=Object.assign({},entry.rawDaily||{});
-    if(!rawDaily[result.workDay])rawDaily[result.workDay]=result.text||"";
+    if(addedSingleDay){
+      rawDaily[result.workDay]=result.text||"";
+      qualityByDay[result.workDay]=isFinite(Number(result.quality))?Number(result.quality):0;
+    }
     entry.rawDaily=rawDaily;
+    entry.rawDailyQuality=qualityByDay;
   }else{
     entry.rawText=result.text||entry.rawText||"";
   }
-  return {entry:entry,skippedDay:skipped};
+  return {entry:entry,skippedDay:skipped,replacedDay:replaced};
 }
 
 // Generate
@@ -863,7 +879,7 @@ async function generate(){
   var btn=document.getElementById("mainBtn");btn.disabled=true;
   var statusDiv=document.getElementById("genStatus");
   statusDiv.style.display="block";statusDiv.textContent="Starte...";
-  var results=[],skippedDays=[];
+  var results=[],skippedDays=[],replacedDays=[];
   for(var i=0;i<imgs.length;i++){
     statusDiv.textContent="Bild "+(i+1)+"/"+imgs.length+" - analysiere...";
     var result=await analyzeImage(imgs[i],active+i);
@@ -879,6 +895,7 @@ async function generate(){
     var mergedPhoto=mergePhotoIntoEntry(state.entries["P"+confirmed],result);
     state.entries["P"+confirmed]=mergedPhoto.entry;
     if(mergedPhoto.skippedDay)skippedDays.push("S"+confirmed+" "+result.workDay);
+    if(mergedPhoto.replacedDay)replacedDays.push("S"+confirmed+" "+result.workDay);
     try{
       var pp=parseEntries(state.entries["P"+confirmed].text||"");
       var cls=classifyParsedWeek(pp,state.entries["P"+confirmed]);
@@ -891,7 +908,7 @@ async function generate(){
     statusDiv.textContent="Seite "+confirmed+" gespeichert"+(i<imgs.length-1?" - weiter...":"");
   }
   imgs=[];rPrev();
-  if(results.length>0){active=results[0];statusDiv.textContent=results.length+" Seiten: "+results.map(function(p){return"S"+p;}).join(", ")+(skippedDays.length?" | Bereits befuellte Tage nicht ueberschrieben: "+skippedDays.join(", "):"");}
+  if(results.length>0){active=results[0];statusDiv.textContent=results.length+" Seiten: "+results.map(function(p){return"S"+p;}).join(", ")+(replacedDays.length?" | Besser lesbare Duplikate genommen: "+replacedDays.join(", "):"")+(skippedDays.length?" | Vorhandene Eintraege beibehalten: "+skippedDays.join(", "):"");}
   renderAll();btn.textContent="Berichtsheft generieren";btn.disabled=false;
 }
 
@@ -923,14 +940,16 @@ async function analyzeImage(imgObj,fallbackPage){
         workDay=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][defaultDate.getDay()];
       }
       if(!/^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)$/.test(workDay))throw new Error("Der Arbeitstag konnte nicht bestimmt werden.");
-      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm den vorhandenen Inhalt so knapp und originalgetreu wie moeglich als kurze Stichpunkte. Keine ganzen Saetze, keine Einleitung, keine Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\\n- Stichpunkt"}.';
+      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm den vorhandenen Inhalt so knapp und originalgetreu wie moeglich als kurze Stichpunkte. Keine ganzen Saetze, keine Einleitung, keine Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\\n- Stichpunkt","confidence":0}. confidence ist 0 bis 100 und bewertet nur, wie klar und vollstaendig die Handschrift im Foto lesbar ist, nicht wie plausibel der Inhalt klingt.';
       var one=await apiCall([{role:"user",content:img.concat([{type:"text",text:onePrompt}])}],700,null);
       var oneRaw=(one&&one.content||[]).map(function(c){return c.text||"";}).join("\n").replace(/```json|```/g,"").trim();
       var oneJson=null;try{oneJson=JSON.parse(oneRaw);}catch(e){var om=oneRaw.match(/\{[\s\S]*\}/);if(om)try{oneJson=JSON.parse(om[0]);}catch(_oneErr){}}
       var activity=oneJson&&oneJson.activity?String(oneJson.activity).trim():oneRaw;
       activity=activity.replace(/^["']|["']$/g,"").trim();
+      var quality=oneJson&&oneJson.confidence!==undefined?Number(oneJson.confidence):0;
+      if(!isFinite(quality))quality=0;quality=Math.max(0,Math.min(100,quality));
       if(!activity)throw new Error("Kein lesbarer Arbeitstext erkannt.");
-      return {text:workDay+":\n"+activity,type:pt,day:day,month:month,year:year,singleDay:true,workDay:workDay,mediaType:mediaType};
+      return {text:workDay+":\n"+activity,type:pt,day:day,month:month,year:year,singleDay:true,workDay:workDay,mediaType:mediaType,quality:quality};
     }
     var extra="";
     if(pt==="sick")extra="\nErkrankung diese Woche - alle Tage: Erkrankung. - 0 Std.";
@@ -942,6 +961,12 @@ async function analyzeImage(imgObj,fallbackPage){
     if(!text)throw new Error("Die KI hat keinen Berichtstext zurueckgegeben.");
     return {text:text,type:pt,day:day,month:month,year:year,mediaType:mediaType};
   }catch(err){console.error("analyzeImage",err);return {error:err&&err.message?err.message:"Unbekannter Fehler"};}
+}
+
+function getExistingReportDayText(pageNum,dayName){
+  var e=state.entries["P"+pageNum]||{};
+  var value=(e.daily&&e.daily[dayName])||parseTextToDays(e.text||"")[dayName]||"";
+  return cleanDayPrefix(value);
 }
 
 function confirmDate(imgDataUrl,result,fallback,num,total){
@@ -980,7 +1005,7 @@ function confirmDate(imgDataUrl,result,fallback,num,total){
       if(d>0&&m>0){
         var pg=y>2019?findPageByDateFull(d,m,y,true,result.singleDay===true):findPageByDate(d,m,true);
         if(pg===-3){hint.textContent="\u26a0 Datum in der Zukunft - nicht erlaubt";hint.style.color="#e74c3c";}
-        else if(pg>0){var ht=state.entries["P"+pg]&&state.entries["P"+pg].text&&state.entries["P"+pg].text.trim().length>10;hint.textContent=(ht?"\u26a0 ":"")+"Seite "+pg+" ("+pLabel(pg)+")"+(ht?" - wird ueberschrieben":"");hint.style.color=ht?"#e67e22":"var(--moss)";}
+        else if(pg>0){var ht=state.entries["P"+pg]&&state.entries["P"+pg].text&&state.entries["P"+pg].text.trim().length>10;var detail="";if(result.singleDay){var oldDay=getExistingReportDayText(pg,result.workDay);var hasScore=!!(state.entries["P"+pg]&&state.entries["P"+pg].rawDailyQuality&&Object.prototype.hasOwnProperty.call(state.entries["P"+pg].rawDailyQuality,result.workDay));detail=oldDay?(hasScore?" - Duplikat: bessere Abschrift wird gewaehlt":" - Tag befuellt; vorhandener Text bleibt"):" - nur "+result.workDay+" wird ergaenzt";}else detail=ht?" - wird ueberschrieben":"";hint.textContent=(ht&&!result.singleDay?"\u26a0 ":"")+"Seite "+pg+" ("+pLabel(pg)+")"+detail;hint.style.color=(ht&&!result.singleDay)||result.singleDay&&oldDay?"#e67e22":"var(--moss)";}
         else{hint.textContent="Datum nicht im bekannten Bereich";hint.style.color="#e74c3c";}
       }else hint.textContent="";
     }
@@ -990,7 +1015,7 @@ function confirmDate(imgDataUrl,result,fallback,num,total){
       if(d>0&&m>0){
         var pg=y>2019?findPageByDateFull(d,m,y,true,result.singleDay===true):findPageByDate(d,m,true);
         if(pg===-3){alert("Datum liegt in der Zukunft!");return;}
-        if(pg>0){var ht=state.entries["P"+pg]&&state.entries["P"+pg].text&&state.entries["P"+pg].text.trim().length>10;if(ht&&!confirm("Seite "+pg+" hat Text. Ueberschreiben?"))return;box.remove();resolve(pg);return;}
+        if(pg>0){var ht=state.entries["P"+pg]&&state.entries["P"+pg].text&&state.entries["P"+pg].text.trim().length>10;if(ht&&!result.singleDay&&!confirm("Seite "+pg+" hat Text. Ueberschreiben?"))return;box.remove();resolve(pg);return;}
       }
       if(confirm("Datum nicht gefunden. Auf Seite "+fallback+" speichern?")){box.remove();resolve(fallback);}
     };
