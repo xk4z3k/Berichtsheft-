@@ -414,7 +414,7 @@ var THEMES=[
   {n:"White",c1:"#f5f5f5",c2:"#eeeeee",c3:"#e0e0e0",c4:"#cccccc",neon:"#222222",neon2:"#444444",moss:"#336633",moss2:"#224422",amber:"#664400",sw:"#222222"}
 ];
 
-var SYSGEN="Du hilfst einem Elektroniker-Azubi beim Berichtsheft.\n\nABSOLUT VERBOTEN - NIEMALS:\n- Firmennamen, Kundennamen, Ortsnamen (Wittislingen, Muster GmbH etc.)\n- Den Wochentag im Fliesstext nennen (NICHT: 'Am Montag...' oder 'Mittwoch (23.10):')\n- Das Datum im Fliesstext\n- Jeden Satz gleich beginnen\n- Aus unvollstaendigen Woertern etwas erfinden (NIEMALS aus 'Betriebs-' 'Betriebsausflug' machen)\n\nFORMAT:\nMontag (DD.MM): [Taetigkeitstext ohne Wochentag/Datum im Text] - HH:MM-HH:MM\nDienstag (DD.MM): [Text] - HH:MM-HH:MM\n\nARBEITSZEITEN wenn nicht lesbar:\n- Mo-Do: 07:30-16:30\n- Fr: 07:30-12:00\n\nFORTLAUFENDE STRICHE / WIEDERHOLUNGEN:\n- Wenn ein Eintrag mit einem senkrechten Strich/Weiterfuehrungsstrich ueber mehrere Tage geht, denselben Text fuer diese Tage wiederholen.\n- Wenn z.B. Montag bis Donnerstag Berufsschule ist und Freitag krank, dann Montag-Donnerstag Berufsschule und Freitag Erkrankung.\n- Wenn nur ein Status wie Urlaub/Krank/Berufsschule steht und die folgenden Tage durch Strich/Leerfeld fortlaufen, denselben Status bis zum naechsten anderen Eintrag setzen.\n- Wenn ein Wort abgeschnitten ist (z.B. 'Betriebs-'), auf der Seite nach dem vollstaendigen Sinn suchen. 'Betriebs-' mit Urlaub/Betriebsurlaub-Kontext bedeutet Urlaub, NICHT Betriebsausflug.\n\nSATZANFAENGE abwechseln: 'Anschliessend...', 'Im Rahmen der Installation...', 'Die Montage...', 'Dabei wurden...', 'Weiterhin...', 'Zuletzt...'\n\nFACHBEGRIFFE: Unterputzdose, Leerrohr, NYM-Kabel, FI-Schutzschalter, Leitungsschutzschalter, Kabeltrasse, Schaltschrank, Klemmleiste, Potentialausgleich\n\nSPEZIAL:\n- Tag leer: [NICHT_ID]\n- krank/erkrankt: Erkrankung. - 0 Std.\n- Urlaub/Betriebsurlaub/Betriebsferien: Urlaub. - 0 Std.\n- Berufsschule/Innung/echter Unterricht: Berufsschule. - 07:00-16:30\n- Feiertag/schulfrei: Feiertag. - 0 Std. (nicht als Schule werten)\nNIEMALS krank mit Urlaub verwechseln! NIEMALS Feiertag/Schulfrei als Berufsschule werten! NIEMALS Betriebsausflug erfinden!\n\nNur den Text. Kein Kommentar. Deutsch.";
+var SYSGEN="Du hilfst einem Elektroniker-Azubi beim Berichtsheft.\n\nPRIORITAET:\n- Nur Taetigkeiten uebernehmen, die auf der Seite stehen oder eindeutig erkennbar sind. Nichts erfinden.\n- Wenn ein vorhandener Eintrag schon kurz, konkret und verstaendlich ist, moeglichst originalgetreu uebernehmen. Nicht ausschmuecken, verlaengern oder in ganze Saetze umwandeln.\n- Material, Kabeltypen, Querschnitte, Geraete und Bauteile nur nennen, wenn sie auf der Seite lesbar sind. Niemals technische Angaben raten.\n- Unleserliche oder leere Tage: [NICHT_ID]. Keine Luecken mit erfundenen Taetigkeiten fuellen.\n\nSTIL:\n- Nur kurze Stichpunkte, keine ganzen Saetze, keine Einleitungen und keine Fuellsaetze.\n- Pro Tag nur so viele Stichpunkte, wie die Quelle hergibt. Lieber ein korrekter Punkt als zusaetzlicher erfundener Inhalt.\n- Konkrete Arbeitsschritte und wichtige Materialien/Bauteile nennen, zum Beispiel Bohren, Kabel verlegen, Druckknopfmelder montieren.\n- Keine Firmennamen, Kundennamen oder Ortsnamen.\n- Wochentag und Datum nur in der Zeilenueberschrift, nie im Taetigkeitstext.\n- Keine wechselnden Satzanfaenge wie „Anschliessend“ oder „Weiterhin“.\n\nFORMAT:\nMontag (DD.MM):\n- [kurzer Stichpunkt]\n- [kurzer Stichpunkt]\nDienstag (DD.MM):\n- [kurzer Stichpunkt]\n- [kurzer Stichpunkt]\nArbeitszeit je Tag separat als HH:MM-HH:MM angeben, wenn lesbar.\n\nARBEITSZEITEN wenn nicht lesbar:\n- Mo-Do: 07:30-16:30\n- Fr: 07:30-12:00\n\nFORTLAUFENDE STRICHE / WIEDERHOLUNGEN:\n- Senkrechte Weiterfuehrungsstriche ueber mehrere Tage bedeuten denselben Eintrag fuer diese Tage.\n- Status wie Berufsschule, Krankheit oder Urlaub bis zum naechsten erkennbaren Eintrag fortsetzen, wenn Striche/Leerfelder das eindeutig zeigen.\n- Bei abgeschnittenen Woertern den Sinn nicht erfinden. „Betriebs-“ mit erkennbarem Urlaubskontext bedeutet Urlaub, nicht Betriebsausflug.\n\nSPEZIAL:\n- Tag leer: [NICHT_ID]\n- krank/erkrankt: Erkrankung. - 0 Std.\n- Urlaub/Betriebsurlaub/Betriebsferien: Urlaub. - 0 Std.\n- Berufsschule/Innung/echter Unterricht: Berufsschule. - 07:00-16:30\n- Feiertag/schulfrei: Feiertag. - 0 Std. (nicht als Schule werten)\nNIEMALS Krankheit mit Urlaub verwechseln. NIEMALS Feiertag/Schulfrei als Berufsschule werten. NIEMALS Betriebsausflug erfinden.\n\nNur den Text ausgeben. Kein Kommentar. Deutsch."
 
 var KEY_VAR="bhz_k";
 var state={entries:{},totalPages:1,startDate:null,userName:"",sickDays:[],vacDays:[],schoolDays:[],isOwner:false};
@@ -1756,7 +1756,7 @@ function mergeRawImageContent(parsed, entry){
   return out;
 }
 
-function prepareParsedForDocx(parsed, entry){
+function prepareParsedForDocx(parsed, entry, fillMissingWork){
   parsed=mergeRawImageContent(parsed, entry||{});
   var out=Object.assign({}, parsed||{});
   ['mon','tue','wed','thu','fri'].forEach(function(k){ out[k]=cleanDayPrefix(out[k]||''); });
@@ -1792,19 +1792,20 @@ function prepareParsedForDocx(parsed, entry){
       }
     });
     out.__classifiedType='school';
-    return out;
+      // Originaltexte fuer Anzeige und Export bewahren; leere Tage bleiben leer.
+  // Auffuellen passiert nur nach ausdruecklichem Klick auf „Echttext behalten / auffuellen“.
+  if(fillMissingWork){
+    var used={};
+    keys.forEach(function(k){
+      var st=dayStatus(out[k]);
+      if(st==='work' && out[k] && out[k]!=='[NICHT_ID]' && !isGenericWorkText(out[k])) used[normTask(out[k])]=true;
+    });
+    keys.forEach(function(k){
+      var st=dayStatus(out[k]);
+      if(st==='work' || st==='empty') out[k]=makeWorkText(out[k], out, used, pageNum, k);
+    });
   }
-
-  // Normale Arbeitswoche: echte Texte behalten, aber leere/zu kurze/generische Tage auffuellen.
-  var used={};
-  keys.forEach(function(k){
-    var st=dayStatus(out[k]);
-    if(st==='work' && out[k] && out[k]!=='[NICHT_ID]' && !isGenericWorkText(out[k])) used[normTask(out[k])]=true;
-  });
-  keys.forEach(function(k){
-    var st=dayStatus(out[k]);
-    if(st==='work' || st==='empty'){
-      out[k]=makeWorkText(out[k], out, used, pageNum, k);
+ k);
     }
   });
   out.__classifiedType=classifyParsedWeek(out, entry||{});
@@ -1820,7 +1821,7 @@ function fillSelectedEmptyDays(){
     if(!e || !e.text) return;
     var parsed=parseEntries(e.text);
     var before=JSON.stringify(parsed)+'|'+(e.type||'');
-    parsed=prepareParsedForDocx(parsed,{type:e.type,__pageNum:n});
+    parsed=prepareParsedForDocx(parsed,{type:e.type,__pageNum:n},true);
     parsed=normalizeParsedTimes(parsed,true);
     var cls=parsed.__classifiedType || classifyParsedWeek(parsed,e);
     if(cls==='school') e.type='school';
