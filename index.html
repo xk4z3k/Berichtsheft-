@@ -473,7 +473,7 @@ function afterLogin(){
 async function doLogout(){closeSB();if(supabaseClient)await supabaseClient.auth.signOut();}
 function doSaveKey(){var k=document.getElementById("apiInp").value.trim();if(!k||k.length<10){alert("Ungueltiger Key.");return;}sKey(k);alert("Key gespeichert!");afterLogin();}
 function updKey(){var k=document.getElementById("newKeyInp").value.trim();if(!k||k.length<10){alert("Ungueltiger Key.");return;}sKey(k);alert("Key aktualisiert!");}
-function saveTrainingStartDate(){var v=document.getElementById("trainingStartInput").value;if(!v){alert("Bitte zuerst ein Datum auswaehlen.");return;}var p=v.split("-").map(Number),d=new Date(p[0],p[1]-1,p[2]);if(!p[0]||d.getFullYear()!==p[0]||d.getMonth()!==p[1]-1||d.getDate()!==p[2]){alert("Das Datum ist ungueltig.");return;}var dow=d.getDay();d.setDate(d.getDate()+(dow===0?-6:1-dow));state.startDate=(d.getDate()<10?"0":"")+d.getDate()+"."+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"."+d.getFullYear();var today=new Date();today.setHours(0,0,0,0);var weeks=Math.max(1,Math.floor((today-d)/(7*24*3600*1000))+1);state.totalPages=Math.max(state.totalPages||1,weeks);sv();active=Math.min(getTodayPage(),state.totalPages);alert("Ausbildungsbeginn gespeichert: "+state.startDate);}
+function saveTrainingStartDate(){var v=document.getElementById("trainingStartInput").value;if(!v){alert("Bitte zuerst ein Datum auswaehlen.");return;}var p=v.split("-").map(Number),d=new Date(p[0],p[1]-1,p[2]);if(!p[0]||d.getFullYear()!==p[0]||d.getMonth()!==p[1]-1||d.getDate()!==p[2]){alert("Das Datum ist ungueltig.");return;}var dow=d.getDay();d.setDate(d.getDate()+(dow===0?-6:1-dow));state.startDate=(d.getDate()<10?"0":"")+d.getDate()+"."+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"."+d.getFullYear();var today=new Date();today.setHours(0,0,0,0);var weeks=Math.max(1,Math.floor((calendarDayNumber(today)-calendarDayNumber(d))/7)+1);state.totalPages=Math.max(state.totalPages||1,weeks);sv();active=Math.min(getTodayPage(),state.totalPages);alert("Ausbildungsbeginn gespeichert: "+state.startDate);}
 async function resetApp(){if(!confirm("Alle Berichtsheft-Daten dieses Kontos loeschen?"))return;try{if(supabaseClient&&cloudUser){var r=await supabaseClient.from("berichtsheft_data").delete().eq("user_id",cloudUser.id);if(r.error)throw r.error;localStorage.removeItem(accountCacheKey(cloudUser.id));}["bhz_v1","bhz_state","berichtsheft_v1","bhz","bhz_k","bhz_tpl","bhz_theme","bhz_sig"].forEach(function(k){localStorage.removeItem(k);});location.reload();}catch(e){alert("Cloud-Daten konnten nicht geloescht werden: "+e.message);}}
 
 // API
@@ -486,12 +486,14 @@ async function apiCall(messages,maxTokens,sysPrompt){
 }
 
 // Date helpers
-function getMon(s){var p=s.split(".");if(p.length<3)return new Date();var dt=new Date(+p[2],+p[1]-1,+p[0]);var dy=dt.getDay(),df=dy===0?-6:1-dy;dt.setDate(dt.getDate()+df);return dt;}
-function getTodayPage(){if(!state.startDate)return active;var s=getMon(state.startDate),t=new Date(),d=Math.floor((t.getTime()-s.getTime())/(7*24*3600*1000));return Math.max(1,Math.min(d+1,state.totalPages));}
-function pLabel(n){if(!state.startDate)return "Seite "+n;var sm=getMon(state.startDate);var ms=new Date(sm.getTime()+(n-1)*7*24*3600*1000);var me=new Date(ms.getTime()+4*24*3600*1000);function fmt(d){return d.getDate()+"."+(d.getMonth()+1)+".";}return fmt(ms)+" - "+fmt(me);}
-function isPageInFuture(p){if(!state.startDate)return false;var sm=getMon(state.startDate);var pd=new Date(sm.getTime()+(p-1)*7*24*3600*1000);var t=new Date();t.setHours(0,0,0,0);return pd>t;}
-function getAusbildungsjahr(pageNum){if(!state.startDate)return "1";var s=getMon(state.startDate);var pm=new Date(s.getTime()+(pageNum-1)*7*24*3600*1000);var sy=s.getFullYear();var sc=new Date(sy,8,1);// Sep 1
-if(s<sc)sc=new Date(sy-1,8,1);var diff=pm.getFullYear()-sc.getFullYear()+(pm<new Date(pm.getFullYear(),8,1)?0:0);var yr=Math.floor((pm.getTime()-sc.getTime())/(365.25*24*3600*1000))+1;return Math.max(1,Math.min(yr,3)).toString();}
+function getMon(s){var p=s.split(".");if(p.length<3)return new Date();var dt=new Date(+p[2],+p[1]-1,+p[0]);var dy=dt.getDay(),df=dy===0?-6:1-dy;dt.setDate(dt.getDate()+df);dt.setHours(0,0,0,0);return dt;}
+function addCalendarDays(date,days){return new Date(date.getFullYear(),date.getMonth(),date.getDate()+days);}
+function calendarDayNumber(date){return Math.floor(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())/86400000);}
+function getTodayPage(){if(!state.startDate)return active;var s=getMon(state.startDate),t=new Date(),d=Math.floor((calendarDayNumber(t)-calendarDayNumber(s))/7);return Math.max(1,Math.min(d+1,state.totalPages));}
+function pLabel(n){if(!state.startDate)return "Seite "+n;var sm=getMon(state.startDate);var ms=addCalendarDays(sm,(n-1)*7);var me=addCalendarDays(ms,4);function fmt(d){return d.getDate()+"."+(d.getMonth()+1)+".";}return fmt(ms)+" - "+fmt(me);}
+function isPageInFuture(p){if(!state.startDate)return false;var sm=getMon(state.startDate);var pd=addCalendarDays(sm,(p-1)*7);var t=new Date();t.setHours(0,0,0,0);return pd>t;}
+function getAusbildungsjahr(pageNum){if(!state.startDate)return "1";var s=getMon(state.startDate);var pm=addCalendarDays(s,(pageNum-1)*7);var sy=s.getFullYear();var sc=new Date(sy,8,1);// Sep 1
+if(s<sc)sc=new Date(sy-1,8,1);var diff=pm.getFullYear()-sc.getFullYear()+(pm<new Date(pm.getFullYear(),8,1)?0:0);var yr=Math.floor((calendarDayNumber(pm)-calendarDayNumber(sc))/365.25)+1;return Math.max(1,Math.min(yr,3)).toString();}
 
 // Navigation
 function hideAll(){["loginScreen","passwordUpdatePanel","apiScreen","firstStart","home","statsPanel","templatePanel","settingsPanel","sharePanel"].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display="none";});var rb=document.getElementById("room-bg");if(rb)rb.style.display="none";}
@@ -762,7 +764,7 @@ async function doScan(){
         var d2=dt.getDate(),m2=dt.getMonth()+1,y2=dt.getFullYear();
         var fmt=(d2<10?"0":"")+d2+"."+(m2<10?"0":"")+m2+"."+y2;
         state.startDate=fmt;
-        var today=new Date(),weeks=Math.ceil((today.getTime()-dt.getTime())/(7*24*3600*1000));
+        var today=new Date(),weeks=Math.ceil((calendarDayNumber(today)-calendarDayNumber(dt))/7);
         state.totalPages=Math.max(1,weeks);
         if(parsed.name)state.userName=parsed.name;
         sv();active=getTodayPage();
@@ -790,7 +792,7 @@ function findPageByDate(day,month,allowOccupied){
   if(!day||!month||!state.startDate)return -1;
   var sm=getMon(state.startDate);
   for(var w=0;w<state.totalPages+4;w++){
-    var c=new Date(sm.getTime()+w*7*24*3600*1000);
+    var c=addCalendarDays(sm,w*7);
     if(c.getDate()===day&&(c.getMonth()+1)===month){
       var pg=w+1;
       if(isPageInFuture(pg))return -3;
@@ -807,7 +809,7 @@ function findPageByDateFull(day,month,year,allowOccupied,allowFuture){
   var sm=getMon(state.startDate);
   var target=new Date(year,month-1,day);
   if(target.getDay()!==1){var dow=target.getDay();target.setDate(target.getDate()+(dow===0?-6:1-dow));}
-  var diff=Math.round((target.getTime()-sm.getTime())/(7*24*3600*1000));
+  var diff=Math.round((calendarDayNumber(target)-calendarDayNumber(sm))/7);
   if(diff<0||diff>=500)return -1;
   var pg=diff+1;
   if(!allowFuture&&isPageInFuture(pg))return -3;
@@ -1481,7 +1483,7 @@ function buildPrintPage(pageNum,text,weekLabel){
   var year=(function(){
   if(!state.startDate)return new Date().getFullYear().toString().slice(2);
   var sm=getMon(state.startDate);
-  var pageDate=new Date(sm.getTime()+(pageNum-1)*7*24*3600*1000);
+  var pageDate=addCalendarDays(sm,(pageNum-1)*7);
   return pageDate.getFullYear().toString().slice(2);
 })();
   var ausbildungsjahr=getAusbildungsjahr(pageNum);
@@ -2432,7 +2434,7 @@ async function _buildAndDownloadMulti(pages, singlePageParsed){
     function getYear(pageNum){
       if(!state.startDate) return new Date().getFullYear().toString().slice(2);
       var sm = getMon(state.startDate);
-      var pd = new Date(sm.getTime() + (pageNum-1)*7*24*3600*1000);
+      var pd = addCalendarDays(sm,(pageNum-1)*7);
       return pd.getFullYear().toString().slice(2);
     }
 
