@@ -862,6 +862,27 @@ function appendReportWithoutLosingOld(oldText,newText){
   return oldValue+"\n\n"+newValue;
 }
 
+function extractDailyWorkHours(text){
+  var m=String(text||"").match(/(?:Arbeitszeit(?:raum)?\s*:\s*)?(\d{1,2}:\d{2}\s*[-–]\s*\d{1,2}:\d{2})/i);
+  return m?m[1].replace(/\s+/g,""):"";
+}
+function stripDailyWorkHours(text){
+  return String(text||"").replace(/\r\n?/g,"\n").split("\n")
+    .filter(function(line){return !/^\s*Arbeitszeit(?:raum)?\s*:/i.test(line);})
+    .map(function(line){return line.replace(/\s*Arbeitszeit(?:raum)?\s*:\s*\d{1,2}:\d{2}\s*[-–]\s*\d{1,2}:\d{2}\s*$/i,"").trim();})
+    .filter(Boolean).join("\n").trim();
+}
+function buildWeekReportText(daily,days,workHours){
+  var rows=[];
+  days.forEach(function(day){
+    var body=String(daily[day]||"").trim();
+    if(!body)return;
+    rows.push(day+": "+body);
+    if(workHours&&workHours[day])rows.push("Arbeitszeit: "+workHours[day]);
+  });
+  return rows.join("\n");
+}
+
 function mergePhotoIntoEntry(entry,result){
   entry=entry||{};
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
@@ -869,15 +890,26 @@ function mergePhotoIntoEntry(entry,result){
   var qualityByDay=Object.assign({},entry.rawDailyQuality||{});
   var rawDaily=Object.assign({},entry.rawDaily||{});
   var itemQualityByDay=Object.assign({},entry.rawDailyItems||{});
+  var workHours=Object.assign({},entry.dayWorkTimes||{});
+  var photoCountByDay=Object.assign({},entry.rawDailyPhotoCount||{});
   var priorText=String(entry.text||"").trim();
   var fromText=parseTextToDays(cleanReportFormatting(priorText));
-  days.forEach(function(d){if(!String(daily[d]||"").trim()&&String(fromText[d]||"").trim())daily[d]=fromText[d];});
+  days.forEach(function(d){
+    var priorDay=String(daily[d]||fromText[d]||"");
+    var extracted=extractDailyWorkHours(String(daily[d]||"")+"\n"+String(fromText[d]||""));
+    if(extracted&&!workHours[d])workHours[d]=extracted;
+    if(!String(daily[d]||"").trim()&&String(fromText[d]||"").trim())daily[d]=stripDailyWorkHours(fromText[d]);
+    else if(String(daily[d]||"").trim())daily[d]=stripDailyWorkHours(daily[d]);
+  });
   var hasDailyData=days.some(function(d){return String(daily[d]||"").trim();});
-  var parsed=parseTextToDays(result.text||"");
+  var parsed=parseTextToDays(cleanReportFormatting(result.text||""));
+  days.forEach(function(d){var extracted=extractDailyWorkHours(parsed[d]||"");if(extracted&&!workHours[d])workHours[d]=extracted;if(parsed[d])parsed[d]=stripDailyWorkHours(parsed[d]);});
   var skipped=false,replaced=false,addedSingleDay=false;
   if(result.singleDay){
     var d=result.workDay;
-    var oldTxt=cleanDayPrefix(daily[d]||"");
+    var priorPhotoCount=Number(photoCountByDay[d])||0;if(!priorPhotoCount&&(rawDaily[d]||itemQualityByDay[d]))priorPhotoCount=1;photoCountByDay[d]=priorPhotoCount+1;
+    if(photoCountByDay[d]>=2&&!workHours[d])workHours[d]="07:30-16:30";
+    var oldTxt=stripDailyWorkHours(cleanDayPrefix(daily[d]||""));
     var newTxt=dailyPhotoTextForDay(result.text||"",d);
     var missing=!oldTxt||oldTxt==="[NICHT_ID]";
     var newItems=dailyPhotoItems(newTxt);
@@ -932,14 +964,16 @@ function mergePhotoIntoEntry(entry,result){
     entry.daily=daily;
     var merged="";
     days.forEach(function(day){if(String(daily[day]||"").trim())merged+=day+": "+cleanDayPrefix(daily[day])+"\n";});
-    if(priorText&&!days.some(function(day){return String(fromText[day]||"").trim();})){entry.text=appendReportWithoutLosingOld(priorText,d+": "+String(daily[d]||"").trim());}else{entry.text=days.filter(function(day){return String(daily[day]||"").trim();}).map(function(day){return day+": "+String(daily[day]).trim();}).join("\n");}
+    if(priorText&&!days.some(function(day){return String(fromText[day]||"").trim();})){var newDayText=d+": "+String(daily[d]||"").trim()+(workHours[d]?"\nArbeitszeit: "+workHours[d]:"");entry.text=appendReportWithoutLosingOld(priorText,newDayText);}else{entry.text=buildWeekReportText(daily,days,workHours);}
     entry.rawDaily=rawDaily;
     entry.rawDailyQuality=qualityByDay;
     entry.rawDailyItems=itemQualityByDay;
+    entry.dayWorkTimes=workHours;
+    entry.rawDailyPhotoCount=photoCountByDay;
   }else{
     if(hasDailyData){
       days.forEach(function(day){
-        var oldText=cleanDayPrefix(daily[day]||"");
+        var oldText=stripDailyWorkHours(cleanDayPrefix(daily[day]||""));
         var newText=cleanDayPrefix(parsed[day]||"");
         var missing=!oldText||oldText==="[NICHT_ID]";
         if((missing||isGenericWorkText(oldText))&&newText)daily[day]=newText;
@@ -950,13 +984,13 @@ function mergePhotoIntoEntry(entry,result){
       }else{
         var mergedWeek="";
         days.forEach(function(day){if(String(daily[day]||"").trim())mergedWeek+=day+": "+cleanDayPrefix(daily[day])+"\n";});
-        entry.text=mergedWeek.trim();
+        entry.text=buildWeekReportText(daily,days,workHours);
       }
     }else{
       entry.text=appendReportWithoutLosingOld(priorText,cleanReportFormatting(result.text||""));
       entry.daily=Object.assign({},daily,parsed);
     }
-    entry.rawText=result.text||entry.rawText||"";
+    entry.rawText=result.text||entry.rawText||"";entry.dayWorkTimes=workHours;entry.rawDailyPhotoCount=photoCountByDay;
   }
   entry.done=false;
   return {entry:entry,skippedDay:skipped,replacedDay:replaced,addedDay:addedSingleDay};
@@ -1033,7 +1067,7 @@ async function analyzeImage(imgObj,fallbackPage){
         workDay=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][defaultDate.getDay()];
       }
       if(!/^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)$/.test(workDay))throw new Error("Der Arbeitstag konnte nicht bestimmt werden.");
-      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm alle unterschiedlichen ausgefuehrten Arbeiten aus diesem Feld knapp und originalgetreu als kurze Stichpunkte, auch wenn mehrere Baustellen oder Arbeitsbereiche genannt sind. Schreibe wie ein Azubi: direkt, konkret, ohne Verwaltungssprache. Beispiel: Wand gebohrt; Kabelkanal geflext und an der Wand montiert. Nichts zusaetzlich erfinden, etwa Messen, Dokumentieren oder Aufraeumen. Keine Taetigkeit weglassen, nur weil sie auf einem anderen Zettel oder zu einer anderen Baustelle gehoert. Keine ganzen Saetze, keine Einleitung, keine Baustellen- oder Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\n- Stichpunkt","confidence":0}. confidence ist 0 bis 100 und bewertet nur, wie klar und vollstaendig die Handschrift im Foto lesbar ist, nicht wie plausibel der Inhalt klingt.';
+      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm alle unterschiedlichen ausgefuehrten Arbeiten aus diesem Feld vollstaendig und originalgetreu als knappe Stichpunkte, auch wenn mehrere Baustellen oder Arbeitsbereiche genannt sind. Wenn mehrere Nachweise denselben Tag betreffen, sollen die zusammengefuehrten Taetigkeiten ungefaehr 6-7 konkrete Informationen ergeben; aehnliche Schritte knapp zusammenziehen, aber keine eigenstaendige Taetigkeit weglassen und nichts erfinden. Schreibe wie ein Azubi: direkt, konkret, ohne Verwaltungssprache. Beispiel: Wand gebohrt; Kabelkanal geflext und an der Wand montiert. Nichts zusaetzlich erfinden, etwa Messen, Dokumentieren oder Aufraeumen. Keine Taetigkeit weglassen, nur weil sie auf einem anderen Zettel oder zu einer anderen Baustelle gehoert. Keine ganzen Saetze, keine Einleitung, keine Baustellen- oder Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\n- Stichpunkt","confidence":0}. confidence ist 0 bis 100 und bewertet nur, wie klar und vollstaendig die Handschrift im Foto lesbar ist, nicht wie plausibel der Inhalt klingt.';
       var one=await apiCall([{role:"user",content:img.concat([{type:"text",text:onePrompt}])}],700,null);
       var oneRaw=(one&&one.content||[]).map(function(c){return c.text||"";}).join("\n").replace(/```json|```/g,"").trim();
       var oneJson=null;try{oneJson=JSON.parse(oneRaw);}catch(e){var om=oneRaw.match(/\{[\s\S]*\}/);if(om)try{oneJson=JSON.parse(om[0]);}catch(_oneErr){}}
@@ -1134,10 +1168,12 @@ function buildDaily(){
   var e=state.entries["P"+active]||{},daily=e.daily||{};
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
   var parsed=e.text?parseTextToDays(cleanReportFormatting(e.text)):{};
+  var workHours=Object.assign({},e.dayWorkTimes||{});
+  days.forEach(function(d){var hours=extractDailyWorkHours(parsed[d]||"");if(hours&&!workHours[d])workHours[d]=hours;});
   var todayIdx=new Date().getDay();
   var box=document.getElementById("dailyDays");box.innerHTML="";
   days.forEach(function(d,i){
-    var val=daily[d]||(parsed[d]||"");
+    var val=stripDailyWorkHours(daily[d]||parsed[d]||"");
     var isToday=(i===(todayIdx-1));
     var displayVal=(val&&val.trim()==="[NICHT_ID]")?"":val;
     var row=document.createElement("div");row.className="daily-day";
@@ -1153,13 +1189,22 @@ function saveDailyEntries(){
   if(!state.entries["P"+active])state.entries["P"+active]={};
   var entry=state.entries["P"+active];
   if(!entry.daily)entry.daily={};
+  if(!entry.dayWorkTimes)entry.dayWorkTimes={};
   var priorText=String(entry.text||"");
   var parsed=priorText?parseTextToDays(cleanReportFormatting(priorText)):{};
+  days.forEach(function(d){
+    var fromText=String(parsed[d]||"");
+    var hours=extractDailyWorkHours(fromText);
+    if(hours&&!entry.dayWorkTimes[d])entry.dayWorkTimes[d]=hours;
+  });
   var filled=0;
   days.forEach(function(d){
-    var el=document.getElementById("dd_"+d),value=el?el.value.trim():"";
+    var el=document.getElementById("dd_"+d),raw=el?el.value.trim():"";
+    var hours=extractDailyWorkHours(raw);
+    if(hours&&!entry.dayWorkTimes[d])entry.dayWorkTimes[d]=hours;
+    var value=stripDailyWorkHours(raw);
     if(value){entry.daily[d]=value;filled++;}
-    else if(!String(entry.daily[d]||"").trim()&&String(parsed[d]||"").trim())entry.daily[d]=parsed[d];
+    else if(!String(entry.daily[d]||"").trim()&&String(parsed[d]||"").trim())entry.daily[d]=stripDailyWorkHours(parsed[d]);
   });
   if(filled>0){
     var hasParsedDays=days.some(function(d){return String(parsed[d]||"").trim();});
@@ -1167,14 +1212,15 @@ function saveDailyEntries(){
       // If the old format cannot be parsed, keep it and append only new text.
       var additions=[];
       days.forEach(function(d){
-        var el=document.getElementById("dd_"+d),value=el?el.value.trim():"";
-        if(value&&priorText.indexOf(value)<0)additions.push(d+": "+cleanDayPrefix(value));
+        var el=document.getElementById("dd_"+d),value=stripDailyWorkHours(el?el.value.trim():"");
+        if(value&&priorText.indexOf(value)<0){
+          additions.push(d+": "+cleanDayPrefix(value));
+          if(entry.dayWorkTimes[d])additions.push("Arbeitszeit: "+entry.dayWorkTimes[d]);
+        }
       });
       if(additions.length)entry.text=priorText+"\n"+additions.join("\n");
     }else{
-      var fullText="";
-      days.forEach(function(d){var v=entry.daily[d]||parsed[d];if(v)fullText+=d+": "+cleanDayPrefix(v)+"\n";});
-      entry.text=fullText.trim();
+      entry.text=buildWeekReportText(entry.daily,days,entry.dayWorkTimes);
     }
   }
   if(filled>=5){entry.done=true;sv();renderAll();alert("Alle 5 Tage - als fertig markiert!");}
