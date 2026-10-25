@@ -801,7 +801,7 @@ function findPageByDate(day,month,allowOccupied){
   return -1;
 }
 
-function findPageByDateFull(day,month,year,allowOccupied){
+function findPageByDateFull(day,month,year,allowOccupied,allowFuture){
   if(!day||!month||!state.startDate)return -1;
   var sm=getMon(state.startDate);
   var target=new Date(year,month-1,day);
@@ -809,7 +809,7 @@ function findPageByDateFull(day,month,year,allowOccupied){
   var diff=Math.round((target.getTime()-sm.getTime())/(7*24*3600*1000));
   if(diff<0||diff>=500)return -1;
   var pg=diff+1;
-  if(isPageInFuture(pg))return -3;
+  if(!allowFuture&&isPageInFuture(pg))return -3;
   var txt2=state.entries["P"+pg]&&state.entries["P"+pg].text;
   if(!allowOccupied&&txt2&&txt2.trim().length>10)return -2;
   return pg;
@@ -873,7 +873,7 @@ async function generate(){
     var confirmed=await confirmDate(imgDataUrl,result,active+i,i+1,imgs.length);
     if(confirmed===null)break;
     if(confirmed===-1)continue;
-    if(isPageInFuture(confirmed)){alert("Seite "+confirmed+" liegt in der Zukunft!");continue;}
+    if(isPageInFuture(confirmed)&&!result.singleDay){alert("Seite "+confirmed+" liegt in der Zukunft!");continue;}
     if(!state.entries["P"+confirmed])state.entries["P"+confirmed]={};
     state.entries["P"+confirmed].type=result.type||"none";
     var mergedPhoto=mergePhotoIntoEntry(state.entries["P"+confirmed],result);
@@ -978,7 +978,7 @@ function confirmDate(imgDataUrl,result,fallback,num,total){
     function uh(){
       var d=parseInt(di.value)||0,m=parseInt(mi.value)||0,y=parseInt(yi.value)||0;
       if(d>0&&m>0){
-        var pg=y>2019?findPageByDateFull(d,m,y,true):findPageByDate(d,m,true);
+        var pg=y>2019?findPageByDateFull(d,m,y,true,result.singleDay===true):findPageByDate(d,m,true);
         if(pg===-3){hint.textContent="\u26a0 Datum in der Zukunft - nicht erlaubt";hint.style.color="#e74c3c";}
         else if(pg>0){var ht=state.entries["P"+pg]&&state.entries["P"+pg].text&&state.entries["P"+pg].text.trim().length>10;hint.textContent=(ht?"\u26a0 ":"")+"Seite "+pg+" ("+pLabel(pg)+")"+(ht?" - wird ueberschrieben":"");hint.style.color=ht?"#e67e22":"var(--moss)";}
         else{hint.textContent="Datum nicht im bekannten Bereich";hint.style.color="#e74c3c";}
@@ -988,7 +988,7 @@ function confirmDate(imgDataUrl,result,fallback,num,total){
     ok.onclick=function(){
       var d=parseInt(di.value)||0,m=parseInt(mi.value)||0,y=parseInt(yi.value)||0;
       if(d>0&&m>0){
-        var pg=y>2019?findPageByDateFull(d,m,y,true):findPageByDate(d,m,true);
+        var pg=y>2019?findPageByDateFull(d,m,y,true,result.singleDay===true):findPageByDate(d,m,true);
         if(pg===-3){alert("Datum liegt in der Zukunft!");return;}
         if(pg>0){var ht=state.entries["P"+pg]&&state.entries["P"+pg].text&&state.entries["P"+pg].text.trim().length>10;if(ht&&!confirm("Seite "+pg+" hat Text. Ueberschreiben?"))return;box.remove();resolve(pg);return;}
       }
