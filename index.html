@@ -96,7 +96,7 @@ h1 span{color:var(--neon);}
 .improve-lbl{font-size:10px;color:var(--amber);letter-spacing:2px;font-family:'Space Mono',monospace;margin-bottom:8px;}
 .improve-row{display:flex;gap:8px;}
 .improve-inp{flex:1;background:var(--c3);border:1px solid var(--c4);border-radius:6px;padding:9px;color:var(--cream);font-size:12px;outline:none;}
-.improve-btn{padding:9px 14px;background:var(--neon2);border:none;border-radius:6px;color:#fff;font-size:12px;cursor:pointer;}
+.improve-btn{padding:9px 14px;background:var(--neon2);border:none;border-radius:6px;color:#fff;font-size:12px;cursor:pointer;}.regen-btn{width:100%;margin-top:8px;padding:10px 12px;background:var(--c3);border:1px solid var(--neon);border-radius:6px;color:var(--neon);font-size:12px;cursor:pointer;}.regen-btn:disabled{opacity:.6;cursor:wait;}
 .pdf-panel{background:linear-gradient(135deg,#100a20,var(--c2));border:1px solid var(--c4);border-radius:12px;padding:14px;margin-bottom:12px;border-left:3px solid #6C63FF;}
 .pdf-title{font-size:10px;color:#6C63FF;letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px;}
 .pdf-opt{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--c4);border-radius:8px;cursor:pointer;background:var(--c2);margin-bottom:8px;}
@@ -312,6 +312,7 @@ h1 span{color:var(--neon);}
         <input class="improve-inp" id="improveInp" placeholder='z.B. "Montag: Bewegungsmelder statt Schalter"'/>
         <button class="improve-btn" onclick="improveText()">&#x27a4;</button>
       </div>
+      <button class="regen-btn" id="regenBtn" onclick="regenerateText()">&#x21bb; Antwort neu erstellen</button>
     </div>
   </div>
   <div id="pdfPanel" style="display:none" class="pdf-panel">
@@ -414,7 +415,7 @@ var THEMES=[
   {n:"White",c1:"#f5f5f5",c2:"#eeeeee",c3:"#e0e0e0",c4:"#cccccc",neon:"#222222",neon2:"#444444",moss:"#336633",moss2:"#224422",amber:"#664400",sw:"#222222"}
 ];
 
-var SYSGEN="Du hilfst einem Elektroniker-Azubi beim Berichtsheft.\n\nPRIORITAET:\n- Nur Taetigkeiten uebernehmen, die auf der Seite stehen oder eindeutig erkennbar sind. Nichts erfinden.\n- Wenn ein vorhandener Eintrag schon kurz, konkret und verstaendlich ist, moeglichst originalgetreu uebernehmen. Nicht ausschmuecken, verlaengern oder in ganze Saetze umwandeln.\n- Material, Kabeltypen, Querschnitte, Geraete und Bauteile nur nennen, wenn sie auf der Seite lesbar sind. Niemals technische Angaben raten.\n- Unleserliche oder leere Tage: [NICHT_ID]. Keine Luecken mit erfundenen Taetigkeiten fuellen.\n\nSTIL:\n- Nur kurze Stichpunkte, keine ganzen Saetze, keine Einleitungen und keine Fuellsaetze.\n- Pro Tag nur so viele Stichpunkte, wie die Quelle hergibt. Lieber ein korrekter Punkt als zusaetzlicher erfundener Inhalt.\n- Konkrete Arbeitsschritte und wichtige Materialien/Bauteile nennen, zum Beispiel Bohren, Kabel verlegen, Druckknopfmelder montieren.\n- Keine Firmennamen, Kundennamen oder Ortsnamen.\n- Wochentag und Datum nur in der Zeilenueberschrift, nie im Taetigkeitstext.\n- Keine wechselnden Satzanfaenge wie „Anschliessend“ oder „Weiterhin“.\n\nFORMAT:\nMontag (DD.MM):\n- [kurzer Stichpunkt]\n- [kurzer Stichpunkt]\nDienstag (DD.MM):\n- [kurzer Stichpunkt]\n- [kurzer Stichpunkt]\nArbeitszeit je Tag separat als HH:MM-HH:MM angeben, wenn lesbar.\n\nARBEITSZEITEN wenn nicht lesbar:\n- Mo-Do: 07:30-16:30\n- Fr: 07:30-12:00\n\nFORTLAUFENDE STRICHE / WIEDERHOLUNGEN:\n- Senkrechte Weiterfuehrungsstriche ueber mehrere Tage bedeuten denselben Eintrag fuer diese Tage.\n- Status wie Berufsschule, Krankheit oder Urlaub bis zum naechsten erkennbaren Eintrag fortsetzen, wenn Striche/Leerfelder das eindeutig zeigen.\n- Bei abgeschnittenen Woertern den Sinn nicht erfinden. „Betriebs-“ mit erkennbarem Urlaubskontext bedeutet Urlaub, nicht Betriebsausflug.\n\nSPEZIAL:\n- Tag leer: [NICHT_ID]\n- krank/erkrankt: Erkrankung. - 0 Std.\n- Urlaub/Betriebsurlaub/Betriebsferien: Urlaub. - 0 Std.\n- Berufsschule/Innung/echter Unterricht: Berufsschule. - 07:00-16:30\n- Feiertag/schulfrei: Feiertag. - 0 Std. (nicht als Schule werten)\nNIEMALS Krankheit mit Urlaub verwechseln. NIEMALS Feiertag/Schulfrei als Berufsschule werten. NIEMALS Betriebsausflug erfinden.\n\nNur den Text ausgeben. Kein Kommentar. Deutsch."
+var SYSGEN="Du hilfst einem Elektroniker-Azubi beim Berichtsheft.\n\nPRIORITAET:\n- Nur Taetigkeiten uebernehmen, die auf der Seite stehen oder eindeutig erkennbar sind. Nichts erfinden.\n- Schreibe wie ein Azubi sein echtes Berichtsheft: knapp, direkt und ohne Verwaltungssprache.\n- Konkrete Arbeitsschritte genau aus der Quelle uebernehmen. Beispiel: Wand gebohrt; Kabelkanal geflext und an der Wand montiert. Nicht zusaetzlich Messen, Dokumentieren, Aufraeumen oder Sichern erfinden.\n- Verbundene Arbeitsschritte duerfen in einem kurzen Stichpunkt stehen. Keine Erklaerungen, warum oder wofuer etwas gemacht wurde.\n- Wenn ein vorhandener Eintrag schon kurz, konkret und verstaendlich ist, moeglichst originalgetreu uebernehmen. Nicht ausschmuecken, verlaengern, verallgemeinern oder in ganze Saetze umwandeln.\n- Material, Kabeltypen, Querschnitte, Geraete und Bauteile nur nennen, wenn sie auf der Seite lesbar sind. Niemals technische Angaben raten.\n- Unleserliche oder leere Tage: [NICHT_ID]. Keine Luecken mit erfundenen Taetigkeiten fuellen.\n\nSTIL:\n- Nur kurze Stichpunkte, keine ganzen Saetze, keine Einleitungen und keine Fuellsaetze.\n- Pro Tag nur so viele Stichpunkte, wie die Quelle hergibt. Lieber ein korrekter Punkt als zusaetzlicher erfundener Inhalt.\n- Konkrete Arbeitsschritte und wichtige Materialien/Bauteile nennen, zum Beispiel Bohren, Kabel verlegen, Druckknopfmelder montieren.\n- Keine Firmennamen, Kundennamen oder Ortsnamen.\n- Wochentag und Datum nur in der Zeilenueberschrift, nie im Taetigkeitstext.\n- Keine wechselnden Satzanfaenge wie „Anschliessend“ oder „Weiterhin“.\n\nFORMAT:\nMontag (DD.MM):\n- [kurzer Stichpunkt]\n- [kurzer Stichpunkt]\nDienstag (DD.MM):\n- [kurzer Stichpunkt]\n- [kurzer Stichpunkt]\nArbeitszeit je Tag separat als HH:MM-HH:MM angeben, wenn lesbar.\n\nARBEITSZEITEN wenn nicht lesbar:\n- Mo-Do: 07:30-16:30\n- Fr: 07:30-12:00\n\nFORTLAUFENDE STRICHE / WIEDERHOLUNGEN:\n- Senkrechte Weiterfuehrungsstriche ueber mehrere Tage bedeuten denselben Eintrag fuer diese Tage.\n- Status wie Berufsschule, Krankheit oder Urlaub bis zum naechsten erkennbaren Eintrag fortsetzen, wenn Striche/Leerfelder das eindeutig zeigen.\n- Bei abgeschnittenen Woertern den Sinn nicht erfinden. „Betriebs-“ mit erkennbarem Urlaubskontext bedeutet Urlaub, nicht Betriebsausflug.\n\nSPEZIAL:\n- Tag leer: [NICHT_ID]\n- krank/erkrankt: Erkrankung. - 0 Std.\n- Urlaub/Betriebsurlaub/Betriebsferien: Urlaub. - 0 Std.\n- Berufsschule/Innung/echter Unterricht: Berufsschule. - 07:00-16:30\n- Feiertag/schulfrei: Feiertag. - 0 Std. (nicht als Schule werten)\nNIEMALS Krankheit mit Urlaub verwechseln. NIEMALS Feiertag/Schulfrei als Berufsschule werten. NIEMALS Betriebsausflug erfinden.\n\nNur den Berichtstext ausgeben. Keine Markdown-Ueberschrift wie Berichtsheft, keine Sternchen-Formatierung, keinen Kommentar. Deutsch."
 
 var KEY_VAR="bhz_k";
 var state={entries:{},totalPages:1,startDate:null,userName:"",sickDays:[],vacDays:[],schoolDays:[],isOwner:false};
@@ -988,6 +989,10 @@ async function generate(){
   renderAll();btn.textContent="Berichtsheft generieren";btn.disabled=false;
 }
 
+function cleanReportFormatting(text){
+  return String(text||"").replace(/^\s*[-*_]{3,}\s*$/gm,"").replace(/^\s*#{1,6}\s*/gm,"").replace(/^\s*(?:Berichtsheft|Bericht)\s*$/gim,"").replace(/\*\*(.*?)\*\*/g,"$1").replace(/__(.*?)__/g,"$1").replace(/\n{3,}/g,"\n\n").trim();
+}
+
 async function analyzeImage(imgObj,fallbackPage){
   try{
     var b=await b64f(imgObj.file);
@@ -1016,12 +1021,12 @@ async function analyzeImage(imgObj,fallbackPage){
         workDay=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][defaultDate.getDay()];
       }
       if(!/^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag)$/.test(workDay))throw new Error("Der Arbeitstag konnte nicht bestimmt werden.");
-      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm alle unterschiedlichen ausgefuehrten Arbeiten aus diesem Feld knapp und originalgetreu als kurze Stichpunkte, auch wenn mehrere Baustellen oder Arbeitsbereiche genannt sind. Keine Taetigkeit weglassen, nur weil sie auf einem anderen Zettel oder zu einer anderen Baustelle gehoert. Keine ganzen Saetze, keine Einleitung, keine Baustellen- oder Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\n- Stichpunkt","confidence":0}. confidence ist 0 bis 100 und bewertet nur, wie klar und vollstaendig die Handschrift im Foto lesbar ist, nicht wie plausibel der Inhalt klingt.';
+      var onePrompt='Das Foto zeigt einen einzelnen Arbeitsnachweis, kein Wochenblatt. Lies ausschliesslich das Feld „Ausgefuehrte Arbeiten“. Uebernimm alle unterschiedlichen ausgefuehrten Arbeiten aus diesem Feld knapp und originalgetreu als kurze Stichpunkte, auch wenn mehrere Baustellen oder Arbeitsbereiche genannt sind. Schreibe wie ein Azubi: direkt, konkret, ohne Verwaltungssprache. Beispiel: Wand gebohrt; Kabelkanal geflext und an der Wand montiert. Nichts zusaetzlich erfinden, etwa Messen, Dokumentieren oder Aufraeumen. Keine Taetigkeit weglassen, nur weil sie auf einem anderen Zettel oder zu einer anderen Baustelle gehoert. Keine ganzen Saetze, keine Einleitung, keine Baustellen- oder Kundennamen, keine Zeiten, keine Maschinen-/Materialangaben aus anderen Feldern. Unleserliches weglassen, nichts erfinden. Antworte nur mit JSON: {"activity":"- Stichpunkt\n- Stichpunkt","confidence":0}. confidence ist 0 bis 100 und bewertet nur, wie klar und vollstaendig die Handschrift im Foto lesbar ist, nicht wie plausibel der Inhalt klingt.';
       var one=await apiCall([{role:"user",content:img.concat([{type:"text",text:onePrompt}])}],700,null);
       var oneRaw=(one&&one.content||[]).map(function(c){return c.text||"";}).join("\n").replace(/```json|```/g,"").trim();
       var oneJson=null;try{oneJson=JSON.parse(oneRaw);}catch(e){var om=oneRaw.match(/\{[\s\S]*\}/);if(om)try{oneJson=JSON.parse(om[0]);}catch(_oneErr){}}
       var activity=oneJson&&oneJson.activity?String(oneJson.activity).trim():oneRaw;
-      activity=activity.replace(/^["']|["']$/g,"").trim();
+      activity=cleanReportFormatting(activity.replace(/^["']|["']$/g,"").trim());
       var quality=oneJson&&oneJson.confidence!==undefined?Number(oneJson.confidence):0;
       if(!isFinite(quality))quality=0;quality=Math.max(0,Math.min(100,quality));
       if(!activity)throw new Error("Kein lesbarer Arbeitstext erkannt.");
@@ -1033,7 +1038,7 @@ async function analyzeImage(imgObj,fallbackPage){
     if(pt==="school")extra="\nSchulwoche: Echte Schul-/Berufsschultage als Berufsschule. Kranktage als Erkrankung. Urlaub als Urlaub. Feiertag/schulfrei als Feiertag. Keine Montage-/Arbeitstexte in Schulwochen erfinden; leere unbekannte Tage: [NICHT_ID].";
     var c3=img.concat([{type:"text",text:"Berichtsheft-Text fuer diese Woche schreiben. Woche: "+pLabel(fallbackPage)+extra}]);
     var data=await apiCall([{role:"user",content:c3}],2000,SYSGEN);
-    var text=(data&&data.content||[]).map(function(c){return c.text||"";}).join("\n").trim();
+    var text=cleanReportFormatting((data&&data.content||[]).map(function(c){return c.text||"";}).join("\n"));
     if(!text)throw new Error("Die KI hat keinen Berichtstext zurueckgegeben.");
     return {text:text,type:pt,day:day,month:month,year:year,mediaType:mediaType};
   }catch(err){console.error("analyzeImage",err);return {error:err&&err.message?err.message:"Unbekannter Fehler"};}
@@ -1108,8 +1113,8 @@ function parseTextToDays(text){
   var result={};if(!text)return result;
   var days=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
   var lines=text.split("\n"),curDay=null,curLines=[];
-  function flush(){if(!curDay||!curLines.length)return;var full=curLines.join(" ").trim();full=cleanDayPrefix(full);full=full.replace(/\s*-\s*\d{1,2}:\d{2}-\d{1,2}:\d{2}\s*$/,"").trim();full=full.replace(/\s*-\s*$/,"").trim();result[curDay]=full;curLines=[];}
-  lines.forEach(function(line){var matched=false;days.forEach(function(d){if(line.match(new RegExp("^"+d+"\s*[:(]","i"))){flush();curDay=d;matched=true;curLines.push(line);}});if(!matched&&curDay)curLines.push(line);});
+  function flush(){if(!curDay||!curLines.length)return;var full=curLines.join("\n").trim();full=cleanDayPrefix(full);full=full.replace(/\s*-\s*\d{1,2}:\d{2}-\d{1,2}:\d{2}\s*$/,"").trim();full=full.replace(/\s*-\s*$/,"").trim();result[curDay]=full;curLines=[];}
+  lines.forEach(function(line){var matched=false;days.forEach(function(d){if(line.match(new RegExp("^"+d+"\\s*[:(]","i"))){flush();curDay=d;matched=true;curLines.push(line);}});if(!matched&&curDay)curLines.push(line);});
   flush();return result;
 }
 
@@ -1152,13 +1157,33 @@ function deletePage(){if(!confirm("Eintrag auf Seite "+active+" loeschen?"))retu
 function movePage(){var e=state.entries["P"+active];if(!e||!e.text){alert("Kein Eintrag.");return;}var t=parseInt(prompt("Auf welche Seite verschieben?",""));if(!t||t<1)return;if(t===active)return;if(isPageInFuture(t)){alert("Zukunfts-Seite nicht erlaubt!");return;}if(state.entries["P"+t]&&state.entries["P"+t].text&&state.entries["P"+t].text.trim().length>10){if(!confirm("Seite "+t+" hat Text. Ueberschreiben?"))return;}state.entries["P"+t]=Object.assign({},state.entries["P"+active]);delete state.entries["P"+active];if(t>state.totalPages)state.totalPages=t;sv();active=t;renderAll();}
 function copyTxt(){var e=state.entries["P"+active];if(!e||!e.text)return;navigator.clipboard.writeText(e.text).then(function(){alert("Kopiert!");});}
 
+async function regenerateText(){
+  var e=state.entries["P"+active],btn=document.getElementById("regenBtn"),inp=document.getElementById("improveInp");
+  if(!e||!e.text)return;
+  var current=String(e.text),extra=inp?inp.value.trim():"";
+  if(btn){btn.disabled=true;btn.textContent="Wird neu erstellt…";}
+  try{
+    var request="Erstelle eine neue, bessere Fassung dieses Berichts. Schreibe nur kurze, konkrete Stichpunkte wie ein Elektriker-Azubi.\n"+
+      "Behalte alle unterschiedlichen Arbeiten, Tage, Daten, Zeiten und lesbaren Materialangaben bei. Nichts erfinden, nichts weglassen, keine Baustellen- oder Kundennamen.\n"+
+      "Formuliere verbundene Schritte knapp, z.B. Wand gebohrt; Kabelkanal geflext und an der Wand montiert. Keine ganzen Saetze, keine Verwaltungssprache, keine Markdown-Formatierung und keine Ueberschrift Berichtsheft.\n"+
+      (extra?"Zusaetzlicher Wunsch: "+extra+"\n":"")+
+      "\nBisheriger Bericht:\n"+current;
+    var data=await apiCall([{role:"user",content:request}],2500,"Du ueberarbeitest Berichtsheft-Texte. Bewahre alle vorhandenen Fakten exakt. Erfinde keine Taetigkeiten, Materialien, Zeiten oder technischen Details. Gib nur den fertigen Bericht mit kurzen Stichpunkten auf Deutsch zurueck.");
+    var t=cleanReportFormatting((data&&data.content||[]).map(function(c){return c.text||"";}).join("\n"));
+    if(!t)throw new Error("Die KI hat keinen Text zurueckgegeben.");
+    var page=state.entries["P"+active];page.text=t;page.daily=parseTextToDays(t);page.done=false;
+    sv();renderAll();if(inp)inp.value="";
+  }catch(err){alert("Neu erstellen fehlgeschlagen: "+(err&&err.message?err.message:"Unbekannter Fehler"));}
+  finally{if(btn){btn.disabled=false;btn.innerHTML="&#x21bb; Antwort neu erstellen";}}
+}
+
 async function improveText(){
   var inp=document.getElementById("improveInp");if(!inp||!inp.value.trim())return;
   var e=state.entries["P"+active];if(!e||!e.text)return;
   var btn=document.querySelector(".improve-btn");if(btn){btn.innerHTML='<span class="spin"><\/span>';btn.disabled=true;}
   try{
     var data=await apiCall([{role:"user",content:"Berichtsheft:\n\n"+e.text+"\n\nAenderung: "+inp.value.trim()+"\n\nKompletten aktualisierten Text zurueckgeben."}],2000,"Verbessere Berichtsheft-Texte. Kein Baustellen-Name, kein Ort. Vollstaendigen Text zurueckgeben.");
-    if(data&&data.content){var t=(data.content||[]).map(function(c){return c.text||"";}).join("\n").trim();if(t){state.entries["P"+active].text=t;state.entries["P"+active].done=false;sv();rResult();}}
+    if(data&&data.content){var t=(data.content||[]).map(function(c){return c.text||"";}).join("\n").trim();if(t){state.entries["P"+active].text=cleanReportFormatting(t);state.entries["P"+active].daily=parseTextToDays(state.entries["P"+active].text);state.entries["P"+active].done=false;sv();rResult();}}
   }catch(err){alert("Verbessern fehlgeschlagen: "+(err&&err.message?err.message:"Unbekannter Fehler"));}
   if(btn){btn.innerHTML="&#x27a4;";btn.disabled=false;}
   inp.value="";
@@ -1596,18 +1621,13 @@ function splitDocxLines(txt, n){
 
 
 function cleanDayPrefix(txt){
-  if(!txt) return "";
-  var s=String(txt).replace(/\s+/g," ").trim();
-  // Entfernt versehentlich erkannte Tagesnamen am Anfang, auch mehrfach:
-  // "Montag: Montag (19.8.): ..." -> "..."
-  var day="(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend)";
-  var date="(?:\s*(?:\\([^)]*\\)|\d{1,2}[./]\d{1,2}(?:[./]\d{2,4})?))?";
-  var re=new RegExp("^(?:\s*"+day+date+"\s*:?\s*)+","i");
+  if(!txt)return "";
+  var s=String(txt).replace(/\r\n?/g,"\n").split("\n").map(function(line){return line.trim();}).join("\n").trim();
+  var prefix=/^(?:[ \t]*(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend)(?:[ \t]*(?:\([^)]*\)|\d{1,2}[./]\d{1,2}(?:[./]\d{2,4})?))?[ \t]*:?[ \t]*)+/i;
   var last;
-  do{ last=s; s=s.replace(re,"").trim(); }while(s!==last);
+  do{last=s;s=s.replace(prefix,"").trim();}while(s!==last);
   return s;
 }
-
 function isSchoolLikeText(txt){
   var s=String(txt||"").toLowerCase();
   // Feiertag/schulfrei/frei darf NIE aus Versehen eine Schulwoche erzeugen.
