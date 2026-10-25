@@ -840,10 +840,10 @@ async function generate(){
       var merged="";["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"].forEach(function(d){if(existDaily[d])merged+=d+": "+cleanDayPrefix(existDaily[d])+"\n";});
       state.entries["P"+confirmed].text=merged.trim();
       var fc=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"].filter(function(d){return existDaily[d]&&existDaily[d].trim();}).length;
-      state.entries["P"+confirmed].done=(fc>=5)||(isSick||isVac);
+      state.entries["P"+confirmed].done=false;
     } else {
       state.entries["P"+confirmed].text=result.text;
-      state.entries["P"+confirmed].done=(isSick||isVac)||(!isSchool&&!hasIncomplete);
+      state.entries["P"+confirmed].done=false;
     }
     try{
       // Originale KI-Ausgabe aus dem Bild separat behalten, damit spaetere Fuell-Fixes echte Bildinhalte wieder nutzen koennen.
@@ -869,13 +869,14 @@ async function analyzeImage(imgObj,fallbackPage){
   try{
     var b=await b64f(imgObj.file);
     var img=[{type:"image",source:{type:"base64",media_type:imgObj.file.type||"image/jpeg",data:b}}];
-    var c0=img.concat([{type:"text",text:'Stundenbuch analysieren. JSON: {"type":"sick/vacation/school/none","name":null,"day":null,"month":null}. school NUR bei echter Berufsschule/Schule/Unterricht/Innung. Feiertag, schulfrei, frei oder Urlaub sind NICHT school. sick=krank/erkrankt, vacation=Urlaub/Feiertag/schulfrei/Betriebsurlaub/Betriebsferien. Wenn ein Wort abgeschnitten ist wie Betriebs-, NICHT Betriebsausflug erfinden; im Zweifel Urlaub, wenn Urlaub/Betriebs-Kontext sichtbar ist. day+month=Montag dieser Woche (nur Tag+Monat ohne Jahr).'}]);
+    var c0=img.concat([{type:"text",text:'Stundenbuch analysieren. JSON: {"type":"sick/vacation/school/none","name":null,"day":null,"month":null,"year":null}. school NUR bei echter Berufsschule/Schule/Unterricht/Innung. Feiertag, schulfrei, frei oder Urlaub sind NICHT school. sick=krank/erkrankt, vacation=Urlaub/Feiertag/schulfrei/Betriebsurlaub/Betriebsferien. Wenn ein Wort abgeschnitten ist wie Betriebs-, NICHT Betriebsausflug erfinden; im Zweifel Urlaub, wenn Urlaub/Betriebs-Kontext sichtbar ist. day+month=Montag dieser Woche. year=Jahreszahl, falls auf dem Bild eindeutig lesbar, sonst null.'}]);
     var td=await apiCall([{role:"user",content:c0}],80,null);
     var tr=(td&&td.content||[]).map(function(c){return c.text||"";}).join("").replace(/```json|```/g,"").trim();
     var meta=null;try{meta=JSON.parse(tr);}catch(e){}
     var pt=(meta&&meta.type)||"none";
     var day=meta&&meta.day?+meta.day:0;
     var month=meta&&meta.month?+meta.month:0;
+    var year=meta&&meta.year?+meta.year:0;if(year<2000||year>2100)year=0;
     if(meta&&meta.name&&!state.userName){state.userName=meta.name;sv();}
     var extra="";
     if(pt==="sick")extra="\nErkrankung diese Woche - alle Tage: Erkrankung. - 0 Std.";
@@ -886,7 +887,7 @@ async function analyzeImage(imgObj,fallbackPage){
     if(!data)return null;
     var text=(data.content||[]).map(function(c){return c.text||"";}).join("\n");
     if(!text)return null;
-    return {text:text,type:pt,day:day,month:month};
+    return {text:text,type:pt,day:day,month:month,year:year};
   }catch(err){console.error("analyzeImage",err);return null;}
 }
 
@@ -894,20 +895,9 @@ function confirmDate(imgDataUrl,result,fallback,num,total){
   return new Promise(function(resolve){
     var old=document.getElementById("dcBox");if(old)old.remove();
     var sd=result.day||0,sm3=result.month||0;
-    var sy=new Date().getFullYear();
-    if(state.startDate){
-      var sy2=+state.startDate.split(".")[2];
-      if(sy2){
-        for(var tryYr=sy2;tryYr<=sy2+5;tryYr++){
-          var smx=getMon(state.startDate),hasEmpty=false;
-          for(var w=0;w<state.totalPages+4;w++){
-            var cand=new Date(smx.getTime()+w*7*24*3600*1000);
-            if(cand.getFullYear()===tryYr&&!isPageInFuture(w+1)&&(!state.entries["P"+(w+1)]||!state.entries["P"+(w+1)].text||state.entries["P"+(w+1)].text.trim().length<10)){hasEmpty=true;break;}
-          }
-          if(hasEmpty){sy=tryYr;break;}
-        }
-      }
-    }
+    // Avoid choosing the first year with a free page: that can map a current photo to an old week.
+    // Use the year read from the image, or this year; the confirmation dialog remains editable.
+    var sy=result.year||new Date().getFullYear();
     var box=document.createElement("div");box.id="dcBox";
     box.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;";
     var inn=document.createElement("div");
