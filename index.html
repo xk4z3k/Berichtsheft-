@@ -168,6 +168,8 @@ h1 span{color:var(--neon);}
 .share-docx{color:#00cc66;border:1px solid #00cc66;}
 .share-times{color:#FFB347;border:1px solid #FFB347;font-family:'Space Mono',monospace;}
 .share-fill{color:#00e0ff;border:1px solid #00e0ff;font-family:'Space Mono',monospace;}
+.share-name{color:#f0c674;border:1px solid #f0c674;font-family:'Space Mono',monospace;}
+.share-audit{color:#f78da7;border:1px solid #f78da7;font-family:'Space Mono',monospace;}
 .share-selection-label{margin:2px 0 0;}
 .share-filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0;}
 .share-filter-btn{padding:9px 10px;background:var(--c3);color:var(--cream);border:1px solid var(--c4);border-radius:8px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;width:100%;text-align:center;}
@@ -425,6 +427,8 @@ h1 span{color:var(--neon);}
         <button class="share-action share-docx" onclick="downloadMultiDocx(shareSelected.length?shareSelected:null)">&#x1f4e5; Alle DOCX</button>
         <button class="share-action share-times" onclick="fixSelectedTimes()">&#x23f1; Uhrzeiten fixen</button>
         <button class="share-action share-fill" onclick="fillSelectedEmptyDays()">&#x2728; Echttext behalten / auffüllen</button>
+        <button class="share-action share-name" onclick="applyNameToAllEntries()">&#x1f464; Namen für alle Seiten</button>
+        <button class="share-action share-audit" onclick="auditTrainingDatesAll()">&#x1f50e; Ausbildungsjahr &amp; Datum prüfen</button>
       </div>
       <div class="share-section-label share-selection-label">Auswahl</div>
       <div class="share-filters">
@@ -547,8 +551,15 @@ function calendarDayNumber(date){return Math.floor(Date.UTC(date.getFullYear(),d
 function getTodayPage(){if(!state.startDate)return active;var s=getMon(state.startDate),t=new Date(),d=Math.floor((calendarDayNumber(t)-calendarDayNumber(s))/7);return Math.max(1,Math.min(d+1,state.totalPages));}
 function pLabel(n){if(!state.startDate)return "Seite "+n;var sm=getMon(state.startDate);var ms=addCalendarDays(sm,(n-1)*7);var me=addCalendarDays(ms,4);function fmt(d){return d.getDate()+"."+(d.getMonth()+1)+".";}return fmt(ms)+" - "+fmt(me);}
 function isPageInFuture(p){if(!state.startDate)return false;var sm=getMon(state.startDate);var pd=addCalendarDays(sm,(p-1)*7);var t=new Date();t.setHours(0,0,0,0);return pd>t;}
-function getAusbildungsjahr(pageNum){if(!state.startDate)return "1";var s=getMon(state.startDate);var pm=addCalendarDays(s,(pageNum-1)*7);var sy=s.getFullYear();var sc=new Date(sy,8,1);// Sep 1
-if(s<sc)sc=new Date(sy-1,8,1);var diff=pm.getFullYear()-sc.getFullYear()+(pm<new Date(pm.getFullYear(),8,1)?0:0);var yr=Math.floor((calendarDayNumber(pm)-calendarDayNumber(sc))/365.25)+1;return Math.max(1,Math.min(yr,3)).toString();}
+function getAusbildungsjahr(pageNum){
+  if(!state.startDate)return "1";
+  var s=getMon(state.startDate),pm=addCalendarDays(s,(pageNum-1)*7);
+  var schoolStart=new Date(s.getFullYear(),8,1);
+  if(s<schoolStart)schoolStart=new Date(s.getFullYear()-1,8,1);
+  var completedYears=pm.getFullYear()-schoolStart.getFullYear();
+  if(pm<new Date(pm.getFullYear(),8,1))completedYears--;
+  return Math.max(1,Math.min(completedYears+1,3)).toString();
+}
 
 // Navigation
 function hideAll(){["loginScreen","passwordUpdatePanel","firstStart","home","statsPanel","templatePanel","settingsPanel","sharePanel"].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display="none";});var rb=document.getElementById("room-bg");if(rb)rb.style.display="none";}
@@ -2280,6 +2291,87 @@ function buildTextFromParsed(parsed){
     if(!txt && !time) return '';
     return r[0]+': '+txt+(time?' '+time:'');
   }).filter(Boolean).join("\n");
+}
+
+function applyNameToAllEntries(){
+  var existing=String(state.userName||"").trim();
+  var chosen=prompt("Name für die Kopfzeile aller Berichte:",existing);
+  if(chosen===null)return;
+  chosen=String(chosen).trim();
+  if(!chosen){alert("Bitte einen Namen eingeben.");return;}
+  var entries=Object.keys(state.entries||{}),count=0;
+  var backup=JSON.stringify(state);
+  state.userName=chosen;
+  entries.forEach(function(k){
+    var entry=state.entries[k];
+    if(!entry||typeof entry!=="object")return;
+    if(entry.userName!==chosen){entry.userName=chosen;count++;}
+  });
+  try{localStorage.setItem("bhz_backup_before_name_apply_"+Date.now(),backup);}catch(_e){}
+  sv();
+  if(typeof renderShare==="function")renderShare();
+  alert("Name für alle Berichte gesetzt: "+chosen+"\nKopfzeile bei "+entries.filter(function(k){var e=state.entries[k];return e&&e.text;}).length+" vorhandenen Berichten.");
+}
+
+function auditTrainingDatesAll(){
+  if(!state.startDate){alert("Bitte zuerst den Ausbildungsbeginn speichern.");return;}
+  var start=getMon(state.startDate);
+  if(!start||isNaN(start.getTime())){alert("Das gespeicherte Startdatum ist ungueltig.");return;}
+  var dayIndex={montag:0,mo:0,dienstag:1,di:1,mittwoch:2,mi:2,donnerstag:3,do:3,freitag:4,fr:4};
+  var checked=0,datesSeen=0,datesFixed=0,metadataFixed=0,details=[];
+  var keys=Object.keys(state.entries||{}).filter(function(k){return /^P\d+$/.test(k);}).sort(function(a,b){return parseInt(a.slice(1),10)-parseInt(b.slice(1),10);});
+  var backup=JSON.stringify(state);
+  keys.forEach(function(key){
+    var pageNum=parseInt(key.slice(1),10),entry=state.entries[key];
+    if(!entry||typeof entry!=="object")return;
+    checked++;
+    var expectedYear=getAusbildungsjahr(pageNum),expectedRange=pLabel(pageNum);
+    ["trainingYear","ausbildungsjahr"].forEach(function(field){
+      if(Object.prototype.hasOwnProperty.call(entry,field)&&String(entry[field])!==String(expectedYear)){entry[field]=expectedYear;metadataFixed++;}
+    });
+    ["weekLabel","dateRange"].forEach(function(field){
+      if(Object.prototype.hasOwnProperty.call(entry,field)&&String(entry[field])!==String(expectedRange)){entry[field]=expectedRange;metadataFixed++;}
+    });
+    if(typeof entry.text!=="string"||!entry.text)return;
+    var lines=entry.text.split("\n"),changed=false;
+    lines=lines.map(function(line){
+      var match=line.match(/^(\s*(?:Montag|Mo\.?|Dienstag|Di\.?|Mittwoch|Mi\.?|Donnerstag|Do\.?|Freitag|Fr\.?)\s*(?::|,|\(|-)?\s*)(\d{1,2})([.\/])(\d{1,2})(?:([.\/])(\d{2,4}))?/i);
+      if(!match)return line;
+      var labelMatch=match[1].match(/Montag|Mo\.?|Dienstag|Di\.?|Mittwoch|Mi\.?|Donnerstag|Do\.?|Freitag|Fr\.?/i);
+      if(!labelMatch)return line;
+      var label=labelMatch[0].toLowerCase().replace(/\.$/,"");
+      var dIndex=dayIndex[label];
+      if(dIndex===undefined)return line;
+      datesSeen++;
+      var expected=addCalendarDays(start,(pageNum-1)*7+dIndex);
+      var day=expected.getDate(),month=expected.getMonth()+1,year=expected.getFullYear();
+      var currentYear=match[6]?Number(match[6]):null;
+      if(currentYear!==null&&String(match[6]).length===2)currentYear+=2000;
+      var isWrong=Number(match[2])!==day||Number(match[4])!==month||(currentYear!==null&&currentYear!==year);
+      if(!isWrong)return line;
+      var dateText=String(day)+match[3]+String(month);
+      if(match[5])dateText+=match[5]+(String(match[6]).length===2?String(year).slice(-2):String(year));
+      datesFixed++;
+      details.push(key+" "+label+": "+match[2]+match[3]+match[4]+(match[6]?(match[5]||".")+match[6]:"")+" → "+dateText);
+      changed=true;
+      return match[1]+dateText+line.slice(match[0].length);
+    });
+    if(changed)entry.text=lines.join("\n");
+  });
+  var modified=datesFixed>0||metadataFixed>0;
+  if(modified){
+    try{localStorage.setItem("bhz_backup_before_date_audit_"+Date.now(),backup);}catch(_e){}
+    sv();
+    if(typeof renderShare==="function")renderShare();
+    if(typeof renderAll==="function")renderAll();
+  }
+  var message="Geprüft: "+checked+" Berichtsseiten.\nAusbildungsjahr und Wochenkopf werden aus Ausbildungsbeginn und Seitennummer berechnet.";
+  if(datesFixed)message+="\nIm Tages-Text korrigierte Datumsangaben: "+datesFixed+"\n"+details.slice(0,10).join("\n")+(details.length>10?"\n…":"");
+  else if(!datesSeen)message+="\nKeine ausdrücklich neben einem Wochentag eingetragenen Datumsangaben gefunden; der Wochenkopf beim Export bleibt maßgeblich.";
+  else message+="\nDie Datumsangaben im Text passen bereits.";
+  if(metadataFixed)message+="\nVeraltete Jahres-/Datumsfelder korrigiert: "+metadataFixed;
+  if(modified)message+="\nEine lokale Sicherung wurde erstellt.";
+  alert(message);
 }
 
 function fixSelectedTimes(){
