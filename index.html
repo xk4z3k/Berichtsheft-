@@ -208,10 +208,6 @@ h1 span{color:var(--neon);}
   <div id="passwordUpdateMsg" style="margin-top:10px;font-size:12px;"></div>
 </div>
 
-<div id="apiScreen" style="display:none">
-  <div class="info-banner"><strong>Gemeinsamer KI-Zugang wird eingerichtet</strong><br>Die Anmeldung funktioniert ohne API-Key auf dem Gerät. KI-Funktionen sind aktiv, sobald der Supabase-KI-Dienst eingerichtet ist.</div>
-</div>
-
 <div id="firstStart" style="display:none">
   <div class="info-banner"><strong>Erster Start</strong><br>Lad dein Stundenbuch-Foto hoch. Die KI erkennt das Datum automatisch.</div>
   <div class="drop-zone" id="scanDrop" onclick="document.getElementById('sGal').click()">
@@ -408,7 +404,6 @@ var THEMES=[
 
 var SYSGEN="Du hilfst einem Elektroniker-Azubi beim Berichtsheft.\n\nPRIORITAET:\n- Nur Taetigkeiten uebernehmen, die auf der Seite stehen oder eindeutig erkennbar sind. Nichts erfinden.\n- Ein lesbarer Wochentag, der direkt bei einer Taetigkeit steht (auch ganz links am Eintrag), hat Vorrang vor der gedruckten Spalte oder seiner Position auf dem Blatt. Steht „Montag“ bei Arbeiten im freien Samstagsfeld, gehoeren sie zum Montag. Nicht dem Samstag zuordnen, wenn die Quelle Montag nennt.\n- Schreibe wie ein Azubi sein echtes Berichtsheft: knapp, direkt und ohne Verwaltungssprache.\n- Konkrete Arbeitsschritte genau aus der Quelle uebernehmen. Beispiel: Wand gebohrt; Kabelkanal geflext und an der Wand montiert. Nicht zusaetzlich Messen, Dokumentieren, Aufraeumen oder Sichern erfinden.\n- Verbundene Arbeitsschritte duerfen in einem kurzen Stichpunkt stehen. Keine Erklaerungen, warum oder wofuer etwas gemacht wurde.\n- Wenn ein vorhandener Eintrag schon kurz, konkret und verstaendlich ist, moeglichst originalgetreu uebernehmen. Nicht ausschmuecken, verlaengern, verallgemeinern oder in ganze Saetze umwandeln.\n- Material, Kabeltypen, Querschnitte, Geraete und Bauteile nur nennen, wenn sie auf der Seite lesbar sind. Niemals technische Angaben raten.\n- Unleserliche oder leere Tage: [NICHT_ID]. Keine Luecken mit erfundenen Taetigkeiten fuellen.\n\nSTIL:\n- Nur kurze Stichpunkte, keine ganzen Saetze, keine Einleitungen und keine Fuellsaetze.\n- Pro Tag nur so viele Stichpunkte, wie die Quelle hergibt. Lieber ein korrekter Punkt als zusaetzlicher erfundener Inhalt.\n- Konkrete Arbeitsschritte und wichtige Materialien/Bauteile nennen, zum Beispiel Bohren, Kabel verlegen, Druckknopfmelder montieren.\n- Keine Firmennamen, Kundennamen oder Ortsnamen.\n- Wochentag und Datum nur in der Zeilenueberschrift, nie im Taetigkeitstext.\n- Keine wechselnden Satzanfaenge wie „Anschliessend“ oder „Weiterhin“.\n\nFORMAT:\nMontag (DD.MM):\n- [kurzer Stichpunkt]\n- [kurzer Stichpunkt]\nDienstag (DD.MM):\n- [kurzer Stichpunkt]\n- [kurzer Stichpunkt]\nPro Tag nur Anfang und Ende der Arbeitszeit erfassen. Zwischenzeiten aus Unterrichts- oder Taetigkeitsbloecken ignorieren. Die Tageszeit als eigene Zeile „Arbeitszeit: HH:MM-HH:MM“ ausgeben, wenn lesbar.\n\nARBEITSZEITEN wenn nicht lesbar:\n- Mo-Do: 07:30-16:30\n- Fr: 07:30-12:00\n\nFORTLAUFENDE STRICHE / WIEDERHOLUNGEN:\n- Senkrechte Weiterfuehrungsstriche ueber mehrere Tage bedeuten denselben Eintrag fuer diese Tage.\n- Status wie Berufsschule, Krankheit oder Urlaub bis zum naechsten erkennbaren Eintrag fortsetzen, wenn Striche/Leerfelder das eindeutig zeigen.\n- Bei abgeschnittenen Woertern den Sinn nicht erfinden. „Betriebs-“ mit erkennbarem Urlaubskontext bedeutet Urlaub, nicht Betriebsausflug.\n\nSPEZIAL:\n- Tag leer: [NICHT_ID]\n- krank/erkrankt: Erkrankung. - 0 Std.\n- Urlaub/Betriebsurlaub/Betriebsferien: Urlaub. - 0 Std.\n- Berufsschule/Innung/echter Unterricht: Faecher und konkrete Lerninhalte als kurze Stichpunkte nennen; nicht pauschal nur „Berufsschule“ schreiben. Arbeitszeit bleibt separat.\n- Feiertag/schulfrei: Feiertag. - 0 Std. (nicht als Schule werten)\nNIEMALS Krankheit mit Urlaub verwechseln. NIEMALS Feiertag/Schulfrei als Berufsschule werten. NIEMALS Betriebsausflug erfinden.\n\nNur den Berichtstext ausgeben. Keine Markdown-Ueberschrift wie Berichtsheft, keine Sternchen-Formatierung, keinen Kommentar. Deutsch."
 
-var KEY_VAR="bhz_k";
 var state={entries:{},totalPages:1,startDate:null,userName:"",sickDays:[],vacDays:[],schoolDays:[],isOwner:false};
 var active=1,imgs=[],scanImgs=[],currentMode="photo";
 var SUPABASE_URL="https://rvaxhnemqxizwrulcbya.supabase.co",SUPABASE_ANON_KEY="sb_publishable_mUaYnJEfS_5e-kVFErkVkw_fywSnN65",supabaseClient=null,cloudUser=null,cloudReady=false,sharedAiReady=false,cloudLoadedUid="",cloudLoadingUid="",cloudSaveTimer=null,authMode="login",allowLegacyImport=false,legacyStateSnapshot=null;
@@ -449,8 +444,6 @@ function ld(){
     }
   }catch(e){console.error("[bhz] ld() error:",e);}
 }
-function gKey(){return localStorage.getItem(KEY_VAR)||"";}
-function sKey(k){localStorage.setItem(KEY_VAR,k);}
 async function checkSharedAi(){
   sharedAiReady=false;
   if(!cloudReady||!supabaseClient)return false;
@@ -472,8 +465,6 @@ async function afterLogin(){
 }
 
 async function doLogout(){closeSB();if(supabaseClient)await supabaseClient.auth.signOut();}
-function doSaveKey(){var k=document.getElementById("apiInp").value.trim();if(!k||k.length<10){alert("Ungueltiger Key.");return;}sKey(k);alert("Key gespeichert!");afterLogin();}
-function updKey(){var k=document.getElementById("newKeyInp").value.trim();if(!k||k.length<10){alert("Ungueltiger Key.");return;}sKey(k);alert("Key aktualisiert!");}
 function saveTrainingStartDate(){var v=document.getElementById("trainingStartInput").value;if(!v){alert("Bitte zuerst ein Datum auswaehlen.");return;}var p=v.split("-").map(Number),d=new Date(p[0],p[1]-1,p[2]);if(!p[0]||d.getFullYear()!==p[0]||d.getMonth()!==p[1]-1||d.getDate()!==p[2]){alert("Das Datum ist ungueltig.");return;}var dow=d.getDay();d.setDate(d.getDate()+(dow===0?-6:1-dow));state.startDate=(d.getDate()<10?"0":"")+d.getDate()+"."+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"."+d.getFullYear();var today=new Date();today.setHours(0,0,0,0);var weeks=Math.max(1,Math.floor((calendarDayNumber(today)-calendarDayNumber(d))/7)+1);state.totalPages=Math.max(state.totalPages||1,weeks);sv();active=Math.min(getTodayPage(),state.totalPages);alert("Ausbildungsbeginn gespeichert: "+state.startDate);}
 async function resetApp(){if(!confirm("Alle Berichtsheft-Daten dieses Kontos loeschen?"))return;try{if(supabaseClient&&cloudUser){var r=await supabaseClient.from("berichtsheft_data").delete().eq("user_id",cloudUser.id);if(r.error)throw r.error;localStorage.removeItem(accountCacheKey(cloudUser.id));}["bhz_v1","bhz_state","berichtsheft_v1","bhz","bhz_k","bhz_tpl","bhz_theme","bhz_sig"].forEach(function(k){localStorage.removeItem(k);});location.reload();}catch(e){alert("Cloud-Daten konnten nicht geloescht werden: "+e.message);}}
 
@@ -500,7 +491,7 @@ function getAusbildungsjahr(pageNum){if(!state.startDate)return "1";var s=getMon
 if(s<sc)sc=new Date(sy-1,8,1);var diff=pm.getFullYear()-sc.getFullYear()+(pm<new Date(pm.getFullYear(),8,1)?0:0);var yr=Math.floor((calendarDayNumber(pm)-calendarDayNumber(sc))/365.25)+1;return Math.max(1,Math.min(yr,3)).toString();}
 
 // Navigation
-function hideAll(){["loginScreen","passwordUpdatePanel","apiScreen","firstStart","home","statsPanel","templatePanel","settingsPanel","sharePanel"].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display="none";});var rb=document.getElementById("room-bg");if(rb)rb.style.display="none";}
+function hideAll(){["loginScreen","passwordUpdatePanel","firstStart","home","statsPanel","templatePanel","settingsPanel","sharePanel"].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display="none";});var rb=document.getElementById("room-bg");if(rb)rb.style.display="none";}
 function showHome(){try{
   hideAll();
   document.getElementById("home").style.display="block";
